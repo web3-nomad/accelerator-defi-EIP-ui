@@ -7,7 +7,7 @@ const TopbarRight = () => {
   };
 
   return (
-    <Flex data-testid="topbar-right" gap={5}>
+    <Flex gap={5}>
       <Box borderLeft="2px solid" borderLeftColor="light.primary" w="1px" />
       <Flex
         onClick={handleDisconnect}

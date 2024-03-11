@@ -7,7 +7,6 @@ const Topbar = () => {
   return (
     <>
       <Flex
-        data-testid="topbar"
         w="100%"
         h="64px"
         boxShadow="down-black"
@@ -19,7 +18,6 @@ const Topbar = () => {
       >
         <Box minW="80px" w="80px" textAlign="center" ml="64px" mr="64px">
           <ChakraNextImage
-            data-testid="topbar-logo"
             alt=""
             src={LOGO_HEDERA}
             w="40px"
