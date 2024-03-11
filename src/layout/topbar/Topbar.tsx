@@ -1,0 +1,50 @@
+import { Box, Flex } from "@chakra-ui/react";
+import LOGO_HEDERA from "../../assets/svg/hedera-hbar-logo.svg";
+import TopbarRight from "./TopbarRight";
+import ChakraNextImage from "../../components/ChakraNextImage";
+
+const Topbar = () => {
+  return (
+    <>
+      <Flex
+        w="100%"
+        h="64px"
+        boxShadow="down-black"
+        bgColor="brand.white"
+        color="brand.gray2"
+        alignItems="center"
+        position="relative"
+        zIndex="100"
+      >
+        <Box minW="80px" w="80px" textAlign="center" ml="64px" mr="64px">
+          <ChakraNextImage
+            alt=""
+            src={LOGO_HEDERA}
+            w="40px"
+            h="40px"
+            margin="auto"
+          />
+        </Box>
+        <Box
+          borderRight="2px solid"
+          borderRightColor="light.primary"
+          w="1px"
+          h="30px"
+        />
+        <Flex
+          w="100%"
+          h="100%"
+          justifyContent="space-between"
+          alignItems="center"
+          pl={6}
+          pr={10}
+        >
+          <TopbarRight />
+        </Flex>
+      </Flex>
+      {/* TODO: implement alerts after connecting wallet/RPC */}
+    </>
+  );
+};
+
+export default Topbar;
