@@ -1,7 +1,5 @@
-// import { defaultWagmiConfig } from '@web3modal/wagmi/react/config'
-
 import { cookieStorage, createConfig, createStorage, http } from "wagmi";
-import { mainnet, sepolia } from "wagmi/chains";
+import { hederaTestnet } from "wagmi/chains";
 import { injected, walletConnect } from "@wagmi/connectors";
 
 // Get projectId at https://cloud.walletconnect.com
@@ -18,10 +16,9 @@ const metadata = {
 
 // Create wagmiConfig
 export const config = createConfig({
-  chains: [mainnet, sepolia],
+  chains: [hederaTestnet],
   transports: {
-    [mainnet.id]: http(),
-    [sepolia.id]: http(),
+    [hederaTestnet.id]: http(),
   },
   connectors: [
     walletConnect({ projectId, metadata, showQrModal: false }),
