@@ -2,7 +2,7 @@ import "./globals.css";
 import Layout from "../layout/Layout";
 import { Metadata } from "next/types";
 
-import { ContextProvider } from "@/context";
+//import { ContextProvider } from "@/context";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -17,9 +17,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <ContextProvider>
-          <Layout>{children}</Layout>
-        </ContextProvider>
+        {/* <ContextProvider> */}
+        <Layout>{children}</Layout>
+        {/* </ContextProvider> */}
       </body>
     </html>
   );
