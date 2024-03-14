@@ -1,4 +1,10 @@
-import { HashConnect, HashConnectTypes } from "hashconnect";
+import {
+  HashConnect,
+  HashConnectConnectionState,
+  SessionData,
+} from "hashconnect";
+import { LedgerId } from "@hashgraph/sdk";
+
 import { HashconnectContext } from "../../../contexts/HashconnectContext";
 import { useCallback, useContext, useEffect } from "react";
 import { WalletInterface } from "../walletInterface";
@@ -16,31 +22,46 @@ import { appConfig } from "../../../config";
 const currentNetworkConfig = appConfig.networks.testnet;
 const hederaNetwork = currentNetworkConfig.network;
 
-export const hashConnect = new HashConnect();
+const appMetadata = {
+  name: process.env.WALLET_DEFI_APP_NAME as string,
+  description: process.env.WALLET_DEFI_APP_DESCRIPTION as string,
+  icons: [process.env.WALLET_DEFI_APP_ICON as string],
+  url: process.env.WALLET_DEFI_APP_URL as string,
+};
+
+const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string;
+// TODO: move all setup to config
+export const hashConnect = new HashConnect(
+  LedgerId.TESTNET,
+  projectId,
+  appMetadata,
+);
 
 class HashConnectWallet implements WalletInterface {
   private getSigner() {
-    const pairingData =
-      hashConnect.hcData.pairingData[hashConnect.hcData.pairingData.length - 1];
-    const provider = hashConnect.getProvider(
-      hederaNetwork,
-      pairingData.topic,
-      pairingData.accountIds[0],
-    );
-    return hashConnect.getSigner(provider);
+    // const pairingData =
+    //   hashConnect.hcData.pairingData[hashConnect.hcData.pairingData.length - 1];
+    // const provider = hashConnect.getProvider(
+    //   hederaNetwork,
+    //   pairingData.topic,
+    //   pairingData.accountIds[0],
+    // );
+    // return hashConnect.getSigner(provider);
+    return null;
   }
 
   async transferHBAR(toAddress: AccountId, amount: number) {
-    // Grab the topic and account to sign from the last pairing event
-    const signer = this.getSigner();
+    // // Grab the topic and account to sign from the last pairing event
+    // const signer = this.getSigner();
 
-    const transferHBARTransaction = await new TransferTransaction()
-      .addHbarTransfer(signer.getAccountId(), -amount)
-      .addHbarTransfer(toAddress, amount)
-      .freezeWithSigner(signer);
+    // const transferHBARTransaction = await new TransferTransaction()
+    //   .addHbarTransfer(signer.getAccountId(), -amount)
+    //   .addHbarTransfer(toAddress, amount)
+    //   .freezeWithSigner(signer);
 
-    const txResult = await transferHBARTransaction.executeWithSigner(signer);
-    return txResult.transactionId;
+    // const txResult = await transferHBARTransaction.executeWithSigner(signer);
+    // return txResult.transactionId;
+    return null;
   }
 
   async transferFungibleToken(
@@ -48,16 +69,17 @@ class HashConnectWallet implements WalletInterface {
     tokenId: TokenId,
     amount: number,
   ) {
-    // Grab the topic and account to sign from the last pairing event
-    const signer = this.getSigner();
+    // // Grab the topic and account to sign from the last pairing event
+    // const signer = this.getSigner();
 
-    const transferTokenTransaction = await new TransferTransaction()
-      .addTokenTransfer(tokenId, signer.getAccountId(), -amount)
-      .addTokenTransfer(tokenId, toAddress, amount)
-      .freezeWithSigner(signer);
+    // const transferTokenTransaction = await new TransferTransaction()
+    //   .addTokenTransfer(tokenId, signer.getAccountId(), -amount)
+    //   .addTokenTransfer(tokenId, toAddress, amount)
+    //   .freezeWithSigner(signer);
 
-    const txResult = await transferTokenTransaction.executeWithSigner(signer);
-    return txResult.transactionId;
+    // const txResult = await transferTokenTransaction.executeWithSigner(signer);
+    // return txResult.transactionId;
+    return null;
   }
 
   async transferNonFungibleToken(
@@ -65,27 +87,29 @@ class HashConnectWallet implements WalletInterface {
     tokenId: TokenId,
     serialNumber: number,
   ) {
-    // Grab the topic and account to sign from the last pairing event
-    const signer = this.getSigner();
+    // // Grab the topic and account to sign from the last pairing event
+    // const signer = this.getSigner();
 
-    const transferTokenTransaction = await new TransferTransaction()
-      .addNftTransfer(tokenId, serialNumber, signer.getAccountId(), toAddress)
-      .freezeWithSigner(signer);
+    // const transferTokenTransaction = await new TransferTransaction()
+    //   .addNftTransfer(tokenId, serialNumber, signer.getAccountId(), toAddress)
+    //   .freezeWithSigner(signer);
 
-    const txResult = await transferTokenTransaction.executeWithSigner(signer);
-    return txResult.transactionId;
+    // const txResult = await transferTokenTransaction.executeWithSigner(signer);
+    // return txResult.transactionId;
+    return null;
   }
 
   async associateToken(tokenId: TokenId) {
-    const signer = this.getSigner();
+    // const signer = this.getSigner();
 
-    const associateTokenTransaction = await new TokenAssociateTransaction()
-      .setAccountId(signer.getAccountId())
-      .setTokenIds([tokenId])
-      .freezeWithSigner(signer);
+    // const associateTokenTransaction = await new TokenAssociateTransaction()
+    //   .setAccountId(signer.getAccountId())
+    //   .setTokenIds([tokenId])
+    //   .freezeWithSigner(signer);
 
-    const txResult = await associateTokenTransaction.executeWithSigner(signer);
-    return txResult.transactionId;
+    // const txResult = await associateTokenTransaction.executeWithSigner(signer);
+    // return txResult.transactionId;
+    return null;
   }
 
   // Purpose: build contract execute transaction and send to hashconnect for signing and execution
@@ -96,58 +120,42 @@ class HashConnectWallet implements WalletInterface {
     functionParameters: ContractFunctionParameterBuilder,
     gasLimit: number,
   ) {
-    // Grab the topic and account to sign from the last pairing event
-    const pairingData =
-      hashConnect.hcData.pairingData[hashConnect.hcData.pairingData.length - 1];
+    // // Grab the topic and account to sign from the last pairing event
+    // const pairingData =
+    //   hashConnect.hcData.pairingData[hashConnect.hcData.pairingData.length - 1];
 
-    const provider = hashConnect.getProvider(
-      hederaNetwork,
-      pairingData.topic,
-      pairingData.accountIds[0],
-    );
-    const signer = hashConnect.getSigner(provider);
+    // const provider = hashConnect.getProvider(
+    //   hederaNetwork,
+    //   pairingData.topic,
+    //   pairingData.accountIds[0],
+    // );
+    // const signer = hashConnect.getSigner(provider);
 
-    const tx = new ContractExecuteTransaction()
-      .setContractId(contractId)
-      .setGas(gasLimit)
-      .setFunction(functionName, functionParameters.buildHAPIParams());
+    // const tx = new ContractExecuteTransaction()
+    //   .setContractId(contractId)
+    //   .setGas(gasLimit)
+    //   .setFunction(functionName, functionParameters.buildHAPIParams());
 
-    const txFrozen = await tx.freezeWithSigner(signer);
-    await txFrozen.executeWithSigner(signer);
+    // const txFrozen = await tx.freezeWithSigner(signer);
+    // await txFrozen.executeWithSigner(signer);
 
-    // in order to read the contract call results, you will need to query the contract call's results form a mirror node using the transaction id
-    // after getting the contract call results, use ethers and abi.decode to decode the call_result
-    return txFrozen.transactionId;
+    // // in order to read the contract call results, you will need to query the contract call's results form a mirror node using the transaction id
+    // // after getting the contract call results, use ethers and abi.decode to decode the call_result
+    // return txFrozen.transactionId;
+    return null;
   }
   disconnect() {
-    const pairingData =
-      hashConnect.hcData.pairingData[hashConnect.hcData.pairingData.length - 1];
-    hashConnect.disconnect(pairingData.topic);
+    hashConnect.disconnect();
   }
 }
 export const hashConnectWallet = new HashConnectWallet();
-
-const getPairingInfo = () => {
-  if (hashConnect.hcData.pairingData.length > 0) {
-    return hashConnect.hcData.pairingData[
-      hashConnect.hcData.pairingData.length - 1
-    ];
-  }
-};
 
 // set the necessary metadata for your app
 // call hashconnects init function which will return your pairing code & any previously connected pariaings
 // this will also start the pairing event listener
 const hashConnectInitPromise = new Promise(async (resolve) => {
-  /* this metadata is used to display the app so the
-      wallet can display what app is requesting access from the user
-  */
-  const appMetadata: HashConnectTypes.AppMetadata = {
-    name: "Hedera CRA Template",
-    description: "Hedera CRA Template",
-    icon: "",
-  };
-  const initResult = await hashConnect.init(appMetadata, hederaNetwork, true);
+  const initResult = await hashConnect.init();
+
   resolve(initResult);
 });
 
@@ -158,7 +166,7 @@ export const HashConnectClient = () => {
 
   // sync the hashconnect state with the context
   const syncWithHashConnect = useCallback(() => {
-    const accountId = getPairingInfo()?.accountIds[0];
+    const accountId = hashConnect.connectedAccountIds[0]?.toString();
     if (accountId) {
       setAccountId(accountId);
       setIsConnected(true);

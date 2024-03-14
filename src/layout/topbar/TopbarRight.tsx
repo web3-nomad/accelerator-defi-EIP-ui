@@ -20,7 +20,7 @@ const TopbarRight = () => {
           <Button
             colorScheme="blue"
             onClick={() => {
-              hashConnect.connectToLocalWallet();
+              hashConnect.openPairingModal();
             }}
           >
             HashPack
