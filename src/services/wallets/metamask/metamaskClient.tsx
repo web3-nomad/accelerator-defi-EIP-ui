@@ -1,3 +1,5 @@
+"use client";
+
 // TODO: migrate transactions if needed https://docs.ethers.org/v6/migrating/
 
 import { ContractId, AccountId } from "@hashgraph/sdk";
@@ -55,7 +57,6 @@ const getProvider = () => {
 // otherwise empty array
 export const connectToMetamask = async () => {
   const provider = getProvider();
-  console.log(provider, window.ethereum);
   // keep track of accounts returned
   let accounts: string[] = [];
 
@@ -220,11 +221,13 @@ class MetaMaskWallet implements WalletInterface {
 export const metamaskWallet = new MetaMaskWallet();
 
 export const MetaMaskClient = () => {
-  const { setMetamaskAccountAddress } = useContext(MetamaskContext);
+  const { setMetamaskAccountAddress, setIsAvailable } =
+    useContext(MetamaskContext);
   useEffect(() => {
     // set the account address if already connected
     try {
       const provider = getProvider();
+      setIsAvailable(true);
       provider.listAccounts().then((signers) => {
         if (signers.length !== 0) {
           setMetamaskAccountAddress(signers[0].address);
@@ -246,8 +249,8 @@ export const MetaMaskClient = () => {
       return () => {
         window.ethereum.removeAllListeners("accountsChanged");
       };
-    } catch (error: any) {
-      console.error(error.message ? error.message : error);
+    } catch (_: any) {
+      setIsAvailable(false);
     }
   }, [setMetamaskAccountAddress]);
 

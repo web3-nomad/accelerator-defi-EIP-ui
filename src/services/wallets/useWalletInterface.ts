@@ -1,3 +1,5 @@
+"use client";
+
 import { useContext } from "react";
 import { BladeContext } from "../../contexts/BladeContext";
 import { HashconnectContext } from "../../contexts/HashconnectContext";

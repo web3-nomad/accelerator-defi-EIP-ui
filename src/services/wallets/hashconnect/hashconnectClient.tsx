@@ -1,3 +1,5 @@
+"use client";
+
 import {
   HashConnect,
   HashConnectConnectionState,
@@ -162,7 +164,8 @@ const hashConnectInitPromise = new Promise(async (resolve) => {
 // this component will sync the hashconnect state with the context
 export const HashConnectClient = () => {
   // use the HashpackContext to keep track of the hashpack account and connection
-  const { setAccountId, setIsConnected } = useContext(HashconnectContext);
+  const { setAccountId, setIsConnected, setIsAvailable } =
+    useContext(HashconnectContext);
 
   // sync the hashconnect state with the context
   const syncWithHashConnect = useCallback(() => {
@@ -174,6 +177,7 @@ export const HashConnectClient = () => {
       setAccountId("");
       setIsConnected(false);
     }
+    setIsAvailable(true);
   }, [setAccountId, setIsConnected]);
 
   useEffect(() => {

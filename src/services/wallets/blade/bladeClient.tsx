@@ -1,3 +1,5 @@
+"use client";
+
 import {
   BladeConnector,
   ConnectorStrategy,
@@ -223,6 +225,10 @@ export const BladeClient = () => {
         const accountId = bladeSigner.getAccountId();
         setAccountId(accountId.toString());
         setIsConnected(true);
+        bladeConnector.onSessionDisconnect(() => {
+          setAccountId("");
+          setIsConnected(false);
+        });
       } else {
         setAccountId("");
         setIsConnected(false);
@@ -233,6 +239,7 @@ export const BladeClient = () => {
       setIsConnected(false);
     }
   }, [setIsConnected, setAccountId]);
+
   const syncWithBladeDisconnected = useCallback(() => {
     setAccountId("");
     setIsConnected(false);
@@ -243,16 +250,17 @@ export const BladeClient = () => {
     const sessionCallback = () => {
       syncWithBladeSession();
     };
-
-    bladeConnectorInitPromise.then((resolveResult) => {
-      bladeConnector = resolveResult as BladeConnector;
-      syncWithBladeSession();
-    });
-
     const disconnectCallback = () => {
       syncWithBladeDisconnected();
     };
 
+    bladeConnectorInitPromise.then((resolveResult) => {
+      bladeConnector = resolveResult as BladeConnector;
+
+      syncWithBladeSession();
+    });
+
+    // TODO
     // if (usedBlade) {
     //   connectToBladeWallet(true);
     // }
