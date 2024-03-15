@@ -30,6 +30,8 @@ export const hashConnect = new HashConnect(
   appMetadata,
 );
 
+const bladeLocalStorage = "usedBladeForWalletPairing";
+
 class HashConnectWallet implements WalletInterface {
   async transferHBAR(toAddress: AccountId, amount: number) {
     const accountId = hashConnect.connectedAccountIds[0];
@@ -143,6 +145,13 @@ class HashConnectWallet implements WalletInterface {
 }
 export const hashConnectWallet = new HashConnectWallet();
 
+export const connectToHashconnectWallet = async () => {
+  try {
+    localStorage.removeItem(bladeLocalStorage);
+    hashConnect.openPairingModal();
+  } catch (e: any) {}
+};
+
 const hashConnectInitPromise = new Promise(async (resolve) => {
   const initResult = await hashConnect.init();
 
@@ -157,13 +166,15 @@ export const HashConnectClient = () => {
 
   // sync the hashconnect state with the context
   const syncWithHashConnect = useCallback(() => {
-    const accountId = hashConnect.connectedAccountIds[0]?.toString();
-    if (accountId) {
-      setAccountId(accountId);
-      setIsConnected(true);
-    } else {
-      setAccountId("");
-      setIsConnected(false);
+    if (localStorage.getItem(bladeLocalStorage) !== "true") {
+      const accountId = hashConnect.connectedAccountIds[0]?.toString();
+      if (accountId) {
+        setAccountId(accountId);
+        setIsConnected(true);
+      } else {
+        setAccountId("");
+        setIsConnected(false);
+      }
     }
     setIsAvailable(true);
   }, [setAccountId, setIsConnected]);

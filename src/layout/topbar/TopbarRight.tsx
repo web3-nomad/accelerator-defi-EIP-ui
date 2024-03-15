@@ -4,7 +4,7 @@ import { Box, Flex, Button } from "@chakra-ui/react";
 
 import { useWalletInterface } from "../../services/wallets/useWalletInterface";
 import { connectToBladeWallet } from "../../services/wallets/blade/bladeClient";
-import { hashConnect } from "../../services/wallets/hashconnect/hashconnectClient";
+import { connectToHashconnectWallet } from "../../services/wallets/hashconnect/hashconnectClient";
 import { connectToMetamask } from "../../services/wallets/metamask/metamaskClient";
 import { HashconnectContext } from "../../contexts/HashconnectContext";
 import { BladeContext } from "../../contexts/BladeContext";
@@ -29,7 +29,7 @@ const TopbarRight = () => {
             isDisabled={!hashconnectCtx.isAvailable}
             colorScheme="blue"
             onClick={() => {
-              hashConnect.openPairingModal();
+              connectToHashconnectWallet();
             }}
           >
             HashPack

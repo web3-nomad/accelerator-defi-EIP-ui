@@ -185,9 +185,7 @@ export const connectToBladeWallet = async (
     });
     syncWithBladeEvent.emit("syncSession");
     localStorage.setItem(bladeLocalStorage, "true");
-  } catch (error) {
-    console.log("Blade wallet connect error", error);
-  }
+  } catch (e: any) {}
 };
 
 const bladeConnectorInitPromise = new Promise(async (resolve, reject) => {
@@ -262,9 +260,9 @@ export const BladeClient = () => {
       },
     );
 
-    if (usedBlade) {
-      connectToBladeWallet(true);
-    }
+    // if (usedBlade) {
+    //   connectToBladeWallet(true);
+    // }
 
     syncWithBladeEvent.on("syncSession", sessionCallback);
     syncWithBladeEvent.on("syncDisconnect", disconnectCallback);
