@@ -193,10 +193,11 @@ const bladeConnectorInitPromise = new Promise(async (resolve, reject) => {
     const initResult: BladeConnector = await BladeConnector.init(
       ConnectorStrategy.EXTENSION, // Use Blade extension exclusively for this adapter
       {
-        name: process.env.WALLET_DEFI_APP_NAME as string,
-        description: process.env.WALLET_DEFI_APP_DESCRIPTION as string,
-        icons: [process.env.WALLET_DEFI_APP_ICON as string],
-        url: process.env.WALLET_DEFI_APP_URL as string,
+        name: process.env.NEXT_PUBLIC_WALLET_DEFI_APP_NAME as string,
+        description: process.env
+          .NEXT_PUBLIC_WALLET_DEFI_APP_DESCRIPTION as string,
+        icons: [process.env.NEXT_PUBLIC_WALLET_DEFI_APP_ICON as string],
+        url: process.env.NEXT_PUBLIC_WALLET_DEFI_APP_URL as string,
       },
     );
     resolve(initResult);

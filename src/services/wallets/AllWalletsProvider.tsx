@@ -16,7 +16,7 @@ export const AllWalletsProvider = (props: {
       <MetamaskContextProvider>
         <HashconnectContextProvider>
           <HashConnectClient />
-          <BladeClient />
+          {/* <BladeClient /> */}
           <MetaMaskClient />
           {props.children}
         </HashconnectContextProvider>

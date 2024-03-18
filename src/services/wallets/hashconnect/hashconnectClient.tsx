@@ -18,16 +18,19 @@ import { WalletInterface } from "../walletInterface";
 import { ContractFunctionParameterBuilder } from "../contractFunctionParameterBuilder";
 
 const appMetadata = {
-  name: process.env.WALLET_DEFI_APP_NAME as string,
-  description: process.env.WALLET_DEFI_APP_DESCRIPTION as string,
-  icons: [process.env.WALLET_DEFI_APP_ICON as string],
-  url: process.env.WALLET_DEFI_APP_URL as string,
+  name: process.env.NEXT_PUBLIC_WALLET_DEFI_APP_NAME as string,
+  description: process.env.NEXT_PUBLIC_WALLET_DEFI_APP_DESCRIPTION as string,
+  icons: [process.env.NEXT_PUBLIC_WALLET_DEFI_APP_ICON as string],
+  url: process.env.NEXT_PUBLIC_WALLET_DEFI_APP_URL as string,
 };
 
 export const hashConnect = new HashConnect(
-  LedgerId.TESTNET, //
+  LedgerId.fromString(
+    (process.env.NEXT_PUBLIC_WALLET_DEFI_NETWORK as string) || "testnet",
+  ),
   process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string,
   appMetadata,
+  true,
 );
 
 const bladeLocalStorage = "usedBladeForWalletPairing";
@@ -154,7 +157,6 @@ export const connectToHashconnectWallet = async () => {
 
 const hashConnectInitPromise = new Promise(async (resolve) => {
   const initResult = await hashConnect.init();
-
   resolve(initResult);
 });
 
@@ -168,6 +170,7 @@ export const HashConnectClient = () => {
   const syncWithHashConnect = useCallback(() => {
     if (localStorage.getItem(bladeLocalStorage) !== "true") {
       const accountId = hashConnect.connectedAccountIds[0]?.toString();
+
       if (accountId) {
         setAccountId(accountId);
         setIsConnected(true);
@@ -180,24 +183,20 @@ export const HashConnectClient = () => {
   }, [setAccountId, setIsConnected]);
 
   useEffect(() => {
-    // when the component renders, sync the hashconnect state with the context
     syncWithHashConnect();
     // when hashconnect is initialized, sync the hashconnect state with the context
     hashConnectInitPromise.then(() => {
       syncWithHashConnect();
     });
-
-    // when pairing an account, sync the hashconnect state with the context
-    hashConnect.pairingEvent.on(syncWithHashConnect);
-
-    // when the connection status changes, sync the hashconnect state with the context
-    hashConnect.connectionStatusChangeEvent.on(syncWithHashConnect);
-
-    return () => {
-      // remove the event listeners when the component unmounts
-      hashConnect.pairingEvent.off(syncWithHashConnect);
-      hashConnect.connectionStatusChangeEvent.off(syncWithHashConnect);
-    };
+    hashConnect.pairingEvent.on(() => {
+      syncWithHashConnect();
+    });
+    hashConnect.disconnectionEvent.on(() => {
+      syncWithHashConnect();
+    });
+    hashConnect.connectionStatusChangeEvent.on(() => {
+      syncWithHashConnect();
+    });
   }, [syncWithHashConnect]);
   return null;
 };
