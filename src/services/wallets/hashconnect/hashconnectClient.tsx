@@ -180,7 +180,7 @@ export const HashConnectClient = () => {
       }
     }
     setIsAvailable(true);
-  }, [setAccountId, setIsConnected]);
+  }, [setAccountId, setIsConnected, setIsAvailable]);
 
   useEffect(() => {
     syncWithHashConnect();

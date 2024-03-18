@@ -274,7 +274,12 @@ export const BladeClient = () => {
         syncWithBladeEvent.off("syncDisconnect", disconnectCallback);
       };
     } catch (_) {}
-  }, [syncWithBladeSession, syncWithBladeDisconnected, usedBlade]);
+  }, [
+    syncWithBladeSession,
+    syncWithBladeDisconnected,
+    usedBlade,
+    setIsAvailable,
+  ]);
 
   useEffect(() => {
     setUsedBlade(localStorage.getItem(bladeLocalStorage) === "true");

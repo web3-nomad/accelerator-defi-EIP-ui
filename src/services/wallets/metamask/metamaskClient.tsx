@@ -252,7 +252,7 @@ export const MetaMaskClient = () => {
     } catch (_: any) {
       setIsAvailable(false);
     }
-  }, [setMetamaskAccountAddress]);
+  }, [setMetamaskAccountAddress, setIsAvailable]);
 
   return null;
 };
