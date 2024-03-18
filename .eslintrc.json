@@ -2,12 +2,6 @@
   "extends": ["next/core-web-vitals", "plugin:react-hooks/recommended", "prettier"],
   "plugins": ["prettier","react-hooks"],
   "rules": {
-    "react-hooks/exhaustive-deps": [
-      "warn",
-      {
-        "enableDangerousAutofixThisMayCauseInfiniteLoops": true
-      }
-    ],
     "prettier/prettier": [
       "warn",
       {
