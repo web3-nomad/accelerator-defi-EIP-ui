@@ -36,7 +36,7 @@ const syncWithBladeEvent = new EventEmitter();
 
 class BladeWallet implements WalletInterface {
   async transferHBAR(toAddress: AccountId, amount: number) {
-    const bladeSigner = bladeConnector.getSigner();
+    const bladeSigner = bladeConnector.getSigners()[0];
     if (!bladeSigner) {
       return null;
     }
@@ -44,10 +44,10 @@ class BladeWallet implements WalletInterface {
     const transferHBARTransaction = await new TransferTransaction()
       .addHbarTransfer(bladeSigner.getAccountId().toString(), -amount)
       .addHbarTransfer(toAddress, amount)
-      .freezeWithSigner(bladeSigner);
+      .freezeWithSigner(bladeSigner as any);
 
     const transactionId = await transferHBARTransaction
-      .executeWithSigner(bladeSigner)
+      .executeWithSigner(bladeSigner as any)
       .then((txResult) => txResult.transactionId)
       .catch((error) => {
         console.log(error.message ? error.message : error);
@@ -61,7 +61,7 @@ class BladeWallet implements WalletInterface {
     tokenId: TokenId,
     amount: number,
   ) {
-    const bladeSigner = bladeConnector.getSigner();
+    const bladeSigner = bladeConnector.getSigners()[0];
     if (!bladeSigner) {
       return null;
     }
@@ -69,10 +69,10 @@ class BladeWallet implements WalletInterface {
     const transferTokenTransaction = await new TransferTransaction()
       .addTokenTransfer(tokenId, bladeSigner.getAccountId().toString(), -amount)
       .addTokenTransfer(tokenId, toAddress, amount)
-      .freezeWithSigner(bladeSigner);
+      .freezeWithSigner(bladeSigner as any);
 
     const transactionId = await transferTokenTransaction
-      .executeWithSigner(bladeSigner)
+      .executeWithSigner(bladeSigner as any)
       .then((txResult) => txResult.transactionId)
       .catch((error) => {
         console.log(error.message ? error.message : error);
@@ -86,7 +86,7 @@ class BladeWallet implements WalletInterface {
     tokenId: TokenId,
     serialNumber: number,
   ) {
-    const bladeSigner = bladeConnector.getSigner();
+    const bladeSigner = bladeConnector.getSigners()[0];
     if (!bladeSigner) {
       return null;
     }
@@ -98,10 +98,10 @@ class BladeWallet implements WalletInterface {
         bladeSigner.getAccountId().toString(),
         toAddress,
       )
-      .freezeWithSigner(bladeSigner);
+      .freezeWithSigner(bladeSigner as any);
 
     const transactionId = await transferTokenTransaction
-      .executeWithSigner(bladeSigner)
+      .executeWithSigner(bladeSigner as any)
       .then((txResult) => txResult.transactionId)
       .catch((error) => {
         console.log(error.message ? error.message : error);
@@ -111,7 +111,7 @@ class BladeWallet implements WalletInterface {
   }
 
   async associateToken(tokenId: TokenId) {
-    const bladeSigner = bladeConnector.getSigner();
+    const bladeSigner = bladeConnector.getSigners()[0];
     if (!bladeSigner) {
       return null;
     }
@@ -119,10 +119,10 @@ class BladeWallet implements WalletInterface {
     const associateTokenTransaction = await new TokenAssociateTransaction()
       .setAccountId(bladeSigner.getAccountId().toString())
       .setTokenIds([tokenId])
-      .freezeWithSigner(bladeSigner);
+      .freezeWithSigner(bladeSigner as any);
 
     const transactionId = await associateTokenTransaction
-      .executeWithSigner(bladeSigner)
+      .executeWithSigner(bladeSigner as any)
       .then((txResult) => txResult.transactionId)
       .catch((error) => {
         console.log(error.message ? error.message : error);
@@ -139,7 +139,7 @@ class BladeWallet implements WalletInterface {
     functionParameters: ContractFunctionParameterBuilder,
     gasLimit: number,
   ) {
-    const bladeSigner = bladeConnector.getSigner();
+    const bladeSigner = bladeConnector.getSigners()[0];
     if (!bladeSigner) {
       return null;
     }
@@ -150,9 +150,9 @@ class BladeWallet implements WalletInterface {
       .setGas(gasLimit)
       .setFunction(functionName, functionParameters.buildHAPIParams());
 
-    const txFrozen = await tx.freezeWithSigner(bladeSigner);
+    const txFrozen = await tx.freezeWithSigner(bladeSigner as any);
     const transactionId = await txFrozen
-      .executeWithSigner(bladeSigner)
+      .executeWithSigner(bladeSigner as any)
       .then((txResult) => txResult.transactionId)
       .catch((error) => {
         console.log(error.message ? error.message : error);
@@ -180,8 +180,9 @@ export const connectToBladeWallet = async (
       await bladeConnector.killSession(); // kill any existing session to allow pairing a new account
     }
     await bladeConnector.createSession({
-      network: HederaNetwork.Testnet,
-      dAppCode: "hederaCraTemplate",
+      network:
+        (process.env.NEXT_PUBLIC_WALLET_DEFI_NETWORK as HederaNetwork) ||
+        "testnet",
     });
     syncWithBladeEvent.emit("syncSession");
     localStorage.setItem(bladeLocalStorage, "true");
@@ -216,7 +217,7 @@ export const BladeClient = () => {
   // sync with blade state with the context so the context is aware of connected account id
   const syncWithBladeSession = useCallback(() => {
     try {
-      const bladeSigner = bladeConnector.getSigner();
+      const bladeSigner = bladeConnector.getSigners()[0];
       if (bladeSigner) {
         const accountId = bladeSigner.getAccountId();
         setAccountId(accountId.toString());
@@ -242,36 +243,37 @@ export const BladeClient = () => {
 
   // sync the blade state with the context
   useEffect(() => {
-    const sessionCallback = () => {
-      syncWithBladeSession();
-    };
-    const disconnectCallback = () => {
-      syncWithBladeDisconnected();
-    };
-
-    bladeConnectorInitPromise.then(
-      (resolveResult) => {
-        bladeConnector = resolveResult as BladeConnector;
-        setIsAvailable(true);
+    try {
+      const sessionCallback = () => {
         syncWithBladeSession();
-      },
-      () => {
-        // no extension was found => make sure it's disabled
-        setIsAvailable(false);
-      },
-    );
+      };
+      const disconnectCallback = () => {
+        syncWithBladeDisconnected();
+      };
 
-    // if (usedBlade) {
-    //   connectToBladeWallet(true);
-    // }
+      bladeConnectorInitPromise.then(
+        (resolveResult) => {
+          bladeConnector = resolveResult as BladeConnector;
+          setIsAvailable(true);
+          syncWithBladeSession();
+          if (usedBlade) {
+            connectToBladeWallet(true);
+          }
+        },
+        () => {
+          // no extension was found => make sure it's disabled
+          setIsAvailable(false);
+        },
+      );
 
-    syncWithBladeEvent.on("syncSession", sessionCallback);
-    syncWithBladeEvent.on("syncDisconnect", disconnectCallback);
+      syncWithBladeEvent.on("syncSession", sessionCallback);
+      syncWithBladeEvent.on("syncDisconnect", disconnectCallback);
 
-    return () => {
-      syncWithBladeEvent.off("syncSession", sessionCallback);
-      syncWithBladeEvent.off("syncDisconnect", disconnectCallback);
-    };
+      return () => {
+        syncWithBladeEvent.off("syncSession", sessionCallback);
+        syncWithBladeEvent.off("syncDisconnect", disconnectCallback);
+      };
+    } catch (_) {}
   }, [syncWithBladeSession, syncWithBladeDisconnected, usedBlade]);
 
   useEffect(() => {

@@ -38,7 +38,7 @@ const TopbarRight = () => {
             isDisabled={!bladeCtx.isAvailable}
             colorScheme="blue"
             onClick={() => {
-              connectToBladeWallet();
+              connectToBladeWallet(true);
             }}
           >
             Blade
