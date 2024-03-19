@@ -4,6 +4,7 @@ import { Box, Flex } from "@chakra-ui/react";
 import type { ReactNode } from "react";
 import Sidebar from "./sidebar/Sidebar";
 import Topbar from "./topbar/Topbar";
+import Footer from "./footer/Footer";
 
 import { ChakraProvider } from "@chakra-ui/react";
 import theme from "../theme/Theme";
@@ -32,6 +33,7 @@ const Layout = ({ children }: LayoutProps) => {
               {children}
             </Box>
           </Flex>
+          <Footer />
         </Box>
       </AllWalletsProvider>
       <ScrollBar />
