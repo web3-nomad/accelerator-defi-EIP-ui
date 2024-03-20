@@ -37,6 +37,7 @@ const syncWithBladeEvent = new EventEmitter();
 class BladeWallet implements WalletInterface {
   async transferHBAR(toAddress: AccountId, amount: number) {
     const bladeSigner = bladeConnector.getSigners()[0];
+    console.log("signers", bladeConnector.getSigners());
     if (!bladeSigner) {
       return null;
     }
@@ -48,7 +49,7 @@ class BladeWallet implements WalletInterface {
           amount: amount,
         },
         {
-          accountId: bladeSigner.getAccountId().toString() as any,
+          accountId: bladeSigner.getAccountId().toString(),
           amount: -amount,
         },
       ],
