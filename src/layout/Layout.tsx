@@ -15,6 +15,8 @@ import { ScrollBar } from "../components/Scrollbar";
 import { AllWalletsProvider } from "../services/wallets/AllWalletsProvider";
 
 import TestTransactions from "../views/TestTransactions";
+import TestFunctionCall from "@/views/TestFunctionCall";
+import TransferFungibleToken from "@/views/TransferFungibleToken";
 
 interface LayoutProps {
   children: ReactNode;
@@ -34,6 +36,8 @@ const Layout = ({ children }: LayoutProps) => {
             <Box w="100%" py={9} px={10} minH="100%" bgColor="brand.gray5">
               {/* {children} TODO: Make it right*/}
               <TestTransactions></TestTransactions>
+              <TestFunctionCall />
+              <TransferFungibleToken />
             </Box>
           </Flex>
           <Footer />
