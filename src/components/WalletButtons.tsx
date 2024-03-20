@@ -2,15 +2,15 @@ import { useContext } from "react";
 
 import { Box, Flex, Button } from "@chakra-ui/react";
 
-import { useWalletInterface } from "../../services/wallets/useWalletInterface";
-import { connectToBladeWallet } from "../../services/wallets/blade/bladeClient";
-import { connectToHashconnectWallet } from "../../services/wallets/hashconnect/hashconnectClient";
-import { connectToMetamask } from "../../services/wallets/metamask/metamaskClient";
-import { HashconnectContext } from "../../contexts/HashconnectContext";
-import { BladeContext } from "../../contexts/BladeContext";
-import { MetamaskContext } from "../../contexts/MetamaskContext";
+import { useWalletInterface } from "../services/wallets/useWalletInterface";
+import { connectToBladeWallet } from "../services/wallets/blade/bladeClient";
+import { connectToHashconnectWallet } from "../services/wallets/hashconnect/hashconnectClient";
+import { connectToMetamask } from "../services/wallets/metamask/metamaskClient";
+import { HashconnectContext } from "../contexts/HashconnectContext";
+import { BladeContext } from "../contexts/BladeContext";
+import { MetamaskContext } from "../contexts/MetamaskContext";
 
-const TopbarRight = () => {
+const WalletButtons = () => {
   const hashconnectCtx = useContext(HashconnectContext);
   const bladeCtx = useContext(BladeContext);
   const metamaskCtx = useContext(MetamaskContext);
@@ -19,9 +19,6 @@ const TopbarRight = () => {
 
   return (
     <Flex gap={5}>
-      <Box borderLeft="2px solid" borderLeftColor="light.primary" w="1px" />
-      {/* <ConnectButton /> */}
-
       {/* TODO: move to separate component */}
       {!accountId ? (
         <>
@@ -70,4 +67,4 @@ const TopbarRight = () => {
   );
 };
 
-export default TopbarRight;
+export default WalletButtons;

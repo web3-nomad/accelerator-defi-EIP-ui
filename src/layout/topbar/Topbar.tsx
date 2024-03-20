@@ -1,6 +1,6 @@
 import { Box, Flex } from "@chakra-ui/react";
 import LOGO_HEDERA from "../../assets/svg/hedera-hbar-logo.svg";
-import TopbarRight from "./TopbarRight";
+import WalletButtons from "../../components/WalletButtons";
 import ChakraNextImage from "../../components/ChakraNextImage";
 
 const Topbar = () => {
@@ -15,8 +15,9 @@ const Topbar = () => {
         alignItems="center"
         position="relative"
         zIndex="100"
+        justifyContent="space-between"
       >
-        <Box minW="80px" w="80px" textAlign="center" ml="64px" mr="64px">
+        <Box minW="80px" w="80px" textAlign="center">
           <ChakraNextImage
             alt=""
             src={LOGO_HEDERA}
@@ -25,21 +26,15 @@ const Topbar = () => {
             margin="auto"
           />
         </Box>
-        <Box
-          borderRight="2px solid"
-          borderRightColor="light.primary"
-          w="1px"
-          h="30px"
-        />
         <Flex
           w="100%"
           h="100%"
-          justifyContent="space-between"
+          justifyContent="right"
           alignItems="center"
-          pl={6}
-          pr={10}
+          pl={5}
+          pr={5}
         >
-          <TopbarRight />
+          <WalletButtons />
         </Flex>
       </Flex>
       {/* TODO: implement alerts after connecting wallet/RPC */}

@@ -37,23 +37,32 @@ const syncWithBladeEvent = new EventEmitter();
 class BladeWallet implements WalletInterface {
   async transferHBAR(toAddress: AccountId, amount: number) {
     const bladeSigner = bladeConnector.getSigners()[0];
+    console.log("signers", bladeConnector.getSigners());
     if (!bladeSigner) {
       return null;
     }
 
-    const transferHBARTransaction = await new TransferTransaction()
-      .addHbarTransfer(bladeSigner.getAccountId().toString(), -amount)
-      .addHbarTransfer(toAddress, amount)
-      .freezeWithSigner(bladeSigner as any);
+    const transaction = new TransferTransaction({
+      hbarTransfers: [
+        {
+          accountId: toAddress,
+          amount: amount,
+        },
+        {
+          accountId: bladeSigner.getAccountId().toString(),
+          amount: -amount,
+        },
+      ],
+    });
 
-    const transactionId = await transferHBARTransaction
-      .executeWithSigner(bladeSigner as any)
-      .then((txResult) => txResult.transactionId)
-      .catch((error) => {
-        console.log(error.message ? error.message : error);
-        return null;
-      });
-    return transactionId;
+    const populatedTransaction = await bladeSigner.populateTransaction(
+      transaction as any,
+    );
+    const signedTransaction = await bladeSigner.signTransaction(
+      populatedTransaction.freeze(),
+    );
+    const result = await bladeSigner.call(signedTransaction);
+    return result as any;
   }
 
   async transferFungibleToken(
