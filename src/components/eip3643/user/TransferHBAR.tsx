@@ -29,9 +29,6 @@ export default function TransferHBAR() {
           type="number"
           value={amount}
           onChange={(e) => setAmount(parseInt(e.target.value))}
-          sx={{
-            maxWidth: "100px",
-          }}
         />
       </VStack>
 
@@ -41,6 +38,9 @@ export default function TransferHBAR() {
           name="hbar-destination-address"
           value={toAccountId}
           onChange={(e) => setToAccountId(e.target.value)}
+          sx={{
+            minWidth: "400px",
+          }}
         />
       </VStack>
 

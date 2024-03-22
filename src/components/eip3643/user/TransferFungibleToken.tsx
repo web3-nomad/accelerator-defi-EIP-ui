@@ -34,9 +34,6 @@ export default function TransferFungibleToken() {
           type="number"
           value={amount}
           onChange={(e) => setAmount(parseInt(e.target.value))}
-          sx={{
-            minWidth: "400px",
-          }}
         />
       </VStack>
 
@@ -47,7 +44,7 @@ export default function TransferFungibleToken() {
           value={fungibleTokenId}
           onChange={(e) => setFungibleTokenId(e.target.value)}
           sx={{
-            maxWidth: "100px",
+            minWidth: "400px",
           }}
         />
       </VStack>
@@ -60,6 +57,9 @@ export default function TransferFungibleToken() {
           name="fungible-destination-address"
           value={toAccountId}
           onChange={(e) => setToAccountId(e.target.value)}
+          sx={{
+            minWidth: "400px",
+          }}
         />
       </VStack>
 
