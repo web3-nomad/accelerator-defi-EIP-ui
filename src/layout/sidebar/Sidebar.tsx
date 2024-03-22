@@ -1,4 +1,4 @@
-import { Flex } from "@chakra-ui/react";
+import { Divider, Flex, HStack } from "@chakra-ui/react";
 import SidebarOption from "./SidebarOption";
 
 interface optionsProps {
@@ -9,42 +9,39 @@ interface optionsProps {
   isHidden?: boolean;
 }
 
-const Sidebar = () => {
-  const options: optionsProps[] = [
-    {
-      icon: "Coin",
-      title: "Route1",
-      route: "route1",
-      isDisabled: false,
-    },
-    {
-      icon: "Users",
-      title: "Route2",
-      route: "route2",
-      isDisabled: false,
-    },
-    {
-      icon: "GearSix",
-      title: "Route3",
-      route: "route3",
-    },
-  ];
+const routes: optionsProps[] = [
+  {
+    icon: "Coin",
+    title: "EIP-3643",
+    route: "/",
+    isDisabled: false,
+  },
+  // {
+  //   icon: "GearSix",
+  //   title: "EIP-3643 Admin",
+  //   route: "/eip3643/admin",
+  // },
+];
 
+const Sidebar = () => {
   return (
-    <Flex
-      data-testid="sidebar"
-      bgColor="brand.white"
-      minW="240px"
-      p="32px 12px"
-      justifyContent={"space-between"}
-      flexDirection="column"
-    >
-      <Flex flexDirection="column" alignItems="center" gap={3}>
-        {options.map((option) => {
-          return <SidebarOption key={option.title} {...option} />;
-        })}
+    <HStack alignItems={"flex-start"}>
+      <Flex
+        data-testid="sidebar"
+        bgColor="brand.white"
+        minW="240px"
+        p="32px 12px"
+        justifyContent={"space-between"}
+        flexDirection="column"
+      >
+        <Flex flexDirection="column" alignItems="center" gap={3}>
+          {routes.map((route) => {
+            return <SidebarOption key={route.title} {...route} />;
+          })}
+        </Flex>
       </Flex>
-    </Flex>
+      <Divider orientation="vertical" />
+    </HStack>
   );
 };
 
