@@ -19,11 +19,14 @@ export function createWatchContractEvent<
   eventName extends ContractEventName<abi> | undefined = undefined,
 >(c: CreateWatchContractEventParameters<abi, address, eventName>): any {
   // todo
+  return () => {
+    console.log("createWatchContractEvent");
+    console.log(c);
+  };
   // return watchContractEvent(config, {
   //   ...(parameters as any),
   //   ...(c.address ? { address: c.address } : {}),
   //   ...(c.eventName ? { functionName: c.eventName } : {}),
   //   abi: c.abi,
   // })
-  return null;
 }

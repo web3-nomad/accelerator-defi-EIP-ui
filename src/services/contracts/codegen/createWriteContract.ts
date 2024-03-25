@@ -28,7 +28,10 @@ export function createWriteContract<
     | undefined = undefined,
 >(c: CreateWriteContractParameters<abi, address, functionName>): any {
   // TODO
-  return null;
+  return () => {
+    console.log("createWatchContractEvent");
+    console.log(c);
+  };
   // return writeContract(config, {
   //   ...(parameters as any),
   //   ...(c.address ? { address: c.address } : {}),

@@ -1,9 +1,7 @@
-import {
-  createReadContract,
-  createWriteContract,
-  createSimulateContract,
-  createWatchContractEvent,
-} from "wagmi/codegen";
+import { createSimulateContract } from "@/services/contracts/codegen/createSimulateContract";
+import { createReadContract } from "@/services/contracts/codegen/createReadContract";
+import { createWatchContractEvent } from "@/services/contracts/codegen/createWatchContractEvent";
+import { createWriteContract } from "@/services/contracts/codegen/createWriteContract";
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ERC20

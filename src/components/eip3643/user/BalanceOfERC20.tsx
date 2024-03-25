@@ -14,6 +14,7 @@ import { AccountId, ContractId } from "@hashgraph/sdk";
 import { ContractFunctionParameterBuilder } from "@/services/wallets/contractFunctionParameterBuilder";
 import { appConfig } from "@/config";
 import { convertAccountIdToSolidityAddress } from "@/services/util/helpers";
+import { readErc20BalanceOf } from "../../../services/contracts/wagmi-gen-actions";
 
 export default function BalanceOfERC20() {
   const { accountId, walletName, walletInterface } = useWalletInterface();
@@ -67,6 +68,27 @@ export default function BalanceOfERC20() {
         }}
       >
         Send
+      </Button>
+
+      <Button
+        onClick={async () => {
+          setTxId("waiting...");
+
+          const txId = await readErc20BalanceOf(walletInterface, [
+            convertAccountIdToSolidityAddress(
+              AccountId.fromString(accountId as string),
+            ),
+          ]);
+
+          //@TODO implement this flow to get readable results to show them to the user
+          // in order to read the contract call results, you will need to query the contract call's results form a mirror node using the transaction id
+          // after getting the contract call results, use ethers and abi.decode to decode the call_result
+
+          console.log("txId", txId);
+          setTxId(txId as unknown as string);
+        }}
+      >
+        Send [codegen-wagmi]
       </Button>
     </VStack>
   );

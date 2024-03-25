@@ -13,6 +13,8 @@ import { AccountId, ContractId } from "@hashgraph/sdk";
 import { ContractFunctionParameterBuilder } from "@/services/wallets/contractFunctionParameterBuilder";
 import { appConfig } from "@/config";
 
+import { readMeaningOfLifeTheMeaningOfLifeIs } from "@/services/contracts/wagmi-gen-actions";
+
 export default function MeaningOfLife() {
   const { accountId, walletName, walletInterface } = useWalletInterface();
   const [txId, setTxId] = useState("no transaction initiated");
@@ -43,6 +45,20 @@ export default function MeaningOfLife() {
         }}
       >
         Send
+      </Button>
+
+      <Button
+        onClick={async () => {
+          setTxId("waiting...");
+
+          const txId =
+            await readMeaningOfLifeTheMeaningOfLifeIs(walletInterface);
+
+          console.log("txId", txId);
+          //setTxId(txId as string);
+        }}
+      >
+        Send [codegen-wagmi]
       </Button>
     </VStack>
   );

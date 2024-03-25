@@ -28,6 +28,10 @@ export function createSimulateContract<
     | undefined = undefined,
 >(c: CreateSimulateContractParameters<abi, address, functionName>): any {
   // TODO
+  return () => {
+    console.log("createSimulateContract");
+    console.log(c);
+  };
   // return simulateContract(config, {
   //   ...(parameters as any),
   //   ...(c.address ? { address: c.address } : {}),
