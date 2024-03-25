@@ -113,7 +113,7 @@ class MetaMaskWallet implements WalletInterface {
     tokenId: TokenId,
     amount: number,
   ) {
-    const hash = await this.executeContractFunction(
+    const hash = await this.executeContractWriteFunction(
       ContractId.fromString(tokenId.toString()),
       "transfer",
       new ContractFunctionParameterBuilder()
@@ -140,7 +140,7 @@ class MetaMaskWallet implements WalletInterface {
   ) {
     const provider = getProvider();
     const addresses = await provider.listAccounts();
-    const hash = await this.executeContractFunction(
+    const hash = await this.executeContractWriteFunction(
       ContractId.fromString(tokenId.toString()),
       "transferFrom",
       new ContractFunctionParameterBuilder()
@@ -168,7 +168,7 @@ class MetaMaskWallet implements WalletInterface {
   async associateToken(tokenId: TokenId) {
     // send the transaction
     // convert tokenId to contract id
-    const hash = await this.executeContractFunction(
+    const hash = await this.executeContractWriteFunction(
       ContractId.fromString(tokenId.toString()),
       "associate",
       new ContractFunctionParameterBuilder(),
@@ -178,9 +178,18 @@ class MetaMaskWallet implements WalletInterface {
     return hash;
   }
 
+  async executeContractReadFunction(
+    contractId: ContractId,
+    functionName: string,
+    functionParameters: ContractFunctionParameterBuilder,
+  ) {
+    // TODO
+    return null;
+  }
+
   // Purpose: build contract execute transaction and send to hashconnect for signing and execution
   // Returns: Promise<TransactionId | null>
-  async executeContractFunction(
+  async executeContractWriteFunction(
     contractId: ContractId,
     functionName: string,
     functionParameters: ContractFunctionParameterBuilder,

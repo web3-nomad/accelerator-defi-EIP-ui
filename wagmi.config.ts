@@ -1,5 +1,5 @@
 import { defineConfig } from "@wagmi/cli";
-import { fetch, react } from "@wagmi/cli/plugins";
+import { fetch, react, actions } from "@wagmi/cli/plugins";
 
 const contracts = [
   {
@@ -15,9 +15,10 @@ const contracts = [
 ];
 
 export default defineConfig({
-  out: "src/wagmi/generated.ts",
+  out: "src/services/contracts/wagmi-gen-actions.ts",
   plugins: [
-    react(),
+    //    react(),
+    actions(),
     fetch({
       cacheDuration: 1,
       contracts: contracts.map((item) => ({

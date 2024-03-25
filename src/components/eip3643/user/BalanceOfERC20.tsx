@@ -45,7 +45,7 @@ export default function BalanceOfERC20() {
         onClick={async () => {
           setTxId("waiting...");
 
-          const txId = await walletInterface?.executeContractFunction(
+          const txId = await walletInterface?.executeContractWriteFunction(
             ContractId.fromEvmAddress(0, 0, fungibleTokenEvmAddress),
             "balanceOf",
             new ContractFunctionParameterBuilder().addParam({

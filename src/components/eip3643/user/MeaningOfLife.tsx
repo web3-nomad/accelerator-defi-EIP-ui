@@ -27,7 +27,7 @@ export default function MeaningOfLife() {
         onClick={async () => {
           setTxId("waiting...");
 
-          const txId = await walletInterface?.executeContractFunction(
+          const txId = await walletInterface?.executeContractWriteFunction(
             ContractId.fromEvmAddress(
               0,
               0,
