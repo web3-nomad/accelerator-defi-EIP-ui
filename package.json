@@ -8,7 +8,6 @@
     "start": "next start",
     "lint": "next lint --fix",
     "prepare": "husky",
-    "get-abis": "node scripts/get-abis.js",
     "format": "prettier --write .",
     "lint-staged": "lint-staged",
     "type-check": "tsc --project tsconfig.json --pretty --noEmit && echo "
