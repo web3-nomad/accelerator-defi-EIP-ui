@@ -72,13 +72,16 @@ export default function BalanceOfERC20() {
 
       <Button
         onClick={async () => {
+          if (walletInterface === null) return null;
+
           setTxId("waiting...");
 
-          const txId = await readErc20BalanceOf(walletInterface, [
-            convertAccountIdToSolidityAddress(
-              AccountId.fromString(accountId as string),
-            ),
-          ]);
+          const accountIdSolidity = convertAccountIdToSolidityAddress(
+            AccountId.fromString(accountId as string),
+          );
+          const txId = await readErc20BalanceOf(walletInterface, {
+            args: [accountIdSolidity as "0x${string}"],
+          });
 
           //@TODO implement this flow to get readable results to show them to the user
           // in order to read the contract call results, you will need to query the contract call's results form a mirror node using the transaction id

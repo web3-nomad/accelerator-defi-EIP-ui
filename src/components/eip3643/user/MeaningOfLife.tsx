@@ -49,10 +49,11 @@ export default function MeaningOfLife() {
 
       <Button
         onClick={async () => {
-          setTxId("waiting...");
-
-          const txId =
-            await readMeaningOfLifeTheMeaningOfLifeIs(walletInterface);
+          if (walletInterface === null) return null;
+          const txId = await readMeaningOfLifeTheMeaningOfLifeIs(
+            walletInterface,
+            {},
+          );
 
           console.log("txId", txId);
           //setTxId(txId as string);
