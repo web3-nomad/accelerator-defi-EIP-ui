@@ -156,7 +156,7 @@ export const erc20Abi = [
 ] as const;
 
 export const erc20Address =
-  "0x0000000000000000000000000000000000000002" as const;
+  "0x0000000000000000000000000000000000387719" as const;
 
 export const erc20Config = { address: erc20Address, abi: erc20Abi } as const;
 
@@ -198,7 +198,7 @@ export const meaningOfLifeAbi = [
 ] as const;
 
 export const meaningOfLifeAddress =
-  "0x0000000000000000000000000000000000000001" as const;
+  "0x8546fc43a9F2dC6A10a2d3155f653F30B18eD56d" as const;
 
 export const meaningOfLifeConfig = {
   address: meaningOfLifeAddress,
