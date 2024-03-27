@@ -12,6 +12,7 @@ import {
 import { AccountId, ContractId } from "@hashgraph/sdk";
 import { ContractFunctionParameterBuilder } from "@/services/wallets/contractFunctionParameterBuilder";
 import { appConfig } from "@/config";
+import { getContractCallResultsByTxId } from "@/services/util/helpers";
 
 import { readMeaningOfLifeTheMeaningOfLifeIs } from "@/services/contracts/wagmi-gen-actions";
 
@@ -41,6 +42,9 @@ export default function MeaningOfLife() {
           );
 
           console.log("txId", txId);
+
+          await getContractCallResultsByTxId(txId);
+
           //setTxId(txId as string);
         }}
       >
@@ -56,6 +60,9 @@ export default function MeaningOfLife() {
           );
 
           console.log("txId", txId);
+
+          await getContractCallResultsByTxId(txId);
+
           //setTxId(txId as string);
         }}
       >
