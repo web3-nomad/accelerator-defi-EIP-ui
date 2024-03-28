@@ -19,6 +19,7 @@ import { readMeaningOfLifeTheMeaningOfLifeIs } from "@/services/contracts/wagmi-
 export default function MeaningOfLife() {
   const { accountId, walletName, walletInterface } = useWalletInterface();
   const [txId, setTxId] = useState("no transaction initiated");
+  const [result, setResult] = useState("no transaction initiated");
 
   return (
     <VStack gap={2} alignItems="flex-start">
@@ -54,20 +55,14 @@ export default function MeaningOfLife() {
       <Button
         onClick={async () => {
           if (walletInterface === null) return null;
-          const txId = await readMeaningOfLifeTheMeaningOfLifeIs(
-            walletInterface,
-            {},
-          );
-
-          console.log("txId", txId);
-
-          await getContractCallResultsByTxId(txId);
-
-          //setTxId(txId as string);
+          const res = await readMeaningOfLifeTheMeaningOfLifeIs({});
+          setResult(res.toString());
         }}
       >
-        Send [codegen-wagmi]
+        Read [codegen-wagmi]
       </Button>
+
+      <Text>Result is: {result}</Text>
     </VStack>
   );
 }

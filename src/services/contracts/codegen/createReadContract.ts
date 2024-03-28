@@ -14,7 +14,6 @@ import {
   type ReadContractReturnType,
   readContract,
 } from "../readContract";
-import { WalletInterface } from "../../wallets/walletInterface";
 
 type stateMutability = "pure" | "view";
 
@@ -43,13 +42,11 @@ export type CreateReadContractReturnType<
     | (address extends undefined ? never : "address")
     | (functionName extends undefined ? never : "functionName"),
 > = <
-  walletInterface extends WalletInterface,
   name extends functionName extends ContractFunctionName<abi, stateMutability>
     ? functionName
     : ContractFunctionName<abi, stateMutability>,
   args extends ContractFunctionArgs<abi, stateMutability, name>,
 >(
-  walletInterface: walletInterface,
   parameters: UnionEvaluate<
     UnionOmit<ReadContractParameters<abi, name, args>, omittedProperties>
   >,
@@ -67,8 +64,8 @@ export default function createReadContract<
 >(
   c: CreateReadContractParameters<abi, address, functionName>,
 ): CreateReadContractReturnType<abi, address, functionName> {
-  return (walletInterface, parameters) => {
-    return readContract(walletInterface, {
+  return (parameters) => {
+    return readContract({
       ...(parameters as any),
       ...(c.address ? { address: c.address } : {}),
       ...(c.functionName ? { functionName: c.functionName } : {}),

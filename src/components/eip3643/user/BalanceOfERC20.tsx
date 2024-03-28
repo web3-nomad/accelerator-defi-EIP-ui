@@ -19,6 +19,7 @@ import { readErc20BalanceOf } from "../../../services/contracts/wagmi-gen-action
 export default function BalanceOfERC20() {
   const { accountId, walletName, walletInterface } = useWalletInterface();
   const [txId, setTxId] = useState("no transaction initiated");
+  const [result, setResult] = useState("no transaction initiated");
   const [fungibleTokenEvmAddress, setFungibleTokenEvmAddress] = useState(
     "0x0000000000000000000000000000000000387719",
   );
@@ -27,7 +28,7 @@ export default function BalanceOfERC20() {
     <VStack gap={2} alignItems="flex-start">
       <Heading size={"md"}>
         Balance of fungible TestToken ERC20 CA call
-        0x0000000000000000000000000000000000387719
+        0x0000000000000000000000000000000000387719 for {accountId}
       </Heading>
 
       <VStack alignItems="flex-start">
@@ -74,25 +75,20 @@ export default function BalanceOfERC20() {
         onClick={async () => {
           if (walletInterface === null) return null;
 
-          setTxId("waiting...");
-
           const accountIdSolidity = convertAccountIdToSolidityAddress(
             AccountId.fromString(accountId as string),
           );
-          const txId = await readErc20BalanceOf(walletInterface, {
+          const res = await readErc20BalanceOf({
             args: [accountIdSolidity as "0x${string}"],
           });
 
-          //@TODO implement this flow to get readable results to show them to the user
-          // in order to read the contract call results, you will need to query the contract call's results form a mirror node using the transaction id
-          // after getting the contract call results, use ethers and abi.decode to decode the call_result
-
-          console.log("txId", txId);
-          setTxId(txId as unknown as string);
+          setResult(res.toString());
         }}
       >
-        Send [codegen-wagmi]
+        Read [codegen-wagmi]
       </Button>
+
+      <Text>Result is: {result}</Text>
     </VStack>
   );
 }
