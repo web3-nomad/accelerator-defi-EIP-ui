@@ -7,6 +7,7 @@ import {
   Input,
   Stack,
   Text,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
 import { AccountId, ContractId } from "@hashgraph/sdk";
@@ -14,12 +15,18 @@ import { ContractFunctionParameterBuilder } from "@/services/wallets/contractFun
 import { appConfig } from "@/config";
 import { getContractCallResultsByTxId } from "@/services/util/helpers";
 
-import { readMeaningOfLifeTheMeaningOfLifeIs } from "@/services/contracts/wagmi-gen-actions";
+import {
+  meaningOfLifeAddress,
+  readMeaningOfLifeTheMeaningOfLifeIs,
+} from "@/services/contracts/wagmi-gen-actions";
+import { getMeaningOfLife } from "@/services/contracts/MeaningOfLifeContract";
 
 export default function MeaningOfLife() {
   const { accountId, walletName, walletInterface } = useWalletInterface();
   const [txId, setTxId] = useState("no transaction initiated");
   const [result, setResult] = useState("no transaction initiated");
+
+  const toast = useToast();
 
   return (
     <VStack gap={2} alignItems="flex-start">
@@ -44,7 +51,16 @@ export default function MeaningOfLife() {
 
           console.log("txId", txId);
 
-          await getContractCallResultsByTxId(txId);
+          // await getContractCallResultsByTxId(txId);
+
+          toast.promise(getContractCallResultsByTxId(txId), {
+            success: { title: "Promise resolved", description: "Looks great" },
+            error: {
+              title: "Promise rejected",
+              description: "Something wrong",
+            },
+            loading: { title: "Promise pending", description: "Please wait" },
+          });
 
           //setTxId(txId as string);
         }}
@@ -61,8 +77,23 @@ export default function MeaningOfLife() {
       >
         Read [codegen-wagmi]
       </Button>
-
       <Text>Result is: {result}</Text>
+
+      <Button
+        onClick={async () => {
+          if (walletInterface === null) return null;
+
+          const txId = await getMeaningOfLife(meaningOfLifeAddress);
+
+          console.log("txId", txId);
+
+          // await getContractCallResultsByTxId(txId);
+
+          //setTxId(txId as string);
+        }}
+      >
+        Send [API service]
+      </Button>
     </VStack>
   );
 }

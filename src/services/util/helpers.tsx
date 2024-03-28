@@ -32,6 +32,7 @@ export async function getContractCallResultsByTxId(
   rawTxId: string | number | TransactionId | null | undefined,
 ) {
   try {
+    //@TODO network from config
     let txData = await fetch(
       `https://testnet.mirrornode.hedera.com/api/v1/contracts/results/${rawTxId}`,
     );
