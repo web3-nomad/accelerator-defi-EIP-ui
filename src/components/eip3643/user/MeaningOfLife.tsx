@@ -13,13 +13,10 @@ import {
 import { AccountId, ContractId } from "@hashgraph/sdk";
 import { ContractFunctionParameterBuilder } from "@/services/wallets/contractFunctionParameterBuilder";
 import { appConfig } from "@/config";
-import { getContractCallResultsByTxId } from "@/services/util/helpers";
 
-import {
-  meaningOfLifeAddress,
-  readMeaningOfLifeTheMeaningOfLifeIs,
-} from "@/services/contracts/wagmi-gen-actions";
+import { readMeaningOfLifeTheMeaningOfLifeIs } from "@/services/contracts/wagmi-gen-actions";
 import { getMeaningOfLife } from "@/services/contracts/MeaningOfLifeContract";
+import { getContractCallResultsByTxId } from "@/services/api/requests";
 
 export default function MeaningOfLife() {
   const { accountId, walletName, walletInterface } = useWalletInterface();
@@ -53,16 +50,13 @@ export default function MeaningOfLife() {
 
           // await getContractCallResultsByTxId(txId);
 
-          toast.promise(getContractCallResultsByTxId(txId), {
-            success: { title: "Promise resolved", description: "Looks great" },
-            error: {
-              title: "Promise rejected",
-              description: "Something wrong",
-            },
-            loading: { title: "Promise pending", description: "Please wait" },
-          });
+          const examplePromise = new Promise((resolve, reject) => {
+            setTimeout(async () => {
+              await getContractCallResultsByTxId(txId);
 
-          //setTxId(txId as string);
+              resolve(200);
+            }, 5000);
+          });
         }}
       >
         Send
@@ -83,13 +77,14 @@ export default function MeaningOfLife() {
         onClick={async () => {
           if (walletInterface === null) return null;
 
-          const txId = await getMeaningOfLife(meaningOfLifeAddress);
+          const result = await getMeaningOfLife();
 
-          console.log("txId", txId);
-
-          // await getContractCallResultsByTxId(txId);
-
-          //setTxId(txId as string);
+          toast({
+            title: "Meaning of life is",
+            description: `${result}`,
+            status: "success",
+            isClosable: true,
+          });
         }}
       >
         Send [API service]
