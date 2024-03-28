@@ -2,7 +2,12 @@ import { AccountId, ContractId, TokenId, TransactionId } from "@hashgraph/sdk";
 import { ContractFunctionParameterBuilder } from "./contractFunctionParameterBuilder";
 
 export interface WalletInterface {
-  executeContractFunction: (
+  executeContractReadFunction: (
+    contractId: ContractId,
+    functionName: string,
+    functionParameters: ContractFunctionParameterBuilder,
+  ) => Promise<TransactionId | string | null>;
+  executeContractWriteFunction: (
     contractId: ContractId,
     functionName: string,
     functionParameters: ContractFunctionParameterBuilder,

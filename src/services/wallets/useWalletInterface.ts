@@ -7,6 +7,7 @@ import { MetamaskContext } from "../../contexts/MetamaskContext";
 import { bladeWallet } from "./blade/bladeClient";
 import { hashConnectWallet } from "./hashconnect/hashconnectClient";
 import { metamaskWallet } from "./metamask/metamaskClient";
+import { WalletInterface } from "./walletInterface";
 
 // Purpose: This hook is used to determine which wallet interface to use
 // Example: const { accountId, walletInterface } = useWalletInterface();
@@ -20,19 +21,19 @@ export const useWalletInterface = () => {
     return {
       walletName: "Hashpack",
       accountId: hashconnectCtx.accountId,
-      walletInterface: hashConnectWallet,
+      walletInterface: hashConnectWallet as WalletInterface,
     };
   } else if (bladeCtx.accountId) {
     return {
       walletName: "Blade",
       accountId: bladeCtx.accountId,
-      walletInterface: bladeWallet,
+      walletInterface: bladeWallet as WalletInterface,
     };
   } else if (metamaskCtx.metamaskAccountAddress) {
     return {
       walletName: "Metamask",
       accountId: metamaskCtx.metamaskAccountAddress,
-      walletInterface: metamaskWallet,
+      walletInterface: metamaskWallet as WalletInterface,
     };
   } else {
     return {

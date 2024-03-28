@@ -14,10 +14,12 @@ import { AccountId, ContractId } from "@hashgraph/sdk";
 import { ContractFunctionParameterBuilder } from "@/services/wallets/contractFunctionParameterBuilder";
 import { appConfig } from "@/config";
 import { convertAccountIdToSolidityAddress } from "@/services/util/helpers";
+import { readErc20BalanceOf } from "../../../services/contracts/wagmi-gen-actions";
 
 export default function BalanceOfERC20() {
   const { accountId, walletName, walletInterface } = useWalletInterface();
   const [txId, setTxId] = useState("no transaction initiated");
+  const [result, setResult] = useState("no transaction initiated");
   const [fungibleTokenEvmAddress, setFungibleTokenEvmAddress] = useState(
     "0x0000000000000000000000000000000000387719",
   );
@@ -26,7 +28,7 @@ export default function BalanceOfERC20() {
     <VStack gap={2} alignItems="flex-start">
       <Heading size={"md"}>
         Balance of fungible TestToken ERC20 CA call
-        0x0000000000000000000000000000000000387719
+        0x0000000000000000000000000000000000387719 for {accountId}
       </Heading>
 
       <VStack alignItems="flex-start">
@@ -45,7 +47,7 @@ export default function BalanceOfERC20() {
         onClick={async () => {
           setTxId("waiting...");
 
-          const txId = await walletInterface?.executeContractFunction(
+          const txId = await walletInterface?.executeContractWriteFunction(
             ContractId.fromEvmAddress(0, 0, fungibleTokenEvmAddress),
             "balanceOf",
             new ContractFunctionParameterBuilder().addParam({
@@ -68,6 +70,25 @@ export default function BalanceOfERC20() {
       >
         Send
       </Button>
+
+      <Button
+        onClick={async () => {
+          if (walletInterface === null) return null;
+
+          const accountIdSolidity = convertAccountIdToSolidityAddress(
+            AccountId.fromString(accountId as string),
+          );
+          const res = await readErc20BalanceOf({
+            args: [accountIdSolidity as "0x${string}"],
+          });
+
+          setResult(res.toString());
+        }}
+      >
+        Read [codegen-wagmi]
+      </Button>
+
+      <Text>Result is: {result}</Text>
     </VStack>
   );
 }
