@@ -56,7 +56,7 @@ export default function MeaningOfLife() {
     });
 
     setResult(caCallRes.toString());
-  }, [txId, contractCallResultTx]);
+  }, [txId, contractCallResultTx, toast]);
 
   return (
     <VStack gap={2} alignItems="flex-start">

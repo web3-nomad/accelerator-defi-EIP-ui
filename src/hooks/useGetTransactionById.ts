@@ -16,5 +16,6 @@ export function useGetTransactionById(txId: string) {
 
       return txData;
     },
+    enabled: !!txId,
   });
 }
