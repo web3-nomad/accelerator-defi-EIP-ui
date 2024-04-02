@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint --fix",
     "prepare": "husky",
+    "sync-contracts": "wagmi generate && sed -i 's@wagmi/codegen@./codegen@g' ./src/services/contracts/wagmi-gen-actions.ts",
     "format": "prettier --write .",
     "lint-staged": "lint-staged",
     "type-check": "tsc --project tsconfig.json --pretty --noEmit && echo "

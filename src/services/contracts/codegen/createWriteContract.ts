@@ -54,7 +54,7 @@ export type CreateWriteContractReturnType<
   >,
 ) => Promise<WriteContractReturnType>;
 
-export default function createWriteContract<
+export function createWriteContract<
   const abi extends Abi | readonly unknown[],
   const address extends
     | Address
