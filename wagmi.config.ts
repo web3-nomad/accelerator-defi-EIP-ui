@@ -1,7 +1,24 @@
 import { defineConfig } from "@wagmi/cli";
-import { fetch, react, actions } from "@wagmi/cli/plugins";
+import { fetch, actions } from "@wagmi/cli/plugins";
+import fs from "fs";
 
-const contracts = [
+type RawJson = {
+  [k: string]: {
+    [contractName: string]: string;
+  };
+};
+
+const rawJson: RawJson = JSON.parse(
+  fs.readFileSync("./scripts/download-json.json").toString(),
+);
+
+type Contracts = Array<{
+  name: string;
+  address: string;
+  url: string;
+}>;
+
+const contracts: Contracts = [
   {
     name: "MeaningOfLife",
     address: "0x8546fc43a9F2dC6A10a2d3155f653F30B18eD56d",
@@ -14,10 +31,19 @@ const contracts = [
   },
 ];
 
+for (const key in rawJson) {
+  for (const contractName in rawJson[key]) {
+    contracts.push({
+      name: contractName,
+      address: rawJson[key][contractName],
+      url: `https://raw.githubusercontent.com/CamposBruno/accelerator-defi-EIP/fix/deployment/data/abis/${contractName}.json`,
+    });
+  }
+}
+
 export default defineConfig({
-  out: "src/services/contracts/wagmi-gen-actions.ts",
+  out: "src/services/contracts/wagmiGenActions.ts",
   plugins: [
-    //    react(),
     actions(),
     fetch({
       cacheDuration: 1,

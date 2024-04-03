@@ -52,7 +52,7 @@ export type CreateReadContractReturnType<
   >,
 ) => Promise<ReadContractReturnType<abi, name, args>>;
 
-export default function createReadContract<
+export function createReadContract<
   const abi extends Abi | readonly unknown[],
   const address extends
     | Address

@@ -17,7 +17,7 @@ import { appConfig } from "@/config";
 import {
   meaningOfLifeAbi,
   readMeaningOfLifeTheMeaningOfLifeIs,
-} from "@/services/contracts/wagmi-gen-actions";
+} from "@/services/contracts/wagmiGenActions";
 import { getMeaningOfLife } from "@/services/contracts/MeaningOfLifeContract";
 import { readContractCallResult } from "@/services/contracts/readContractCallResult";
 import { useGetTransactionById } from "@/hooks/useGetTransactionById";

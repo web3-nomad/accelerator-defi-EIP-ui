@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
-import { writeErc20Transfer } from "@/services/contracts/wagmi-gen-actions";
+import { writeErc20Transfer } from "@/services/contracts/wagmiGenActions";
 import { WalletInterface } from "@/services/wallets/walletInterface";
 import { hederaTestnet } from "wagmi/chains";
 import { AccountId } from "@hashgraph/sdk";

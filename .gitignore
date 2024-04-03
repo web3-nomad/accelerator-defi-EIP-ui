@@ -167,3 +167,5 @@ dist
 .pnp.*
 
 .idea
+
+scripts/download-json.json
