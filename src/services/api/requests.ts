@@ -45,57 +45,14 @@ export const fetchTransactionRecord = async (
   return transactions.transactions;
 };
 
-//@TODO retry if 404 and TX has not propagated yet
 export async function getContractCallResultsByTxId(
   transactionId: string | number | TransactionId | null | undefined,
 ) {
-  try {
-    const { data: transaction } = await testnetMirrorNodeAPI.get(
-      `/api/v1/contracts/results/${transactionId}`,
-    );
+  const { data: transaction } = await testnetMirrorNodeAPI.get(
+    `/api/v1/contracts/results/${transactionId}`,
+  );
 
-    console.log("L65 transaction ===", transaction);
+  console.log("L55 transaction ===", transaction);
 
-    return;
-
-    //@TODO network from config
-    //   let txData = await fetch(
-    //     `https://testnet.mirrornode.hedera.com/api/v1/contracts/results/${rawTxId}`,
-    //   );
-    //
-    //   console.log("L39 txData ===", txData);
-    //
-    //   let txDataParsed = await txData.json();
-    //   console.log("L56 txDataParsed ===", txDataParsed);
-    //
-    //   console.log("L58 txDataParsed.call_result ===", txDataParsed.call_result);
-    //
-    //   const functionAbi = abiFull.abi.find(
-    //     (func) => func.name === "theMeaningOfLifeIs",
-    //   );
-    //
-    //   if (!functionAbi) {
-    //     throw new Error("functionAbi 404");
-    //   }
-    //
-    //   const functionParameters = functionAbi.outputs as AbiInput[];
-    //   console.log("L65 functionParameters ===", functionParameters);
-    //
-    //   const web3 = new Web3();
-    //
-    //   const result = web3.eth.abi.decodeParameters(
-    //     functionParameters,
-    //     txDataParsed.call_result,
-    //   );
-    //
-    //   //@TODO get type from output and format accordingly
-    //   // Number(BigInt.asIntN(32, 42n))
-    //
-    //   console.log("L62 result ===", result); //42n
-    //
-    //   //@TODO show success popup with result info
-  } catch (e) {
-    console.log("L21 fetch by TX ID failed ===", e);
-    //@TODO show error popup
-  }
+  return transaction;
 }

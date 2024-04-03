@@ -15,31 +15,36 @@ import { ScrollBar } from "@/components/Scrollbar";
 import { AllWalletsProvider } from "@/services/wallets/AllWalletsProvider";
 
 import EIP3643 from "@/views/eip3643/EIP3643";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
+const queryClient = new QueryClient();
+
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <ChakraProvider theme={theme}>
-      <Focus />
-      <Fonts />
-      <AllWalletsProvider>
-        <Box>
-          <Topbar />
-          <Flex>
-            <Sidebar />
-            <Box p={10}>
-              {/* {children} TODO: we can't use next.js routing due to build error of 'crypto' module */}
-              <EIP3643 />
-            </Box>
-          </Flex>
-          <Footer />
-        </Box>
-      </AllWalletsProvider>
-      <ScrollBar />
-    </ChakraProvider>
+    <QueryClientProvider client={queryClient}>
+      <ChakraProvider theme={theme}>
+        <Focus />
+        <Fonts />
+        <AllWalletsProvider>
+          <Box>
+            <Topbar />
+            <Flex>
+              <Sidebar />
+              <Box p={10}>
+                {/* {children} TODO: we can't use next.js routing due to build error of 'crypto' module */}
+                <EIP3643 />
+              </Box>
+            </Flex>
+            <Footer />
+          </Box>
+        </AllWalletsProvider>
+        <ScrollBar />
+      </ChakraProvider>
+    </QueryClientProvider>
   );
 };
 

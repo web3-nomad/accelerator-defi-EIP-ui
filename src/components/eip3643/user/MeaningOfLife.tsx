@@ -1,5 +1,5 @@
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
   Flex,
@@ -10,20 +10,53 @@ import {
   useToast,
   VStack,
 } from "@chakra-ui/react";
-import { AccountId, ContractId } from "@hashgraph/sdk";
+import { ContractId } from "@hashgraph/sdk";
 import { ContractFunctionParameterBuilder } from "@/services/wallets/contractFunctionParameterBuilder";
 import { appConfig } from "@/config";
 
-import { readMeaningOfLifeTheMeaningOfLifeIs } from "@/services/contracts/wagmi-gen-actions";
+import {
+  meaningOfLifeAbi,
+  readMeaningOfLifeTheMeaningOfLifeIs,
+} from "@/services/contracts/wagmi-gen-actions";
 import { getMeaningOfLife } from "@/services/contracts/MeaningOfLifeContract";
-import { getContractCallResultsByTxId } from "@/services/api/requests";
+import { readContractCallResult } from "@/services/contracts/readContractCallResult";
+import { useGetTransactionById } from "@/hooks/useGetTransactionById";
 
 export default function MeaningOfLife() {
   const { accountId, walletName, walletInterface } = useWalletInterface();
-  const [txId, setTxId] = useState("no transaction initiated");
+  const [txId, setTxId] = useState("");
   const [result, setResult] = useState("no transaction initiated");
 
   const toast = useToast();
+
+  const { data: contractCallResultTx } = useGetTransactionById(txId);
+
+  useEffect(() => {
+    console.log(
+      "L36 inside effect contractCallResultTx ===",
+      contractCallResultTx,
+    );
+
+    if (!contractCallResultTx || !txId) return;
+
+    //@TODO have function names as exported consts too
+    const caCallRes = readContractCallResult({
+      callResult: contractCallResultTx.call_result,
+      functionName: "theMeaningOfLifeIs",
+      abi: meaningOfLifeAbi,
+    });
+
+    console.log("L45 effect ca res ===", caCallRes);
+
+    toast({
+      title: "Meaning of life is",
+      description: `${caCallRes.toString()}`,
+      status: "success",
+      isClosable: true,
+    });
+
+    setResult(caCallRes.toString());
+  }, [txId, contractCallResultTx, toast]);
 
   return (
     <VStack gap={2} alignItems="flex-start">
@@ -33,9 +66,7 @@ export default function MeaningOfLife() {
 
       <Button
         onClick={async () => {
-          setTxId("waiting...");
-
-          const txId = await walletInterface?.executeContractWriteFunction(
+          const txId = (await walletInterface?.executeContractWriteFunction(
             ContractId.fromEvmAddress(
               0,
               0,
@@ -44,34 +75,37 @@ export default function MeaningOfLife() {
             "theMeaningOfLifeIs",
             new ContractFunctionParameterBuilder(),
             appConfig.constants.METAMASK_GAS_LIMIT_TRANSFER_FT,
-          );
+          )) as string;
 
           console.log("txId", txId);
 
-          // await getContractCallResultsByTxId(txId);
-
-          const examplePromise = new Promise((resolve, reject) => {
-            setTimeout(async () => {
-              await getContractCallResultsByTxId(txId);
-
-              resolve(200);
-            }, 5000);
-          });
+          if (txId) {
+            setTxId(txId);
+          }
         }}
       >
-        Send
+        Read [via CA Write]
       </Button>
 
       <Button
         onClick={async () => {
           if (walletInterface === null) return null;
-          const res = await readMeaningOfLifeTheMeaningOfLifeIs({});
-          setResult(res.toString());
+          const result = await readMeaningOfLifeTheMeaningOfLifeIs({});
+
+          console.log("L79 result ===", result);
+
+          toast({
+            title: "Meaning of life is",
+            description: `${result}`,
+            status: "success",
+            isClosable: true,
+          });
+
+          setResult(result.toString());
         }}
       >
         Read [codegen-wagmi]
       </Button>
-      <Text>Result is: {result}</Text>
 
       <Button
         onClick={async () => {
@@ -87,8 +121,10 @@ export default function MeaningOfLife() {
           });
         }}
       >
-        Send [API service]
+        Read [API service]
       </Button>
+
+      <Text>Result is: {result}</Text>
     </VStack>
   );
 }

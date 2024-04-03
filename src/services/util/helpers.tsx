@@ -2,7 +2,7 @@ import { AccountId, TransactionId } from "@hashgraph/sdk";
 
 export function convertAccountIdToSolidityAddress(
   accountId: AccountId,
-): string {
+): `0x${string}` {
   const accountIdString =
     accountId.evmAddress !== null
       ? accountId.evmAddress.toString()
