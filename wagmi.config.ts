@@ -40,7 +40,7 @@ for (const key in rawJson) {
 }
 
 export default defineConfig({
-  out: "src/services/contracts/wagmi-gen-actions.ts",
+  out: "src/services/contracts/wagmiGenActions.ts",
   plugins: [
     actions(),
     fetch({

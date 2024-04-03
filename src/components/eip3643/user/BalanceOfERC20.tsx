@@ -14,7 +14,7 @@ import { AccountId, ContractId } from "@hashgraph/sdk";
 import { ContractFunctionParameterBuilder } from "@/services/wallets/contractFunctionParameterBuilder";
 import { appConfig } from "@/config";
 import { convertAccountIdToSolidityAddress } from "@/services/util/helpers";
-import { readErc20BalanceOf } from "../../../services/contracts/wagmi-gen-actions";
+import { readErc20BalanceOf } from "../../../services/contracts/wagmiGenActions";
 
 export default function BalanceOfERC20() {
   const { accountId, walletName, walletInterface } = useWalletInterface();

@@ -14,7 +14,7 @@ import { AccountId, ContractId } from "@hashgraph/sdk";
 import { ContractFunctionParameterBuilder } from "@/services/wallets/contractFunctionParameterBuilder";
 import { appConfig } from "@/config";
 
-import { readMeaningOfLifeTheMeaningOfLifeIs } from "@/services/contracts/wagmi-gen-actions";
+import { readMeaningOfLifeTheMeaningOfLifeIs } from "@/services/contracts/wagmiGenActions";
 import { getMeaningOfLife } from "@/services/contracts/MeaningOfLifeContract";
 import { getContractCallResultsByTxId } from "@/services/api/requests";
 
