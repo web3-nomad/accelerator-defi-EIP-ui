@@ -115,7 +115,7 @@ export const claimTopicsRegistryAbi = [
 ] as const;
 
 export const claimTopicsRegistryAddress =
-  "0x7C5803D5703aba58C0fdA80b318F3ccA48346ED2" as const;
+  "0xbd7D63Aacb0965Fd5BFE77cE8E9E9B279c20B4E5" as const;
 
 export const claimTopicsRegistryConfig = {
   address: claimTopicsRegistryAddress,
@@ -337,7 +337,7 @@ export const countryAllowModuleAbi = [
 ] as const;
 
 export const countryAllowModuleAddress =
-  "0xAb5b7F9BAE717fC6Df8Ecc42685A8bDd3D5d1017" as const;
+  "0x954dbd9f366E50059a507a99DCb5974AA327901e" as const;
 
 export const countryAllowModuleConfig = {
   address: countryAllowModuleAddress,
@@ -502,10 +502,21 @@ export const erc20Address =
 export const erc20Config = { address: erc20Address, abi: erc20Abi } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// IIdFactory
+// IdFactory
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export const iIdFactoryAbi = [
+export const idFactoryAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      {
+        name: "implementationAuthority",
+        internalType: "address",
+        type: "address",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
   {
     type: "event",
     anonymous: false,
@@ -518,6 +529,25 @@ export const iIdFactoryAbi = [
       },
     ],
     name: "Deployed",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "previousOwner",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "newOwner",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "OwnershipTransferred",
   },
   {
     type: "event",
@@ -692,8 +722,29 @@ export const iIdFactoryAbi = [
   },
   {
     type: "function",
+    inputs: [],
+    name: "owner",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [{ name: "_factory", internalType: "address", type: "address" }],
     name: "removeTokenFactory",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "renounceOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newOwner", internalType: "address", type: "address" }],
+    name: "transferOwnership",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -706,12 +757,12 @@ export const iIdFactoryAbi = [
   },
 ] as const;
 
-export const iIdFactoryAddress =
-  "0xB82cD6B012f14d19ff17084e7f2D00811FC6450D" as const;
+export const idFactoryAddress =
+  "0x8C63aa9eb1566DAFa68D69F85cAa8e51175c2f82" as const;
 
-export const iIdFactoryConfig = {
-  address: iIdFactoryAddress,
-  abi: iIdFactoryAbi,
+export const idFactoryConfig = {
+  address: idFactoryAddress,
+  abi: idFactoryAbi,
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1141,7 +1192,7 @@ export const identityAbi = [
 ] as const;
 
 export const identityAddress =
-  "0xFCE67bb91482b10a2bA9feE0F5291069df041A9a" as const;
+  "0x2433a54b26c33c6008AB060c40d0aE4a4a5de4A8" as const;
 
 export const identityConfig = {
   address: identityAddress,
@@ -1564,7 +1615,7 @@ export const identityRegistryAbi = [
 ] as const;
 
 export const identityRegistryAddress =
-  "0x32f8aEb90ba4f0eaBcB4134a3c9d36E2f8d2970E" as const;
+  "0x883a551987Ee5895E9410DD3995A2E6555ABb733" as const;
 
 export const identityRegistryConfig = {
   address: identityRegistryAddress,
@@ -1876,7 +1927,7 @@ export const identityRegistryStorageAbi = [
 ] as const;
 
 export const identityRegistryStorageAddress =
-  "0xfA112d166DB1128671a6db414106db18575f371F" as const;
+  "0x49ad119E7b24D3c3Bf8356f94BEF0762E74E9D5A" as const;
 
 export const identityRegistryStorageConfig = {
   address: identityRegistryStorageAddress,
@@ -1967,7 +2018,7 @@ export const implementationAuthorityAbi = [
 ] as const;
 
 export const implementationAuthorityAddress =
-  "0x3259690Cc310E532c9b2D68a6f1496084ccf9573" as const;
+  "0xe8e840070d1afd7799767B71b8C1b708B5F58702" as const;
 
 export const implementationAuthorityConfig = {
   address: implementationAuthorityAddress,
@@ -2254,7 +2305,7 @@ export const modularComplianceAbi = [
 ] as const;
 
 export const modularComplianceAddress =
-  "0x99339bA4627179775FF3390Abd5cbFBD46835090" as const;
+  "0x0562683F04f2D942b935AE7741e6e99f9122E591" as const;
 
 export const modularComplianceConfig = {
   address: modularComplianceAddress,
@@ -2426,7 +2477,7 @@ export const requiresNftModuleAbi = [
 ] as const;
 
 export const requiresNftModuleAddress =
-  "0xe52C9FD90F31F57Db36AfFF4212228276D1c2676" as const;
+  "0xf6A8fDB90E9CD834E9d74E0B3744BF303aA99b5c" as const;
 
 export const requiresNftModuleConfig = {
   address: requiresNftModuleAddress,
@@ -2672,7 +2723,7 @@ export const trexFactoryAbi = [
 ] as const;
 
 export const trexFactoryAddress =
-  "0xF876543047f08c52f5459BdffC192D41C39B189f" as const;
+  "0x25AC07CB223cA9eCB624c396B347654cbd53482B" as const;
 
 export const trexFactoryConfig = {
   address: trexFactoryAddress,
@@ -3241,7 +3292,7 @@ export const trexImplementationAuthorityAbi = [
 ] as const;
 
 export const trexImplementationAuthorityAddress =
-  "0x6E00fEe5bfD308eC99672a4365B653f893Db9032" as const;
+  "0xE8891d420cc36aDbfA4600d3fa1b88D5E8034E9D" as const;
 
 export const trexImplementationAuthorityConfig = {
   address: trexImplementationAuthorityAddress,
@@ -3930,7 +3981,7 @@ export const tokenAbi = [
 ] as const;
 
 export const tokenAddress =
-  "0xb54ffB10566aED06D9292b1B9Ce85d86E68EB00E" as const;
+  "0x07fb7949C8606037881Af84f569BCdb3F171CA36" as const;
 
 export const tokenConfig = { address: tokenAddress, abi: tokenAbi } as const;
 
@@ -4137,7 +4188,7 @@ export const trustedIssuersRegistryAbi = [
 ] as const;
 
 export const trustedIssuersRegistryAddress =
-  "0xFeb1b01720b590Ec9D4609fD42a1380B87b09336" as const;
+  "0xC38d12D7eD1CE45b576b6A4dD219510c30bbfddb" as const;
 
 export const trustedIssuersRegistryConfig = {
   address: trustedIssuersRegistryAddress,
@@ -4845,287 +4896,341 @@ export const watchErc20TransferEvent = /*#__PURE__*/ createWatchContractEvent({
 });
 
 /**
- * Wraps __{@link readContract}__ with `abi` set to __{@link iIdFactoryAbi}__
+ * Wraps __{@link readContract}__ with `abi` set to __{@link idFactoryAbi}__
  */
-export const readIIdFactory = /*#__PURE__*/ createReadContract({
-  abi: iIdFactoryAbi,
-  address: iIdFactoryAddress,
+export const readIdFactory = /*#__PURE__*/ createReadContract({
+  abi: idFactoryAbi,
+  address: idFactoryAddress,
 });
 
 /**
- * Wraps __{@link readContract}__ with `abi` set to __{@link iIdFactoryAbi}__ and `functionName` set to `"getIdentity"`
+ * Wraps __{@link readContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"getIdentity"`
  */
-export const readIIdFactoryGetIdentity = /*#__PURE__*/ createReadContract({
-  abi: iIdFactoryAbi,
-  address: iIdFactoryAddress,
+export const readIdFactoryGetIdentity = /*#__PURE__*/ createReadContract({
+  abi: idFactoryAbi,
+  address: idFactoryAddress,
   functionName: "getIdentity",
 });
 
 /**
- * Wraps __{@link readContract}__ with `abi` set to __{@link iIdFactoryAbi}__ and `functionName` set to `"getToken"`
+ * Wraps __{@link readContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"getToken"`
  */
-export const readIIdFactoryGetToken = /*#__PURE__*/ createReadContract({
-  abi: iIdFactoryAbi,
-  address: iIdFactoryAddress,
+export const readIdFactoryGetToken = /*#__PURE__*/ createReadContract({
+  abi: idFactoryAbi,
+  address: idFactoryAddress,
   functionName: "getToken",
 });
 
 /**
- * Wraps __{@link readContract}__ with `abi` set to __{@link iIdFactoryAbi}__ and `functionName` set to `"getWallets"`
+ * Wraps __{@link readContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"getWallets"`
  */
-export const readIIdFactoryGetWallets = /*#__PURE__*/ createReadContract({
-  abi: iIdFactoryAbi,
-  address: iIdFactoryAddress,
+export const readIdFactoryGetWallets = /*#__PURE__*/ createReadContract({
+  abi: idFactoryAbi,
+  address: idFactoryAddress,
   functionName: "getWallets",
 });
 
 /**
- * Wraps __{@link readContract}__ with `abi` set to __{@link iIdFactoryAbi}__ and `functionName` set to `"implementationAuthority"`
+ * Wraps __{@link readContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"implementationAuthority"`
  */
-export const readIIdFactoryImplementationAuthority =
+export const readIdFactoryImplementationAuthority =
   /*#__PURE__*/ createReadContract({
-    abi: iIdFactoryAbi,
-    address: iIdFactoryAddress,
+    abi: idFactoryAbi,
+    address: idFactoryAddress,
     functionName: "implementationAuthority",
   });
 
 /**
- * Wraps __{@link readContract}__ with `abi` set to __{@link iIdFactoryAbi}__ and `functionName` set to `"isSaltTaken"`
+ * Wraps __{@link readContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"isSaltTaken"`
  */
-export const readIIdFactoryIsSaltTaken = /*#__PURE__*/ createReadContract({
-  abi: iIdFactoryAbi,
-  address: iIdFactoryAddress,
+export const readIdFactoryIsSaltTaken = /*#__PURE__*/ createReadContract({
+  abi: idFactoryAbi,
+  address: idFactoryAddress,
   functionName: "isSaltTaken",
 });
 
 /**
- * Wraps __{@link readContract}__ with `abi` set to __{@link iIdFactoryAbi}__ and `functionName` set to `"isTokenFactory"`
+ * Wraps __{@link readContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"isTokenFactory"`
  */
-export const readIIdFactoryIsTokenFactory = /*#__PURE__*/ createReadContract({
-  abi: iIdFactoryAbi,
-  address: iIdFactoryAddress,
+export const readIdFactoryIsTokenFactory = /*#__PURE__*/ createReadContract({
+  abi: idFactoryAbi,
+  address: idFactoryAddress,
   functionName: "isTokenFactory",
 });
 
 /**
- * Wraps __{@link writeContract}__ with `abi` set to __{@link iIdFactoryAbi}__
+ * Wraps __{@link readContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"owner"`
  */
-export const writeIIdFactory = /*#__PURE__*/ createWriteContract({
-  abi: iIdFactoryAbi,
-  address: iIdFactoryAddress,
+export const readIdFactoryOwner = /*#__PURE__*/ createReadContract({
+  abi: idFactoryAbi,
+  address: idFactoryAddress,
+  functionName: "owner",
 });
 
 /**
- * Wraps __{@link writeContract}__ with `abi` set to __{@link iIdFactoryAbi}__ and `functionName` set to `"addTokenFactory"`
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link idFactoryAbi}__
  */
-export const writeIIdFactoryAddTokenFactory = /*#__PURE__*/ createWriteContract(
-  {
-    abi: iIdFactoryAbi,
-    address: iIdFactoryAddress,
-    functionName: "addTokenFactory",
-  },
-);
+export const writeIdFactory = /*#__PURE__*/ createWriteContract({
+  abi: idFactoryAbi,
+  address: idFactoryAddress,
+});
 
 /**
- * Wraps __{@link writeContract}__ with `abi` set to __{@link iIdFactoryAbi}__ and `functionName` set to `"createIdentity"`
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"addTokenFactory"`
  */
-export const writeIIdFactoryCreateIdentity = /*#__PURE__*/ createWriteContract({
-  abi: iIdFactoryAbi,
-  address: iIdFactoryAddress,
+export const writeIdFactoryAddTokenFactory = /*#__PURE__*/ createWriteContract({
+  abi: idFactoryAbi,
+  address: idFactoryAddress,
+  functionName: "addTokenFactory",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"createIdentity"`
+ */
+export const writeIdFactoryCreateIdentity = /*#__PURE__*/ createWriteContract({
+  abi: idFactoryAbi,
+  address: idFactoryAddress,
   functionName: "createIdentity",
 });
 
 /**
- * Wraps __{@link writeContract}__ with `abi` set to __{@link iIdFactoryAbi}__ and `functionName` set to `"createIdentityWithManagementKeys"`
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"createIdentityWithManagementKeys"`
  */
-export const writeIIdFactoryCreateIdentityWithManagementKeys =
+export const writeIdFactoryCreateIdentityWithManagementKeys =
   /*#__PURE__*/ createWriteContract({
-    abi: iIdFactoryAbi,
-    address: iIdFactoryAddress,
+    abi: idFactoryAbi,
+    address: idFactoryAddress,
     functionName: "createIdentityWithManagementKeys",
   });
 
 /**
- * Wraps __{@link writeContract}__ with `abi` set to __{@link iIdFactoryAbi}__ and `functionName` set to `"createTokenIdentity"`
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"createTokenIdentity"`
  */
-export const writeIIdFactoryCreateTokenIdentity =
+export const writeIdFactoryCreateTokenIdentity =
   /*#__PURE__*/ createWriteContract({
-    abi: iIdFactoryAbi,
-    address: iIdFactoryAddress,
+    abi: idFactoryAbi,
+    address: idFactoryAddress,
     functionName: "createTokenIdentity",
   });
 
 /**
- * Wraps __{@link writeContract}__ with `abi` set to __{@link iIdFactoryAbi}__ and `functionName` set to `"linkWallet"`
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"linkWallet"`
  */
-export const writeIIdFactoryLinkWallet = /*#__PURE__*/ createWriteContract({
-  abi: iIdFactoryAbi,
-  address: iIdFactoryAddress,
+export const writeIdFactoryLinkWallet = /*#__PURE__*/ createWriteContract({
+  abi: idFactoryAbi,
+  address: idFactoryAddress,
   functionName: "linkWallet",
 });
 
 /**
- * Wraps __{@link writeContract}__ with `abi` set to __{@link iIdFactoryAbi}__ and `functionName` set to `"removeTokenFactory"`
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"removeTokenFactory"`
  */
-export const writeIIdFactoryRemoveTokenFactory =
+export const writeIdFactoryRemoveTokenFactory =
   /*#__PURE__*/ createWriteContract({
-    abi: iIdFactoryAbi,
-    address: iIdFactoryAddress,
+    abi: idFactoryAbi,
+    address: idFactoryAddress,
     functionName: "removeTokenFactory",
   });
 
 /**
- * Wraps __{@link writeContract}__ with `abi` set to __{@link iIdFactoryAbi}__ and `functionName` set to `"unlinkWallet"`
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"renounceOwnership"`
  */
-export const writeIIdFactoryUnlinkWallet = /*#__PURE__*/ createWriteContract({
-  abi: iIdFactoryAbi,
-  address: iIdFactoryAddress,
+export const writeIdFactoryRenounceOwnership =
+  /*#__PURE__*/ createWriteContract({
+    abi: idFactoryAbi,
+    address: idFactoryAddress,
+    functionName: "renounceOwnership",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const writeIdFactoryTransferOwnership =
+  /*#__PURE__*/ createWriteContract({
+    abi: idFactoryAbi,
+    address: idFactoryAddress,
+    functionName: "transferOwnership",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"unlinkWallet"`
+ */
+export const writeIdFactoryUnlinkWallet = /*#__PURE__*/ createWriteContract({
+  abi: idFactoryAbi,
+  address: idFactoryAddress,
   functionName: "unlinkWallet",
 });
 
 /**
- * Wraps __{@link simulateContract}__ with `abi` set to __{@link iIdFactoryAbi}__
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link idFactoryAbi}__
  */
-export const simulateIIdFactory = /*#__PURE__*/ createSimulateContract({
-  abi: iIdFactoryAbi,
-  address: iIdFactoryAddress,
+export const simulateIdFactory = /*#__PURE__*/ createSimulateContract({
+  abi: idFactoryAbi,
+  address: idFactoryAddress,
 });
 
 /**
- * Wraps __{@link simulateContract}__ with `abi` set to __{@link iIdFactoryAbi}__ and `functionName` set to `"addTokenFactory"`
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"addTokenFactory"`
  */
-export const simulateIIdFactoryAddTokenFactory =
+export const simulateIdFactoryAddTokenFactory =
   /*#__PURE__*/ createSimulateContract({
-    abi: iIdFactoryAbi,
-    address: iIdFactoryAddress,
+    abi: idFactoryAbi,
+    address: idFactoryAddress,
     functionName: "addTokenFactory",
   });
 
 /**
- * Wraps __{@link simulateContract}__ with `abi` set to __{@link iIdFactoryAbi}__ and `functionName` set to `"createIdentity"`
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"createIdentity"`
  */
-export const simulateIIdFactoryCreateIdentity =
+export const simulateIdFactoryCreateIdentity =
   /*#__PURE__*/ createSimulateContract({
-    abi: iIdFactoryAbi,
-    address: iIdFactoryAddress,
+    abi: idFactoryAbi,
+    address: idFactoryAddress,
     functionName: "createIdentity",
   });
 
 /**
- * Wraps __{@link simulateContract}__ with `abi` set to __{@link iIdFactoryAbi}__ and `functionName` set to `"createIdentityWithManagementKeys"`
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"createIdentityWithManagementKeys"`
  */
-export const simulateIIdFactoryCreateIdentityWithManagementKeys =
+export const simulateIdFactoryCreateIdentityWithManagementKeys =
   /*#__PURE__*/ createSimulateContract({
-    abi: iIdFactoryAbi,
-    address: iIdFactoryAddress,
+    abi: idFactoryAbi,
+    address: idFactoryAddress,
     functionName: "createIdentityWithManagementKeys",
   });
 
 /**
- * Wraps __{@link simulateContract}__ with `abi` set to __{@link iIdFactoryAbi}__ and `functionName` set to `"createTokenIdentity"`
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"createTokenIdentity"`
  */
-export const simulateIIdFactoryCreateTokenIdentity =
+export const simulateIdFactoryCreateTokenIdentity =
   /*#__PURE__*/ createSimulateContract({
-    abi: iIdFactoryAbi,
-    address: iIdFactoryAddress,
+    abi: idFactoryAbi,
+    address: idFactoryAddress,
     functionName: "createTokenIdentity",
   });
 
 /**
- * Wraps __{@link simulateContract}__ with `abi` set to __{@link iIdFactoryAbi}__ and `functionName` set to `"linkWallet"`
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"linkWallet"`
  */
-export const simulateIIdFactoryLinkWallet =
-  /*#__PURE__*/ createSimulateContract({
-    abi: iIdFactoryAbi,
-    address: iIdFactoryAddress,
-    functionName: "linkWallet",
-  });
+export const simulateIdFactoryLinkWallet = /*#__PURE__*/ createSimulateContract(
+  { abi: idFactoryAbi, address: idFactoryAddress, functionName: "linkWallet" },
+);
 
 /**
- * Wraps __{@link simulateContract}__ with `abi` set to __{@link iIdFactoryAbi}__ and `functionName` set to `"removeTokenFactory"`
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"removeTokenFactory"`
  */
-export const simulateIIdFactoryRemoveTokenFactory =
+export const simulateIdFactoryRemoveTokenFactory =
   /*#__PURE__*/ createSimulateContract({
-    abi: iIdFactoryAbi,
-    address: iIdFactoryAddress,
+    abi: idFactoryAbi,
+    address: idFactoryAddress,
     functionName: "removeTokenFactory",
   });
 
 /**
- * Wraps __{@link simulateContract}__ with `abi` set to __{@link iIdFactoryAbi}__ and `functionName` set to `"unlinkWallet"`
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"renounceOwnership"`
  */
-export const simulateIIdFactoryUnlinkWallet =
+export const simulateIdFactoryRenounceOwnership =
   /*#__PURE__*/ createSimulateContract({
-    abi: iIdFactoryAbi,
-    address: iIdFactoryAddress,
+    abi: idFactoryAbi,
+    address: idFactoryAddress,
+    functionName: "renounceOwnership",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const simulateIdFactoryTransferOwnership =
+  /*#__PURE__*/ createSimulateContract({
+    abi: idFactoryAbi,
+    address: idFactoryAddress,
+    functionName: "transferOwnership",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link idFactoryAbi}__ and `functionName` set to `"unlinkWallet"`
+ */
+export const simulateIdFactoryUnlinkWallet =
+  /*#__PURE__*/ createSimulateContract({
+    abi: idFactoryAbi,
+    address: idFactoryAddress,
     functionName: "unlinkWallet",
   });
 
 /**
- * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link iIdFactoryAbi}__
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link idFactoryAbi}__
  */
-export const watchIIdFactoryEvent = /*#__PURE__*/ createWatchContractEvent({
-  abi: iIdFactoryAbi,
-  address: iIdFactoryAddress,
+export const watchIdFactoryEvent = /*#__PURE__*/ createWatchContractEvent({
+  abi: idFactoryAbi,
+  address: idFactoryAddress,
 });
 
 /**
- * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link iIdFactoryAbi}__ and `eventName` set to `"Deployed"`
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link idFactoryAbi}__ and `eventName` set to `"Deployed"`
  */
-export const watchIIdFactoryDeployedEvent =
+export const watchIdFactoryDeployedEvent =
   /*#__PURE__*/ createWatchContractEvent({
-    abi: iIdFactoryAbi,
-    address: iIdFactoryAddress,
+    abi: idFactoryAbi,
+    address: idFactoryAddress,
     eventName: "Deployed",
   });
 
 /**
- * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link iIdFactoryAbi}__ and `eventName` set to `"TokenFactoryAdded"`
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link idFactoryAbi}__ and `eventName` set to `"OwnershipTransferred"`
  */
-export const watchIIdFactoryTokenFactoryAddedEvent =
+export const watchIdFactoryOwnershipTransferredEvent =
   /*#__PURE__*/ createWatchContractEvent({
-    abi: iIdFactoryAbi,
-    address: iIdFactoryAddress,
+    abi: idFactoryAbi,
+    address: idFactoryAddress,
+    eventName: "OwnershipTransferred",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link idFactoryAbi}__ and `eventName` set to `"TokenFactoryAdded"`
+ */
+export const watchIdFactoryTokenFactoryAddedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: idFactoryAbi,
+    address: idFactoryAddress,
     eventName: "TokenFactoryAdded",
   });
 
 /**
- * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link iIdFactoryAbi}__ and `eventName` set to `"TokenFactoryRemoved"`
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link idFactoryAbi}__ and `eventName` set to `"TokenFactoryRemoved"`
  */
-export const watchIIdFactoryTokenFactoryRemovedEvent =
+export const watchIdFactoryTokenFactoryRemovedEvent =
   /*#__PURE__*/ createWatchContractEvent({
-    abi: iIdFactoryAbi,
-    address: iIdFactoryAddress,
+    abi: idFactoryAbi,
+    address: idFactoryAddress,
     eventName: "TokenFactoryRemoved",
   });
 
 /**
- * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link iIdFactoryAbi}__ and `eventName` set to `"TokenLinked"`
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link idFactoryAbi}__ and `eventName` set to `"TokenLinked"`
  */
-export const watchIIdFactoryTokenLinkedEvent =
+export const watchIdFactoryTokenLinkedEvent =
   /*#__PURE__*/ createWatchContractEvent({
-    abi: iIdFactoryAbi,
-    address: iIdFactoryAddress,
+    abi: idFactoryAbi,
+    address: idFactoryAddress,
     eventName: "TokenLinked",
   });
 
 /**
- * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link iIdFactoryAbi}__ and `eventName` set to `"WalletLinked"`
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link idFactoryAbi}__ and `eventName` set to `"WalletLinked"`
  */
-export const watchIIdFactoryWalletLinkedEvent =
+export const watchIdFactoryWalletLinkedEvent =
   /*#__PURE__*/ createWatchContractEvent({
-    abi: iIdFactoryAbi,
-    address: iIdFactoryAddress,
+    abi: idFactoryAbi,
+    address: idFactoryAddress,
     eventName: "WalletLinked",
   });
 
 /**
- * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link iIdFactoryAbi}__ and `eventName` set to `"WalletUnlinked"`
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link idFactoryAbi}__ and `eventName` set to `"WalletUnlinked"`
  */
-export const watchIIdFactoryWalletUnlinkedEvent =
+export const watchIdFactoryWalletUnlinkedEvent =
   /*#__PURE__*/ createWatchContractEvent({
-    abi: iIdFactoryAbi,
-    address: iIdFactoryAddress,
+    abi: idFactoryAbi,
+    address: idFactoryAddress,
     eventName: "WalletUnlinked",
   });
 
