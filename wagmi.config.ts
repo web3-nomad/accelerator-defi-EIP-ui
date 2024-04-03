@@ -1,6 +1,6 @@
 import { defineConfig } from "@wagmi/cli";
 import { fetch, actions } from "@wagmi/cli/plugins";
-import src from "./scripts/download-json.json" assert { type: "json" };
+import fs from "fs";
 
 type RawJson = {
   [k: string]: {
@@ -8,7 +8,9 @@ type RawJson = {
   };
 };
 
-const rawJson: RawJson = src;
+const rawJson: RawJson = JSON.parse(
+  fs.readFileSync("./scripts/download-json.json").toString(),
+);
 
 type Contracts = Array<{
   name: string;
