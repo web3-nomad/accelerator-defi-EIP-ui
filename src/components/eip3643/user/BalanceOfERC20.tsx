@@ -15,6 +15,7 @@ import { ContractFunctionParameterBuilder } from "@/services/wallets/contractFun
 import { appConfig } from "@/config";
 import { convertAccountIdToSolidityAddress } from "@/services/util/helpers";
 import { readErc20BalanceOf } from "../../../services/contracts/wagmiGenActions";
+import { useReadErc20BalanceOf } from "@/hooks/useReadErc20BalanceOf";
 
 export default function BalanceOfERC20() {
   const { accountId, walletName, walletInterface } = useWalletInterface();
@@ -24,6 +25,10 @@ export default function BalanceOfERC20() {
     "0x0000000000000000000000000000000000387719",
   );
 
+  const { data: readErc20BalanceOfResult } = useReadErc20BalanceOf(
+    accountId as string,
+  );
+
   return (
     <VStack gap={2} alignItems="flex-start">
       <Heading size={"md"}>
@@ -31,8 +36,17 @@ export default function BalanceOfERC20() {
         0x0000000000000000000000000000000000387719 for {accountId}
       </Heading>
 
+      <Text>
+        Query auto fetch result is: {readErc20BalanceOfResult?.toString()}
+      </Text>
+
+      <Heading size={"md"}>
+        Balance of fungible TestToken ERC20 CA call
+        0x0000000000000000000000000000000000387719 for {accountId}
+      </Heading>
+
       <VStack alignItems="flex-start">
-        <label htmlFor="erc20-balance">Token ID</label>
+        <label htmlFor="erc20-balance">Token ID (only for CA write call)</label>
         <Input
           name="erc20-balance"
           value={fungibleTokenEvmAddress}
@@ -68,7 +82,7 @@ export default function BalanceOfERC20() {
           //setTxId(txId as string);
         }}
       >
-        Send
+        Read [via CA write]
       </Button>
 
       <Button
@@ -88,7 +102,7 @@ export default function BalanceOfERC20() {
         Read [codegen-wagmi]
       </Button>
 
-      <Text>Result is: {result}</Text>
+      <Text>CA call result is: {result}</Text>
     </VStack>
   );
 }
