@@ -102,7 +102,7 @@ export const switchToHederaNetwork = async (ethereum: any) => {
   }
 };
 
-//@TODO find a way to use provider from web3wallet
+//@TODO find a way to use provider from web3wallet hook inside client functions - is it needed at all?
 //const { walletProvider } = useWeb3ModalProvider();
 //const provider = new ethers.BrowserProvider(walletProvider);
 const getProvider = () => {
@@ -115,25 +115,25 @@ const getProvider = () => {
 
 // returns a list of accounts
 // otherwise empty array
-export const connectToWalletConnect = async () => {
-  const provider = getProvider();
-  // keep track of accounts returned
-  let accounts: string[] = [];
-
-  try {
-    await switchToHederaNetwork(window.ethereum);
-    accounts = await provider.send("eth_requestAccounts", []);
-  } catch (error: any) {
-    if (error.code === 4001) {
-      // EIP-1193 userRejectedRequest error
-      console.warn("Please connect to Metamask.");
-    } else {
-      console.error(error);
-    }
-  }
-
-  return accounts;
-};
+// export const connectToWalletConnect = async () => {
+//   const provider = getProvider();
+//   // keep track of accounts returned
+//   let accounts: string[] = [];
+//
+//   try {
+//     await switchToHederaNetwork(window.ethereum);
+//     accounts = await provider.send("eth_requestAccounts", []);
+//   } catch (error: any) {
+//     if (error.code === 4001) {
+//       // EIP-1193 userRejectedRequest error
+//       console.warn("Please connect to Metamask.");
+//     } else {
+//       console.error(error);
+//     }
+//   }
+//
+//   return accounts;
+// };
 
 //
 class WalletConnectWallet implements WalletInterface {
