@@ -22,6 +22,7 @@
     "@netlify/plugin-nextjs": "^4.41.3",
     "@reduxjs/toolkit": "^2.2.1",
     "@tanstack/react-query": "^5.28.9",
+    "@web3modal/ethers": "^4.1.5",
     "@web3modal/wagmi": "^4.0.13",
     "abitype": "^1.0.2",
     "ethers": "^6.11.1",

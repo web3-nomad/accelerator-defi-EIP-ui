@@ -1,6 +1,7 @@
 import { useContext } from "react";
 
 import { Box, Flex, Button } from "@chakra-ui/react";
+import { useWeb3Modal } from "@web3modal/ethers/react";
 
 import { useWalletInterface } from "../services/wallets/useWalletInterface";
 import { connectToBladeWallet } from "../services/wallets/blade/bladeClient";
@@ -9,6 +10,7 @@ import { connectToMetamask } from "../services/wallets/metamask/metamaskClient";
 import { HashconnectContext } from "../contexts/HashconnectContext";
 import { BladeContext } from "../contexts/BladeContext";
 import { MetamaskContext } from "../contexts/MetamaskContext";
+// import { connectToWalletConnect } from "@/services/wallets/walletconnect/walletconnectClient";
 
 const WalletButtons = () => {
   const hashconnectCtx = useContext(HashconnectContext);
@@ -16,6 +18,7 @@ const WalletButtons = () => {
   const metamaskCtx = useContext(MetamaskContext);
 
   const { accountId, walletName, walletInterface } = useWalletInterface();
+  const { open } = useWeb3Modal();
 
   return (
     <Flex gap={5}>
@@ -48,6 +51,17 @@ const WalletButtons = () => {
             }}
           >
             Metamask
+          </Button>
+          <Button
+            // isDisabled={!metamaskCtx.isAvailable}
+            colorScheme="blue"
+            onClick={() => {
+              // connectToMetamask();
+              open();
+              // connectToWalletConnect();
+            }}
+          >
+            WalletConnect
           </Button>
         </>
       ) : (
