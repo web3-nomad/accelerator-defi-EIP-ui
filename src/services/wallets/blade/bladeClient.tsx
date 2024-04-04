@@ -14,6 +14,7 @@ import {
   TokenId,
   TransferTransaction,
 } from "@hashgraph/sdk";
+
 import EventEmitter from "events";
 
 import { BladeContext } from "../../../contexts/BladeContext";
@@ -37,7 +38,6 @@ const syncWithBladeEvent = new EventEmitter();
 class BladeWallet implements WalletInterface {
   async transferHBAR(toAddress: AccountId, amount: number) {
     const bladeSigner = bladeConnector.getSigners()[0];
-    console.log("signers", bladeConnector.getSigners());
     if (!bladeSigner) {
       return null;
     }
@@ -162,24 +162,41 @@ class BladeWallet implements WalletInterface {
       return null;
     }
 
+    console.log("contractId", contractId);
+    console.log("bladeSigner", bladeSigner);
+
     // Grab the topic and account to sign from the last pairing event
     const tx = new ContractExecuteTransaction()
       .setContractId(contractId)
       .setGas(gasLimit)
       .setFunction(functionName, functionParameters.buildHAPIParams());
 
-    const txFrozen = await tx.freezeWithSigner(bladeSigner as any);
-    const transactionId = await txFrozen
-      .executeWithSigner(bladeSigner as any)
-      .then((txResult) => txResult.transactionId)
-      .catch((error) => {
-        console.log(error.message ? error.message : error);
-        return null;
-      });
+    console.log("tx", tx);
 
-    // in order to read the contract call results, you will need to query the contract call's results form a mirror node using the transaction id
-    // after getting the contract call results, use ethers and abi.decode to decode the call_result
-    return transactionId;
+    const populatedTransaction = await bladeSigner.populateTransaction(
+      tx as any,
+    );
+    const signedTransaction = await bladeSigner.signTransaction(
+      tx.freeze() as any,
+    );
+
+    return null;
+
+    // const txFrozen = await tx.freeze();
+    // console.log('txF', txFrozen);
+
+    // const transactionId = await bladeSigner.call();
+    // // const transactionId = await txFrozen
+    // //   .execute()
+    // //   .then((txResult) => txResult.transactionId)
+    // //   .catch((error) => {
+    // //     console.log(error.message ? error.message : error);
+    // //     return null;
+    // //   });
+
+    // // in order to read the contract call results, you will need to query the contract call's results form a mirror node using the transaction id
+    // // after getting the contract call results, use ethers and abi.decode to decode the call_result
+    // return transactionId;
   }
 
   disconnect() {
@@ -204,7 +221,9 @@ export const connectToBladeWallet = async (
     });
     syncWithBladeEvent.emit("syncSession");
     localStorage.setItem(bladeLocalStorage, "true");
-  } catch (e: any) {}
+  } catch (e: any) {
+    console.log("connectToBladeWallet error", e);
+  }
 };
 
 const bladeConnectorInitPromise = new Promise(async (resolve, reject) => {
