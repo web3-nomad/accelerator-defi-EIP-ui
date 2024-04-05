@@ -178,15 +178,6 @@ class MetaMaskWallet implements WalletInterface {
     return hash;
   }
 
-  async executeContractReadFunction(
-    contractId: ContractId,
-    functionName: string,
-    functionParameters: ContractFunctionParameterBuilder,
-  ) {
-    // TODO
-    return null;
-  }
-
   // Purpose: build contract execute transaction and send to hashconnect for signing and execution
   // Returns: Promise<TransactionId | null>
   async executeContractWriteFunction(

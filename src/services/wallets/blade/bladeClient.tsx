@@ -20,6 +20,7 @@ import EventEmitter from "events";
 import { BladeContext } from "../../../contexts/BladeContext";
 import { WalletInterface } from "../walletInterface";
 import { ContractFunctionParameterBuilder } from "../contractFunctionParameterBuilder";
+import { formatRawTxId } from "../../util/helpers";
 
 const bladeLocalStorage = "usedBladeForWalletPairing";
 
@@ -140,15 +141,6 @@ class BladeWallet implements WalletInterface {
     return transactionId;
   }
 
-  async executeContractReadFunction(
-    contractId: ContractId,
-    functionName: string,
-    functionParameters: ContractFunctionParameterBuilder,
-  ) {
-    // TODO
-    return null;
-  }
-
   // Purpose: build contract execute transaction and send to hashconnect for signing and execution
   // Returns: Promise<TransactionId | null>
   async executeContractWriteFunction(
@@ -161,42 +153,18 @@ class BladeWallet implements WalletInterface {
     if (!bladeSigner) {
       return null;
     }
-
-    console.log("contractId", contractId);
-    console.log("bladeSigner", bladeSigner);
-
-    // Grab the topic and account to sign from the last pairing event
     const tx = new ContractExecuteTransaction()
       .setContractId(contractId)
       .setGas(gasLimit)
       .setFunction(functionName, functionParameters.buildHAPIParams());
 
-    console.log("tx", tx);
+    const txFrozen = await tx.freezeWithSigner(bladeSigner as any);
+    await txFrozen.executeWithSigner(bladeSigner as any);
 
-    const populatedTransaction = await bladeSigner.populateTransaction(
-      tx as any,
-    );
-    const signedTransaction = await bladeSigner.signTransaction(
-      tx.freeze() as any,
-    );
-
-    return null;
-
-    // const txFrozen = await tx.freeze();
-    // console.log('txF', txFrozen);
-
-    // const transactionId = await bladeSigner.call();
-    // // const transactionId = await txFrozen
-    // //   .execute()
-    // //   .then((txResult) => txResult.transactionId)
-    // //   .catch((error) => {
-    // //     console.log(error.message ? error.message : error);
-    // //     return null;
-    // //   });
-
-    // // in order to read the contract call results, you will need to query the contract call's results form a mirror node using the transaction id
-    // // after getting the contract call results, use ethers and abi.decode to decode the call_result
-    // return transactionId;
+    // in order to read the contract call results, you will need to query the contract call's results form a mirror node using the transaction id
+    // after getting the contract call results, use ethers and abi.decode to decode the call_result
+    const txId = txFrozen.transactionId?.toString();
+    return txId ? formatRawTxId(txId) : null;
   }
 
   disconnect() {
