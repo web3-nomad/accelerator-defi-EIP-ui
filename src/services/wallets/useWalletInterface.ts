@@ -3,10 +3,8 @@
 import { useContext } from "react";
 import { BladeContext } from "@/contexts/BladeContext";
 import { HashconnectContext } from "@/contexts/HashconnectContext";
-import { MetamaskContext } from "@/contexts/MetamaskContext";
 import { bladeWallet } from "./blade/bladeClient";
 import { hashConnectWallet } from "./hashconnect/hashconnectClient";
-import { metamaskWallet } from "./metamask/metamaskClient";
 import { WalletInterface } from "./walletInterface";
 import { WalletConnectContext } from "@/contexts/WalletConnectContext";
 import { walletconnectWallet } from "@/services/wallets/walletconnect/walletconnectClient";
@@ -17,7 +15,6 @@ import { walletconnectWallet } from "@/services/wallets/walletconnect/walletconn
 export const useWalletInterface = () => {
   const hashconnectCtx = useContext(HashconnectContext);
   const bladeCtx = useContext(BladeContext);
-  const metamaskCtx = useContext(MetamaskContext);
   const walletconnectCtx = useContext(WalletConnectContext);
 
   if (hashconnectCtx.accountId) {
@@ -32,15 +29,7 @@ export const useWalletInterface = () => {
       accountId: bladeCtx.accountId,
       walletInterface: bladeWallet as WalletInterface,
     };
-  }
-  // else if (metamaskCtx.metamaskAccountAddress) {
-  //   return {
-  //     walletName: "Metamask",
-  //     accountId: metamaskCtx.metamaskAccountAddress,
-  //     walletInterface: metamaskWallet as WalletInterface,
-  //   };
-  // }
-  else if (walletconnectCtx.walletConnectAccountAddress) {
+  } else if (walletconnectCtx.walletConnectAccountAddress) {
     return {
       walletName: "WalletConnect",
       accountId: walletconnectCtx.walletConnectAccountAddress,
