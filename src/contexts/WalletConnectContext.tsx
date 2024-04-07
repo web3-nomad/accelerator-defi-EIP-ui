@@ -9,7 +9,6 @@ const defaultValue = {
 
 export const WalletConnectContext = createContext(defaultValue);
 
-//
 export const WalletConnectContextProvider = (props: {
   children: ReactNode | undefined;
 }) => {

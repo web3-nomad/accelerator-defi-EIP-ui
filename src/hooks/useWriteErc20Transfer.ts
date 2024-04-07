@@ -14,7 +14,7 @@ export interface UseWriteErc20TransferParameters {
 export function useWriteErc20Transfer() {
   const { accountId, walletName, walletInterface } = useWalletInterface();
 
-  const mutation = useMutation({
+  return useMutation({
     mutationFn: async ({ to, amount }: UseWriteErc20TransferParameters) => {
       // if (!walletInterface) return;
       //@TODO make account/chain not mandatory if possible
@@ -36,8 +36,4 @@ export function useWriteErc20Transfer() {
       console.log("L10 onSuccess data ===", data);
     },
   });
-
-  console.log("L14 mutation ===", mutation);
-
-  return mutation;
 }
