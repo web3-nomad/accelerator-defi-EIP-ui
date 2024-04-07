@@ -14,11 +14,13 @@ import {
   TokenId,
   TransferTransaction,
 } from "@hashgraph/sdk";
+
 import EventEmitter from "events";
 
 import { BladeContext } from "../../../contexts/BladeContext";
 import { WalletInterface } from "../walletInterface";
 import { ContractFunctionParameterBuilder } from "../contractFunctionParameterBuilder";
+import { formatRawTxId } from "../../util/helpers";
 
 const bladeLocalStorage = "usedBladeForWalletPairing";
 
@@ -37,7 +39,6 @@ const syncWithBladeEvent = new EventEmitter();
 class BladeWallet implements WalletInterface {
   async transferHBAR(toAddress: AccountId, amount: number) {
     const bladeSigner = bladeConnector.getSigners()[0];
-    console.log("signers", bladeConnector.getSigners());
     if (!bladeSigner) {
       return null;
     }
@@ -140,15 +141,6 @@ class BladeWallet implements WalletInterface {
     return transactionId;
   }
 
-  async executeContractReadFunction(
-    contractId: ContractId,
-    functionName: string,
-    functionParameters: ContractFunctionParameterBuilder,
-  ) {
-    // TODO
-    return null;
-  }
-
   // Purpose: build contract execute transaction and send to hashconnect for signing and execution
   // Returns: Promise<TransactionId | null>
   async executeContractWriteFunction(
@@ -161,25 +153,18 @@ class BladeWallet implements WalletInterface {
     if (!bladeSigner) {
       return null;
     }
-
-    // Grab the topic and account to sign from the last pairing event
     const tx = new ContractExecuteTransaction()
       .setContractId(contractId)
       .setGas(gasLimit)
       .setFunction(functionName, functionParameters.buildHAPIParams());
 
     const txFrozen = await tx.freezeWithSigner(bladeSigner as any);
-    const transactionId = await txFrozen
-      .executeWithSigner(bladeSigner as any)
-      .then((txResult) => txResult.transactionId)
-      .catch((error) => {
-        console.log(error.message ? error.message : error);
-        return null;
-      });
+    await txFrozen.executeWithSigner(bladeSigner as any);
 
     // in order to read the contract call results, you will need to query the contract call's results form a mirror node using the transaction id
     // after getting the contract call results, use ethers and abi.decode to decode the call_result
-    return transactionId;
+    const txId = txFrozen.transactionId?.toString();
+    return txId ? formatRawTxId(txId) : null;
   }
 
   disconnect() {
@@ -204,7 +189,9 @@ export const connectToBladeWallet = async (
     });
     syncWithBladeEvent.emit("syncSession");
     localStorage.setItem(bladeLocalStorage, "true");
-  } catch (e: any) {}
+  } catch (e: any) {
+    console.log("connectToBladeWallet error", e);
+  }
 };
 
 const bladeConnectorInitPromise = new Promise(async (resolve, reject) => {

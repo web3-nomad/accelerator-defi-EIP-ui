@@ -52,6 +52,7 @@ export type CreateWriteContractReturnType<
   parameters: UnionEvaluate<
     UnionOmit<WriteContractParameters<abi, name, args>, omittedProperties>
   >,
+  addressOverride?: `0x${string}`,
 ) => Promise<WriteContractReturnType>;
 
 export function createWriteContract<
@@ -66,10 +67,11 @@ export function createWriteContract<
 >(
   c: CreateWriteContractParameters<abi, address, functionName>,
 ): CreateWriteContractReturnType<abi, address, functionName> {
-  return (walletInterface, parameters) => {
+  return (walletInterface, parameters, addressOverride) => {
     return writeContract(walletInterface, {
       ...(parameters as any),
       ...(c.address ? { address: c.address } : {}),
+      ...(addressOverride ? { address: addressOverride } : {}),
       ...(c.functionName ? { functionName: c.functionName } : {}),
       abi: c.abi,
     });

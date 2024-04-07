@@ -50,6 +50,7 @@ export type CreateReadContractReturnType<
   parameters: UnionEvaluate<
     UnionOmit<ReadContractParameters<abi, name, args>, omittedProperties>
   >,
+  addressOverride?: `0x${string}`,
 ) => Promise<ReadContractReturnType<abi, name, args>>;
 
 export function createReadContract<
@@ -64,10 +65,11 @@ export function createReadContract<
 >(
   c: CreateReadContractParameters<abi, address, functionName>,
 ): CreateReadContractReturnType<abi, address, functionName> {
-  return (parameters) => {
+  return (parameters, addressOverride) => {
     return readContract({
       ...(parameters as any),
       ...(c.address ? { address: c.address } : {}),
+      ...(addressOverride ? { address: addressOverride } : {}),
       ...(c.functionName ? { functionName: c.functionName } : {}),
       abi: c.abi,
     });

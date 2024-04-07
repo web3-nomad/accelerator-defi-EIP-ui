@@ -16,6 +16,7 @@ import {
 import { HashconnectContext } from "../../../contexts/HashconnectContext";
 import { WalletInterface } from "../walletInterface";
 import { ContractFunctionParameterBuilder } from "../contractFunctionParameterBuilder";
+import { formatRawTxId } from "../../util/helpers";
 
 const appMetadata = {
   name: process.env.NEXT_PUBLIC_WALLET_DEFI_APP_NAME as string,
@@ -115,15 +116,6 @@ class HashConnectWallet implements WalletInterface {
     return txResult.transactionId;
   }
 
-  async executeContractReadFunction(
-    contractId: ContractId,
-    functionName: string,
-    functionParameters: ContractFunctionParameterBuilder,
-  ) {
-    // TODO
-    return null;
-  }
-
   // Purpose: build contract execute transaction and send to hashconnect for signing and execution
   // Returns: Promise<TransactionId | null>
   async executeContractWriteFunction(
@@ -148,7 +140,8 @@ class HashConnectWallet implements WalletInterface {
 
     // in order to read the contract call results, you will need to query the contract call's results form a mirror node using the transaction id
     // after getting the contract call results, use ethers and abi.decode to decode the call_result
-    return txFrozen.transactionId;
+    const txId = txFrozen.transactionId?.toString();
+    return txId ? formatRawTxId(txId) : null;
   }
 
   disconnect() {
