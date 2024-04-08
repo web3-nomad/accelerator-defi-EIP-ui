@@ -6,45 +6,54 @@ import { ContractId, AccountId } from "@hashgraph/sdk";
 import { TokenId } from "@hashgraph/sdk";
 import { ethers } from "ethers";
 import { useContext, useEffect } from "react";
-import { appConfig } from "../../../config";
-import { MetamaskContext } from "../../../contexts/MetamaskContext";
+import { appConfig } from "@/config";
 import { ContractFunctionParameterBuilder } from "../contractFunctionParameterBuilder";
 import { WalletInterface } from "../walletInterface";
+import { WalletConnectContext } from "@/contexts/WalletConnectContext";
+import { useWeb3ModalProvider } from "@web3modal/ethers/react";
+import { hederaTestnet } from "wagmi/chains";
+import { createWeb3Modal, defaultConfig } from "@web3modal/ethers/react";
 
-const currentNetworkConfig = appConfig.networks.testnet;
+// 1. Get projectId at https://cloud.walletconnect.com
+const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string;
 
-export const switchToHederaNetwork = async (ethereum: any) => {
-  try {
-    await ethereum.request({
-      method: "wallet_switchEthereumChain",
-      params: [{ chainId: currentNetworkConfig.chainId }], // chainId must be in hexadecimal numbers
-    });
-  } catch (error: any) {
-    if (error.code === 4902) {
-      try {
-        await ethereum.request({
-          method: "wallet_addEthereumChain",
-          params: [
-            {
-              chainName: `Hedera (${currentNetworkConfig.network})`,
-              chainId: currentNetworkConfig.chainId,
-              nativeCurrency: {
-                name: "HBAR",
-                symbol: "HBAR",
-                decimals: 18,
-              },
-              rpcUrls: [currentNetworkConfig.jsonRpcUrl],
-            },
-          ],
-        });
-      } catch (addError) {
-        console.error(addError);
-      }
-    }
-    console.error(error);
-  }
+// 2. Set chains
+//@TODO add mainnet
+const hederaTestnetConfigWC = {
+  chainId: hederaTestnet.id,
+  name: hederaTestnet.name,
+  currency: hederaTestnet.nativeCurrency.name,
+  explorerUrl: hederaTestnet.blockExplorers.default.url,
+  rpcUrl: hederaTestnet.rpcUrls.default.http[0],
 };
 
+// 3. Create a metadata object
+const metadata = {
+  name: "EIP 3643 POC",
+  description: "EIP 3643 POC",
+  url: "https://eip.zilbo.com/", // origin must match your domain & subdomain
+  icons: ["https://avatars.mywebsite.com/"],
+};
+
+// 4. Create Ethers config
+const ethersConfig = defaultConfig({
+  metadata,
+});
+
+// 5. Create a Web3Modal instance
+createWeb3Modal({
+  ethersConfig,
+  chains: [hederaTestnetConfigWC],
+  projectId,
+  enableAnalytics: true, // Optional - defaults to your Cloud configuration
+});
+
+//@TODO find a way to use provider from web3wallet hook inside client functions - is it needed at all?
+//const { walletProvider } = useWeb3ModalProvider();
+//const provider = new ethers.BrowserProvider(walletProvider);
+/**
+ * @deprecated
+ */
 const getProvider = () => {
   if (!window.ethereum) {
     throw new Error("Metamask is not installed! Go install the extension!");
@@ -53,29 +62,7 @@ const getProvider = () => {
   return new ethers.BrowserProvider(window.ethereum);
 };
 
-// returns a list of accounts
-// otherwise empty array
-export const connectToMetamask = async () => {
-  const provider = getProvider();
-  // keep track of accounts returned
-  let accounts: string[] = [];
-
-  try {
-    await switchToHederaNetwork(window.ethereum);
-    accounts = await provider.send("eth_requestAccounts", []);
-  } catch (error: any) {
-    if (error.code === 4001) {
-      // EIP-1193 userRejectedRequest error
-      console.warn("Please connect to Metamask.");
-    } else {
-      console.error(error);
-    }
-  }
-
-  return accounts;
-};
-
-class MetaMaskWallet implements WalletInterface {
+class WalletConnectWallet implements WalletInterface {
   private convertAccountIdToSolidityAddress(accountId: AccountId): string {
     const accountIdString =
       accountId.evmAddress !== null
@@ -213,35 +200,49 @@ class MetaMaskWallet implements WalletInterface {
     }
   }
 
-  disconnect() {
-    alert("Please disconnect using the Metamask extension.");
+  disconnect(functionOverride?: Function) {
+    if (functionOverride) {
+      functionOverride();
+    } else {
+      alert("Please disconnect using the Metamask extension.");
+    }
   }
 }
 
-export const metamaskWallet = new MetaMaskWallet();
+export const walletconnectWallet = new WalletConnectWallet();
 
-export const MetaMaskClient = () => {
-  const { setMetamaskAccountAddress, setIsAvailable } =
-    useContext(MetamaskContext);
+//
+export const WalletConnectClient = () => {
+  const { setWalletConnectAccountAddress, setIsAvailable } =
+    useContext(WalletConnectContext);
+
+  const { walletProvider } = useWeb3ModalProvider();
+
   useEffect(() => {
     // set the account address if already connected
     try {
-      const provider = getProvider();
+      if (!walletProvider) {
+        return;
+      }
+
+      const provider = new ethers.BrowserProvider(walletProvider);
+
+      provider.send("eth_requestAccounts", []).then((accounts) => {});
       setIsAvailable(true);
       provider.listAccounts().then((signers) => {
         if (signers.length !== 0) {
-          setMetamaskAccountAddress(signers[0].address);
+          setWalletConnectAccountAddress(signers[0].address);
         } else {
-          setMetamaskAccountAddress("");
+          setWalletConnectAccountAddress("");
         }
       });
 
       // listen for account changes and update the account address
       window.ethereum.on("accountsChanged", (accounts: string[]) => {
         if (accounts.length !== 0) {
-          setMetamaskAccountAddress(accounts[0]);
+          setWalletConnectAccountAddress(accounts[0]);
         } else {
-          setMetamaskAccountAddress("");
+          setWalletConnectAccountAddress("");
         }
       });
 
@@ -252,7 +253,7 @@ export const MetaMaskClient = () => {
     } catch (_: any) {
       setIsAvailable(false);
     }
-  }, [setMetamaskAccountAddress, setIsAvailable]);
+  }, [setWalletConnectAccountAddress, setIsAvailable, walletProvider]);
 
   return null;
 };

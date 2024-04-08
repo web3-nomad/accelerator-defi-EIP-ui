@@ -32,11 +32,6 @@ export default function MeaningOfLife() {
   const { data: contractCallResultTx } = useGetTransactionById(txId);
 
   useEffect(() => {
-    console.log(
-      "L36 inside effect contractCallResultTx ===",
-      contractCallResultTx,
-    );
-
     if (!contractCallResultTx || !txId) return;
 
     //@TODO have function names as exported consts too
@@ -45,8 +40,6 @@ export default function MeaningOfLife() {
       functionName: "theMeaningOfLifeIs",
       abi: meaningOfLifeAbi,
     });
-
-    console.log("L45 effect ca res ===", caCallRes);
 
     toast({
       title: "Meaning of life is",

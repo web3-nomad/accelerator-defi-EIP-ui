@@ -8,7 +8,7 @@ export interface WalletInterface {
     functionParameters: ContractFunctionParameterBuilder,
     gasLimit: number,
   ) => Promise<TransactionId | string | null>;
-  disconnect: () => void;
+  disconnect: (functionOverride?: Function) => void;
   transferHBAR: (
     toAddress: AccountId,
     amount: number,
