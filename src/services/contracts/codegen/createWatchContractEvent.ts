@@ -59,8 +59,8 @@ export function createWatchContractEvent<
       ...(parameters as any),
       ...(c.address ? { address: c.address } : {}),
       ...(addressOverride ? { address: addressOverride } : {}),
-      ...(c.eventName ? { functionName: c.eventName } : {}),
+      ...(c.eventName ? { eventName: c.eventName } : {}),
       abi: c.abi,
-    });
+    }) as any; // TODO
   };
 }

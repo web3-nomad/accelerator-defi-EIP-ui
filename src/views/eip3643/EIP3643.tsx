@@ -9,6 +9,7 @@ import {
   Divider,
 } from "@chakra-ui/react";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
+import EventsTest from "@/components/eip3643/user/EventsTest";
 import MeaningOfLife from "@/components/eip3643/user/MeaningOfLife";
 import TransferHBAR from "@/components/eip3643/user/TransferHBAR";
 import TransferFungibleToken from "@/components/eip3643/user/TransferFungibleToken";
@@ -52,6 +53,8 @@ export default function EIP3643() {
 
         <TabPanels>
           <TabPanel>
+            <EventsTest />
+            <Divider my={10} />
             <MeaningOfLife />
             <Divider my={10} />
             <BalanceOfERC20 />
