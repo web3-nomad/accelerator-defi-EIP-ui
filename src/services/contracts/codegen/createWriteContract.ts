@@ -5,10 +5,7 @@ import {
   type ContractFunctionName,
 } from "viem";
 
-import {
-  type UnionEvaluate,
-  type UnionOmit,
-} from "@/services/util/wagmi-types";
+import { type UnionEvaluate, type UnionOmit } from "@/services/util/wagmiTypes";
 import {
   type WriteContractReturnType,
   writeContract,

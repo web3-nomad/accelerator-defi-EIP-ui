@@ -4,7 +4,7 @@ import {
   type WriteContractReturnType as viem_WriteContractReturnType,
 } from "viem/actions";
 
-import type { Evaluate } from "@/services/util/wagmi-types";
+import type { Evaluate } from "@/services/util/wagmiTypes";
 import { WalletInterface } from "../wallets/walletInterface";
 import { ContractFunctionParameterBuilder } from "../wallets/contractFunctionParameterBuilder";
 import { ContractId } from "@hashgraph/sdk";
