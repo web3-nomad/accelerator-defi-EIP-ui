@@ -1,6 +1,10 @@
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { useMutation } from "@tanstack/react-query";
-import { writeTrexFactoryDeployTrexSuite } from "@/services/contracts/wagmiGenActions";
+import {
+  writeTrexFactoryDeployTrexSuite,
+  writeTrexGateway,
+  writeTrexGatewayDeployTrexSuite,
+} from "@/services/contracts/wagmiGenActions";
 import { convertAccountIdToSolidityAddress } from "@/services/util/helpers";
 import { AccountId } from "@hashgraph/sdk";
 import { hederaTestnet } from "wagmi/chains";
@@ -58,10 +62,9 @@ export function useDeployToken() {
 
       console.log("L16 claimsDetails ===", claimsDetails);
 
-      const deployResult = await writeTrexFactoryDeployTrexSuite(
+      const deployResult = await writeTrexGatewayDeployTrexSuite(
         walletInterface as WalletInterface,
         {
-          //@ts-ignore
           args: [tokenDetails, claimsDetails],
           account: convertAccountIdToSolidityAddress(
             AccountId.fromString(accountId as string),
