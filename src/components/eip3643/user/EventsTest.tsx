@@ -9,7 +9,6 @@ export default function EventsTest() {
 
       <Button
         onClick={async () => {
-          console.log("EVENT start");
           const unsub = await watchTrexFactoryTrexSuiteDeployedEvent({
             onLogs: (data) => {
               console.log("EVENT onLogs", data);
@@ -20,7 +19,7 @@ export default function EventsTest() {
           setTimeout(() => {
             unsub();
             console.log("EVENT unsub");
-          }, 10000);
+          }, 20000);
         }}
       >
         Fetch+watch

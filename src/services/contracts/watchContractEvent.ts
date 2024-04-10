@@ -19,56 +19,52 @@ export async function watchContractEvent<
   strict extends boolean | undefined = undefined,
 >(parameters: WatchContractEventParameters<abi, eventName, strict>) {
   const contractInterface = new ethers.Interface(parameters.abi as []);
-  let unwatch: WatchContractEventReturnType | undefined;
+  let timeOut = 0;
+  let isActive = true;
+  let lastTimestamp = 0;
 
-  console.log("EVENT", parameters);
+  let unwatch: WatchContractEventReturnType | undefined = () => {
+    isActive = false;
+    clearTimeout(timeOut);
+  };
 
-  // https://testnet.mirrornode.hedera.com/api/v1/docs/#/contracts/listContractLogs
-  const response = await fetch(
-    `https://testnet.mirrornode.hedera.com/api/v1/contracts/${parameters.address}/results/logs`,
-    {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
+  const poll = async () => {
+    // https://testnet.mirrornode.hedera.com/api/v1/docs/#/contracts/listContractLogs
+    const response = await fetch(
+      `https://testnet.mirrornode.hedera.com/api/v1/contracts/${parameters.address}/results/logs?timestamp=gte:${lastTimestamp}&order=asc`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
       },
-    },
-  );
-  const result = (await response.json()).logs;
-  console.log("EVENT result", result);
+    );
+    const result = (await response.json()).logs;
 
-  const decodeResults = result.map((item: any) => {
-    return contractInterface.parseLog(item);
-  });
-
-  console.log("EVENT result decoded", decodeResults);
-
-  const decodeResultsFiltered = decodeResults.filter((item: any) => {
-    return item.name === parameters.eventName;
-  }); /*.map((item: any) => {
-    const res: any = {};
-    for (let i = 0; i < item.fragment.inputs.length; i++) {
-      res[item.fragment.inputs[i].name as string] = item.args[i];
+    if (result && result.length > 0) {
+      lastTimestamp = parseInt(result.slice(-1)[0].timestamp) + 1 || 0;
+      const decodeResults = result.map((item: any) => {
+        return contractInterface.parseLog(item);
+      });
+      const decodeResultsFiltered = decodeResults.filter((item: any) => {
+        return item.name === parameters.eventName;
+      });
+      if (decodeResultsFiltered && isActive) {
+        parameters.onLogs(decodeResultsFiltered);
+      }
     }
-    return res;
-  });*/
-
-  console.log("EVENT result decoded & filtered", decodeResultsFiltered);
+    if (isActive) {
+      setTimeout(poll, 2000);
+    }
+  };
 
   const listener = () => {
     if (unwatch) unwatch();
-
-    // const client = config.getClient({ chainId })
-    // const action = getAction(
-    //   client,
-    //   viem_watchContractEvent,
-    //   'watchContractEvent',
-    // )
-    // unwatch = action(rest as unknown as viem_WatchContractEventParameters)
+    isActive = true;
+    poll();
     return unwatch;
   };
-
-  // // set up listener for transaction changes
   const unlisten = listener();
 
   return () => {
