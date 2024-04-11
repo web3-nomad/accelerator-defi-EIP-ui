@@ -5,7 +5,6 @@ import {
   type ReadContractReturnType as viem_ReadContractReturnType,
 } from "viem/actions";
 import { ethers } from "ethers";
-import { ContractInfo } from "@hashgraph/sdk";
 
 export type ReadContractParameters<
   abi extends Abi | readonly unknown[] = Abi,

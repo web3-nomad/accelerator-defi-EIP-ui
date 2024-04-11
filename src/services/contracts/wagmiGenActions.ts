@@ -115,7 +115,7 @@ export const claimTopicsRegistryAbi = [
 ] as const;
 
 export const claimTopicsRegistryAddress =
-  "0xbd7D63Aacb0965Fd5BFE77cE8E9E9B279c20B4E5" as const;
+  "0xaE4dc72e4e3D678D6C1C9D1e5Fbc5e7380882135" as const;
 
 export const claimTopicsRegistryConfig = {
   address: claimTopicsRegistryAddress,
@@ -337,7 +337,7 @@ export const countryAllowModuleAbi = [
 ] as const;
 
 export const countryAllowModuleAddress =
-  "0x954dbd9f366E50059a507a99DCb5974AA327901e" as const;
+  "0xDeAe375d9A6facc4F5CB4Bb74f9c9a3df2400672" as const;
 
 export const countryAllowModuleConfig = {
   address: countryAllowModuleAddress,
@@ -758,7 +758,7 @@ export const idFactoryAbi = [
 ] as const;
 
 export const idFactoryAddress =
-  "0x8C63aa9eb1566DAFa68D69F85cAa8e51175c2f82" as const;
+  "0xC0DF339c6457D78BAD39a8AAaC3dca6DbAb1c4b5" as const;
 
 export const idFactoryConfig = {
   address: idFactoryAddress,
@@ -1192,7 +1192,7 @@ export const identityAbi = [
 ] as const;
 
 export const identityAddress =
-  "0x2433a54b26c33c6008AB060c40d0aE4a4a5de4A8" as const;
+  "0x250ED8654F682DBC716F77CEC4e98A11c355A062" as const;
 
 export const identityConfig = {
   address: identityAddress,
@@ -1615,7 +1615,7 @@ export const identityRegistryAbi = [
 ] as const;
 
 export const identityRegistryAddress =
-  "0x883a551987Ee5895E9410DD3995A2E6555ABb733" as const;
+  "0xf2087897DFA5bb47cd9d19cEb452B450b6387240" as const;
 
 export const identityRegistryConfig = {
   address: identityRegistryAddress,
@@ -1927,7 +1927,7 @@ export const identityRegistryStorageAbi = [
 ] as const;
 
 export const identityRegistryStorageAddress =
-  "0x49ad119E7b24D3c3Bf8356f94BEF0762E74E9D5A" as const;
+  "0x1135245A5b2c40414989cd8B76bF3936173dFF93" as const;
 
 export const identityRegistryStorageConfig = {
   address: identityRegistryStorageAddress,
@@ -2018,7 +2018,7 @@ export const implementationAuthorityAbi = [
 ] as const;
 
 export const implementationAuthorityAddress =
-  "0xe8e840070d1afd7799767B71b8C1b708B5F58702" as const;
+  "0xb287549483D9d1daB6371C82b365dbfF19B492f4" as const;
 
 export const implementationAuthorityConfig = {
   address: implementationAuthorityAddress,
@@ -2305,7 +2305,7 @@ export const modularComplianceAbi = [
 ] as const;
 
 export const modularComplianceAddress =
-  "0x0562683F04f2D942b935AE7741e6e99f9122E591" as const;
+  "0xafd21595d8484A3E949c09CEF74eB63A19073Fa9" as const;
 
 export const modularComplianceConfig = {
   address: modularComplianceAddress,
@@ -2477,7 +2477,7 @@ export const requiresNftModuleAbi = [
 ] as const;
 
 export const requiresNftModuleAddress =
-  "0xf6A8fDB90E9CD834E9d74E0B3744BF303aA99b5c" as const;
+  "0xA1C46b80dC649F80667DD6d5eBd8069b038A93AC" as const;
 
 export const requiresNftModuleConfig = {
   address: requiresNftModuleAddress,
@@ -2723,11 +2723,507 @@ export const trexFactoryAbi = [
 ] as const;
 
 export const trexFactoryAddress =
-  "0x25AC07CB223cA9eCB624c396B347654cbd53482B" as const;
+  "0xb7d3b7992174Bcc5fc72922685A3A70020145231" as const;
 
 export const trexFactoryConfig = {
   address: trexFactoryAddress,
   abi: trexFactoryAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// TREXGateway
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const trexGatewayAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "factory", internalType: "address", type: "address" },
+      { name: "publicDeploymentStatus", internalType: "bool", type: "bool" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "lengthLimit", internalType: "uint16", type: "uint16" }],
+    name: "BatchMaxLengthExceeded",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "deployer", internalType: "address", type: "address" }],
+    name: "DeployerAlreadyExists",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "deployer", internalType: "address", type: "address" }],
+    name: "DeployerDoesNotExist",
+  },
+  { type: "error", inputs: [], name: "DeploymentFeesAlreadyDisabled" },
+  { type: "error", inputs: [], name: "DeploymentFeesAlreadyEnabled" },
+  { type: "error", inputs: [], name: "DiscountOutOfRange" },
+  { type: "error", inputs: [], name: "OnlyAdminCall" },
+  { type: "error", inputs: [], name: "PublicCannotDeployOnBehalf" },
+  { type: "error", inputs: [], name: "PublicDeploymentAlreadyDisabled" },
+  { type: "error", inputs: [], name: "PublicDeploymentAlreadyEnabled" },
+  { type: "error", inputs: [], name: "PublicDeploymentsNotAllowed" },
+  { type: "error", inputs: [], name: "ZeroAddress" },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "_agent",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "AgentAdded",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "_agent",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "AgentRemoved",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "deployer",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "DeployerAdded",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "deployer",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "DeployerRemoved",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "isEnabled", internalType: "bool", type: "bool", indexed: true },
+    ],
+    name: "DeploymentFeeEnabled",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "fee", internalType: "uint256", type: "uint256", indexed: true },
+      {
+        name: "feeToken",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "feeCollector",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "DeploymentFeeSet",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "factory",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "FactorySet",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "deployer",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "discount",
+        internalType: "uint16",
+        type: "uint16",
+        indexed: false,
+      },
+    ],
+    name: "FeeDiscountApplied",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "requester",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "intendedOwner",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "feeApplied",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "GatewaySuiteDeploymentProcessed",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "previousOwner",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "newOwner",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "OwnershipTransferred",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "publicDeploymentStatus",
+        internalType: "bool",
+        type: "bool",
+        indexed: true,
+      },
+    ],
+    name: "PublicDeploymentStatusSet",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_agent", internalType: "address", type: "address" }],
+    name: "addAgent",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "deployer", internalType: "address", type: "address" }],
+    name: "addDeployer",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "deployer", internalType: "address", type: "address" },
+      { name: "discount", internalType: "uint16", type: "uint16" },
+    ],
+    name: "applyFeeDiscount",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "deployers", internalType: "address[]", type: "address[]" },
+    ],
+    name: "batchAddDeployer",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "deployers", internalType: "address[]", type: "address[]" },
+      { name: "discounts", internalType: "uint16[]", type: "uint16[]" },
+    ],
+    name: "batchApplyFeeDiscount",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      {
+        name: "_tokenDetails",
+        internalType: "struct ITREXFactory.TokenDetails[]",
+        type: "tuple[]",
+        components: [
+          { name: "owner", internalType: "address", type: "address" },
+          { name: "name", internalType: "string", type: "string" },
+          { name: "symbol", internalType: "string", type: "string" },
+          { name: "decimals", internalType: "uint8", type: "uint8" },
+          { name: "irs", internalType: "address", type: "address" },
+          { name: "ONCHAINID", internalType: "address", type: "address" },
+          { name: "irAgents", internalType: "address[]", type: "address[]" },
+          { name: "tokenAgents", internalType: "address[]", type: "address[]" },
+          {
+            name: "complianceModules",
+            internalType: "address[]",
+            type: "address[]",
+          },
+          {
+            name: "complianceSettings",
+            internalType: "bytes[]",
+            type: "bytes[]",
+          },
+        ],
+      },
+      {
+        name: "_claimDetails",
+        internalType: "struct ITREXFactory.ClaimDetails[]",
+        type: "tuple[]",
+        components: [
+          { name: "claimTopics", internalType: "uint256[]", type: "uint256[]" },
+          { name: "issuers", internalType: "address[]", type: "address[]" },
+          {
+            name: "issuerClaims",
+            internalType: "uint256[][]",
+            type: "uint256[][]",
+          },
+        ],
+      },
+    ],
+    name: "batchDeployTREXSuite",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "deployers", internalType: "address[]", type: "address[]" },
+    ],
+    name: "batchRemoveDeployer",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "deployer", internalType: "address", type: "address" }],
+    name: "calculateFee",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      {
+        name: "_tokenDetails",
+        internalType: "struct ITREXFactory.TokenDetails",
+        type: "tuple",
+        components: [
+          { name: "owner", internalType: "address", type: "address" },
+          { name: "name", internalType: "string", type: "string" },
+          { name: "symbol", internalType: "string", type: "string" },
+          { name: "decimals", internalType: "uint8", type: "uint8" },
+          { name: "irs", internalType: "address", type: "address" },
+          { name: "ONCHAINID", internalType: "address", type: "address" },
+          { name: "irAgents", internalType: "address[]", type: "address[]" },
+          { name: "tokenAgents", internalType: "address[]", type: "address[]" },
+          {
+            name: "complianceModules",
+            internalType: "address[]",
+            type: "address[]",
+          },
+          {
+            name: "complianceSettings",
+            internalType: "bytes[]",
+            type: "bytes[]",
+          },
+        ],
+      },
+      {
+        name: "_claimDetails",
+        internalType: "struct ITREXFactory.ClaimDetails",
+        type: "tuple",
+        components: [
+          { name: "claimTopics", internalType: "uint256[]", type: "uint256[]" },
+          { name: "issuers", internalType: "address[]", type: "address[]" },
+          {
+            name: "issuerClaims",
+            internalType: "uint256[][]",
+            type: "uint256[][]",
+          },
+        ],
+      },
+    ],
+    name: "deployTREXSuite",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_isEnabled", internalType: "bool", type: "bool" }],
+    name: "enableDeploymentFee",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getDeploymentFee",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct ITREXGateway.Fee",
+        type: "tuple",
+        components: [
+          { name: "fee", internalType: "uint256", type: "uint256" },
+          { name: "feeToken", internalType: "address", type: "address" },
+          { name: "feeCollector", internalType: "address", type: "address" },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getFactory",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getPublicDeploymentStatus",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_agent", internalType: "address", type: "address" }],
+    name: "isAgent",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "deployer", internalType: "address", type: "address" }],
+    name: "isDeployer",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "isDeploymentFeeEnabled",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "owner",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_agent", internalType: "address", type: "address" }],
+    name: "removeAgent",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "deployer", internalType: "address", type: "address" }],
+    name: "removeDeployer",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "renounceOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_fee", internalType: "uint256", type: "uint256" },
+      { name: "_feeToken", internalType: "address", type: "address" },
+      { name: "_feeCollector", internalType: "address", type: "address" },
+    ],
+    name: "setDeploymentFee",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "factory", internalType: "address", type: "address" }],
+    name: "setFactory",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_isEnabled", internalType: "bool", type: "bool" }],
+    name: "setPublicDeploymentStatus",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_newOwner", internalType: "address", type: "address" }],
+    name: "transferFactoryOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newOwner", internalType: "address", type: "address" }],
+    name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
+export const trexGatewayAddress =
+  "0xcB7F1652520938dEFE28383aD26086577EbBe309" as const;
+
+export const trexGatewayConfig = {
+  address: trexGatewayAddress,
+  abi: trexGatewayAbi,
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3292,7 +3788,7 @@ export const trexImplementationAuthorityAbi = [
 ] as const;
 
 export const trexImplementationAuthorityAddress =
-  "0xE8891d420cc36aDbfA4600d3fa1b88D5E8034E9D" as const;
+  "0xF9693d202D21b7005927950aB5aC14dA8616C327" as const;
 
 export const trexImplementationAuthorityConfig = {
   address: trexImplementationAuthorityAddress,
@@ -3981,7 +4477,7 @@ export const tokenAbi = [
 ] as const;
 
 export const tokenAddress =
-  "0x07fb7949C8606037881Af84f569BCdb3F171CA36" as const;
+  "0xD0a3F3628abd0C813107fDa9cF754328B43A5438" as const;
 
 export const tokenConfig = { address: tokenAddress, abi: tokenAbi } as const;
 
@@ -4188,7 +4684,7 @@ export const trustedIssuersRegistryAbi = [
 ] as const;
 
 export const trustedIssuersRegistryAddress =
-  "0xC38d12D7eD1CE45b576b6A4dD219510c30bbfddb" as const;
+  "0x92B47b5b7720DdE20fbA335aACcdD8c971B5802C" as const;
 
 export const trustedIssuersRegistryConfig = {
   address: trustedIssuersRegistryAddress,
@@ -7536,6 +8032,562 @@ export const watchTrexFactoryTrexSuiteDeployedEvent =
     abi: trexFactoryAbi,
     address: trexFactoryAddress,
     eventName: "TREXSuiteDeployed",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link trexGatewayAbi}__
+ */
+export const readTrexGateway = /*#__PURE__*/ createReadContract({
+  abi: trexGatewayAbi,
+  address: trexGatewayAddress,
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"calculateFee"`
+ */
+export const readTrexGatewayCalculateFee = /*#__PURE__*/ createReadContract({
+  abi: trexGatewayAbi,
+  address: trexGatewayAddress,
+  functionName: "calculateFee",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"getDeploymentFee"`
+ */
+export const readTrexGatewayGetDeploymentFee = /*#__PURE__*/ createReadContract(
+  {
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "getDeploymentFee",
+  },
+);
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"getFactory"`
+ */
+export const readTrexGatewayGetFactory = /*#__PURE__*/ createReadContract({
+  abi: trexGatewayAbi,
+  address: trexGatewayAddress,
+  functionName: "getFactory",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"getPublicDeploymentStatus"`
+ */
+export const readTrexGatewayGetPublicDeploymentStatus =
+  /*#__PURE__*/ createReadContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "getPublicDeploymentStatus",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"isAgent"`
+ */
+export const readTrexGatewayIsAgent = /*#__PURE__*/ createReadContract({
+  abi: trexGatewayAbi,
+  address: trexGatewayAddress,
+  functionName: "isAgent",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"isDeployer"`
+ */
+export const readTrexGatewayIsDeployer = /*#__PURE__*/ createReadContract({
+  abi: trexGatewayAbi,
+  address: trexGatewayAddress,
+  functionName: "isDeployer",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"isDeploymentFeeEnabled"`
+ */
+export const readTrexGatewayIsDeploymentFeeEnabled =
+  /*#__PURE__*/ createReadContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "isDeploymentFeeEnabled",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"owner"`
+ */
+export const readTrexGatewayOwner = /*#__PURE__*/ createReadContract({
+  abi: trexGatewayAbi,
+  address: trexGatewayAddress,
+  functionName: "owner",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link trexGatewayAbi}__
+ */
+export const writeTrexGateway = /*#__PURE__*/ createWriteContract({
+  abi: trexGatewayAbi,
+  address: trexGatewayAddress,
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"addAgent"`
+ */
+export const writeTrexGatewayAddAgent = /*#__PURE__*/ createWriteContract({
+  abi: trexGatewayAbi,
+  address: trexGatewayAddress,
+  functionName: "addAgent",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"addDeployer"`
+ */
+export const writeTrexGatewayAddDeployer = /*#__PURE__*/ createWriteContract({
+  abi: trexGatewayAbi,
+  address: trexGatewayAddress,
+  functionName: "addDeployer",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"applyFeeDiscount"`
+ */
+export const writeTrexGatewayApplyFeeDiscount =
+  /*#__PURE__*/ createWriteContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "applyFeeDiscount",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"batchAddDeployer"`
+ */
+export const writeTrexGatewayBatchAddDeployer =
+  /*#__PURE__*/ createWriteContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "batchAddDeployer",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"batchApplyFeeDiscount"`
+ */
+export const writeTrexGatewayBatchApplyFeeDiscount =
+  /*#__PURE__*/ createWriteContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "batchApplyFeeDiscount",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"batchDeployTREXSuite"`
+ */
+export const writeTrexGatewayBatchDeployTrexSuite =
+  /*#__PURE__*/ createWriteContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "batchDeployTREXSuite",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"batchRemoveDeployer"`
+ */
+export const writeTrexGatewayBatchRemoveDeployer =
+  /*#__PURE__*/ createWriteContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "batchRemoveDeployer",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"deployTREXSuite"`
+ */
+export const writeTrexGatewayDeployTrexSuite =
+  /*#__PURE__*/ createWriteContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "deployTREXSuite",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"enableDeploymentFee"`
+ */
+export const writeTrexGatewayEnableDeploymentFee =
+  /*#__PURE__*/ createWriteContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "enableDeploymentFee",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"removeAgent"`
+ */
+export const writeTrexGatewayRemoveAgent = /*#__PURE__*/ createWriteContract({
+  abi: trexGatewayAbi,
+  address: trexGatewayAddress,
+  functionName: "removeAgent",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"removeDeployer"`
+ */
+export const writeTrexGatewayRemoveDeployer = /*#__PURE__*/ createWriteContract(
+  {
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "removeDeployer",
+  },
+);
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const writeTrexGatewayRenounceOwnership =
+  /*#__PURE__*/ createWriteContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "renounceOwnership",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"setDeploymentFee"`
+ */
+export const writeTrexGatewaySetDeploymentFee =
+  /*#__PURE__*/ createWriteContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "setDeploymentFee",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"setFactory"`
+ */
+export const writeTrexGatewaySetFactory = /*#__PURE__*/ createWriteContract({
+  abi: trexGatewayAbi,
+  address: trexGatewayAddress,
+  functionName: "setFactory",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"setPublicDeploymentStatus"`
+ */
+export const writeTrexGatewaySetPublicDeploymentStatus =
+  /*#__PURE__*/ createWriteContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "setPublicDeploymentStatus",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"transferFactoryOwnership"`
+ */
+export const writeTrexGatewayTransferFactoryOwnership =
+  /*#__PURE__*/ createWriteContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "transferFactoryOwnership",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const writeTrexGatewayTransferOwnership =
+  /*#__PURE__*/ createWriteContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "transferOwnership",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link trexGatewayAbi}__
+ */
+export const simulateTrexGateway = /*#__PURE__*/ createSimulateContract({
+  abi: trexGatewayAbi,
+  address: trexGatewayAddress,
+});
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"addAgent"`
+ */
+export const simulateTrexGatewayAddAgent = /*#__PURE__*/ createSimulateContract(
+  {
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "addAgent",
+  },
+);
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"addDeployer"`
+ */
+export const simulateTrexGatewayAddDeployer =
+  /*#__PURE__*/ createSimulateContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "addDeployer",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"applyFeeDiscount"`
+ */
+export const simulateTrexGatewayApplyFeeDiscount =
+  /*#__PURE__*/ createSimulateContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "applyFeeDiscount",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"batchAddDeployer"`
+ */
+export const simulateTrexGatewayBatchAddDeployer =
+  /*#__PURE__*/ createSimulateContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "batchAddDeployer",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"batchApplyFeeDiscount"`
+ */
+export const simulateTrexGatewayBatchApplyFeeDiscount =
+  /*#__PURE__*/ createSimulateContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "batchApplyFeeDiscount",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"batchDeployTREXSuite"`
+ */
+export const simulateTrexGatewayBatchDeployTrexSuite =
+  /*#__PURE__*/ createSimulateContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "batchDeployTREXSuite",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"batchRemoveDeployer"`
+ */
+export const simulateTrexGatewayBatchRemoveDeployer =
+  /*#__PURE__*/ createSimulateContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "batchRemoveDeployer",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"deployTREXSuite"`
+ */
+export const simulateTrexGatewayDeployTrexSuite =
+  /*#__PURE__*/ createSimulateContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "deployTREXSuite",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"enableDeploymentFee"`
+ */
+export const simulateTrexGatewayEnableDeploymentFee =
+  /*#__PURE__*/ createSimulateContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "enableDeploymentFee",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"removeAgent"`
+ */
+export const simulateTrexGatewayRemoveAgent =
+  /*#__PURE__*/ createSimulateContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "removeAgent",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"removeDeployer"`
+ */
+export const simulateTrexGatewayRemoveDeployer =
+  /*#__PURE__*/ createSimulateContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "removeDeployer",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const simulateTrexGatewayRenounceOwnership =
+  /*#__PURE__*/ createSimulateContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "renounceOwnership",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"setDeploymentFee"`
+ */
+export const simulateTrexGatewaySetDeploymentFee =
+  /*#__PURE__*/ createSimulateContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "setDeploymentFee",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"setFactory"`
+ */
+export const simulateTrexGatewaySetFactory =
+  /*#__PURE__*/ createSimulateContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "setFactory",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"setPublicDeploymentStatus"`
+ */
+export const simulateTrexGatewaySetPublicDeploymentStatus =
+  /*#__PURE__*/ createSimulateContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "setPublicDeploymentStatus",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"transferFactoryOwnership"`
+ */
+export const simulateTrexGatewayTransferFactoryOwnership =
+  /*#__PURE__*/ createSimulateContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "transferFactoryOwnership",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link trexGatewayAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const simulateTrexGatewayTransferOwnership =
+  /*#__PURE__*/ createSimulateContract({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    functionName: "transferOwnership",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link trexGatewayAbi}__
+ */
+export const watchTrexGatewayEvent = /*#__PURE__*/ createWatchContractEvent({
+  abi: trexGatewayAbi,
+  address: trexGatewayAddress,
+});
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link trexGatewayAbi}__ and `eventName` set to `"AgentAdded"`
+ */
+export const watchTrexGatewayAgentAddedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    eventName: "AgentAdded",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link trexGatewayAbi}__ and `eventName` set to `"AgentRemoved"`
+ */
+export const watchTrexGatewayAgentRemovedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    eventName: "AgentRemoved",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link trexGatewayAbi}__ and `eventName` set to `"DeployerAdded"`
+ */
+export const watchTrexGatewayDeployerAddedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    eventName: "DeployerAdded",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link trexGatewayAbi}__ and `eventName` set to `"DeployerRemoved"`
+ */
+export const watchTrexGatewayDeployerRemovedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    eventName: "DeployerRemoved",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link trexGatewayAbi}__ and `eventName` set to `"DeploymentFeeEnabled"`
+ */
+export const watchTrexGatewayDeploymentFeeEnabledEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    eventName: "DeploymentFeeEnabled",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link trexGatewayAbi}__ and `eventName` set to `"DeploymentFeeSet"`
+ */
+export const watchTrexGatewayDeploymentFeeSetEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    eventName: "DeploymentFeeSet",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link trexGatewayAbi}__ and `eventName` set to `"FactorySet"`
+ */
+export const watchTrexGatewayFactorySetEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    eventName: "FactorySet",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link trexGatewayAbi}__ and `eventName` set to `"FeeDiscountApplied"`
+ */
+export const watchTrexGatewayFeeDiscountAppliedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    eventName: "FeeDiscountApplied",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link trexGatewayAbi}__ and `eventName` set to `"GatewaySuiteDeploymentProcessed"`
+ */
+export const watchTrexGatewayGatewaySuiteDeploymentProcessedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    eventName: "GatewaySuiteDeploymentProcessed",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link trexGatewayAbi}__ and `eventName` set to `"OwnershipTransferred"`
+ */
+export const watchTrexGatewayOwnershipTransferredEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    eventName: "OwnershipTransferred",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link trexGatewayAbi}__ and `eventName` set to `"PublicDeploymentStatusSet"`
+ */
+export const watchTrexGatewayPublicDeploymentStatusSetEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: trexGatewayAbi,
+    address: trexGatewayAddress,
+    eventName: "PublicDeploymentStatusSet",
   });
 
 /**
