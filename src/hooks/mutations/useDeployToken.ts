@@ -16,7 +16,7 @@ export function useDeployToken() {
 
   return useMutation({
     mutationFn: async () => {
-      const TOKEN_NAME = "RWA_R_US"; // unique per deployer
+      const TOKEN_NAME = "RWA_R_US123"; // unique per deployer
       const TOKEN_SYMBOL = "RWARUS";
       const TOKEN_DECIMALS = 8;
 

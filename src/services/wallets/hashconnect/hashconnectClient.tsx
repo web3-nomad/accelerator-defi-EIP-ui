@@ -123,7 +123,7 @@ class HashConnectWallet implements WalletInterface {
     abi: readonly any[],
     functionName: string,
     functionParameters: ContractFunctionParameterBuilder,
-    gasLimit: number,
+    gasLimit: number | undefined,
   ) {
     const accountId = hashConnect.connectedAccountIds[0];
     const hashConnectSigner = hashConnect.getSigner(accountId);

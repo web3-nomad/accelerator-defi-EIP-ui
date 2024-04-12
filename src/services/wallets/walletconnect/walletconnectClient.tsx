@@ -13,8 +13,7 @@ import { WalletConnectContext } from "@/contexts/WalletConnectContext";
 import { useWeb3ModalProvider } from "@web3modal/ethers/react";
 import { hederaTestnet } from "wagmi/chains";
 import { createWeb3Modal, defaultConfig } from "@web3modal/ethers/react";
-
-import { trexGatewayAbi } from "../../contracts/wagmiGenActions";
+import { estimateGas } from "../estimateGas";
 
 // 1. Get projectId at https://cloud.walletconnect.com
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string;
@@ -178,29 +177,45 @@ class WalletConnectWallet implements WalletInterface {
     abi: readonly any[],
     functionName: string,
     functionParameters: ContractFunctionParameterBuilder,
-    gasLimit: number,
+    gasLimit: number | undefined,
   ) {
     const provider = getProvider();
     const signer = await provider.getSigner();
+
+    let gasLimitFinal = gasLimit;
+
+    if (!gasLimitFinal) {
+      const res = await estimateGas(
+        signer.address,
+        contractId,
+        abi,
+        functionName,
+        functionParameters.buildEthersParams(),
+      );
+      if (res.result) {
+        gasLimitFinal = parseInt(res.result, 16);
+      } else {
+        console.warn(res._status?.messages?.[0]);
+        return null;
+      }
+    }
 
     // create contract instance for the contract id
     // to call the function, use contract[functionName](...functionParameters, ethersOverrides)
     const contract = new ethers.Contract(
       `0x${contractId.toSolidityAddress()}`,
       abi || [
-        // workaround for token transfer funcs
+        // workaround for case when calling outside of wagmi-codegen | no abi present
         `function ${functionName}(${functionParameters.buildAbiFunctionParams()})`,
       ],
-
       signer,
     );
-    console.log("contract", functionName, Array.from(contract as any));
+
     try {
       const txResult = await contract[functionName](
         ...functionParameters.buildEthersParams(),
         {
-          //          gasLimit: gasLimit === -1 ? undefined : gasLimit,
-          gasLimit: 5000000,
+          gasLimit: gasLimitFinal,
         },
       );
       return txResult.hash;

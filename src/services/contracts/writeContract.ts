@@ -8,7 +8,6 @@ import type { Evaluate } from "@/services/util/wagmiTypes";
 import { WalletInterface } from "../wallets/walletInterface";
 import { ContractFunctionParameterBuilder } from "../wallets/contractFunctionParameterBuilder";
 import { ContractId } from "@hashgraph/sdk";
-import { appConfig } from "../../config/index";
 
 export type WriteContractParameters<
   abi extends Abi | readonly unknown[] = Abi,
@@ -27,7 +26,7 @@ export type WriteContractParameters<
 
 export type WriteContractReturnType = viem_WriteContractReturnType;
 
-export function writeContract<
+export async function writeContract<
   const abi extends Abi | readonly unknown[],
   functionName extends ContractFunctionName<abi, "pure" | "view">,
   args extends ContractFunctionArgs<abi, "pure" | "view", functionName>,
@@ -41,6 +40,7 @@ export function writeContract<
   );
   let index = 0;
   const args = parameters.args as [];
+  console.log("args", args);
   const functionParameters = new ContractFunctionParameterBuilder();
   abiFunc.inputs?.forEach((input: any) => {
     functionParameters.addParam({
@@ -59,7 +59,7 @@ export function writeContract<
         parameters.abi,
         parameters.functionName as string,
         functionParameters,
-        appConfig.constants.METAMASK_GAS_LIMIT_TRANSFER_FT,
+        0,
       )
       .then((txId: any) => resolve(txId));
   });

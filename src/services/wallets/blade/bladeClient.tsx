@@ -148,7 +148,7 @@ class BladeWallet implements WalletInterface {
     abi: readonly any[],
     functionName: string,
     functionParameters: ContractFunctionParameterBuilder,
-    gasLimit: number,
+    gasLimit: number | undefined,
   ) {
     const bladeSigner = bladeConnector.getSigners()[0];
     if (!bladeSigner) {

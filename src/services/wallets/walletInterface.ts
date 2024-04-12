@@ -7,7 +7,7 @@ export interface WalletInterface {
     abi: readonly any[],
     functionName: string,
     functionParameters: ContractFunctionParameterBuilder,
-    gasLimit: number,
+    gasLimit: number | undefined,
   ) => Promise<TransactionId | string | null>;
   disconnect: (functionOverride?: Function) => void;
   transferHBAR: (
