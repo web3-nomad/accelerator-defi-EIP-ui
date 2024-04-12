@@ -56,6 +56,7 @@ export function writeContract<
     walletInterface
       .executeContractWriteFunction(
         ContractId.fromEvmAddress(0, 0, parameters.address as "0x{string}"),
+        parameters.abi,
         parameters.functionName as string,
         functionParameters,
         appConfig.constants.METAMASK_GAS_LIMIT_TRANSFER_FT,

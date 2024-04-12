@@ -14,6 +14,8 @@ import { useWeb3ModalProvider } from "@web3modal/ethers/react";
 import { hederaTestnet } from "wagmi/chains";
 import { createWeb3Modal, defaultConfig } from "@web3modal/ethers/react";
 
+import { trexGatewayAbi } from "../../contracts/wagmiGenActions";
+
 // 1. Get projectId at https://cloud.walletconnect.com
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string;
 
@@ -27,6 +29,7 @@ const hederaTestnetConfigWC = {
   rpcUrl: hederaTestnet.rpcUrls.default.http[0],
 };
 
+// TODO: take from .env
 // 3. Create a metadata object
 const metadata = {
   name: "EIP 3643 POC",
@@ -102,6 +105,7 @@ class WalletConnectWallet implements WalletInterface {
   ) {
     const hash = await this.executeContractWriteFunction(
       ContractId.fromString(tokenId.toString()),
+      [],
       "transfer",
       new ContractFunctionParameterBuilder()
         .addParam({
@@ -129,6 +133,7 @@ class WalletConnectWallet implements WalletInterface {
     const addresses = await provider.listAccounts();
     const hash = await this.executeContractWriteFunction(
       ContractId.fromString(tokenId.toString()),
+      [],
       "transferFrom",
       new ContractFunctionParameterBuilder()
         .addParam({
@@ -157,6 +162,7 @@ class WalletConnectWallet implements WalletInterface {
     // convert tokenId to contract id
     const hash = await this.executeContractWriteFunction(
       ContractId.fromString(tokenId.toString()),
+      [],
       "associate",
       new ContractFunctionParameterBuilder(),
       appConfig.constants.METAMASK_GAS_LIMIT_ASSOCIATE,
@@ -169,28 +175,32 @@ class WalletConnectWallet implements WalletInterface {
   // Returns: Promise<TransactionId | null>
   async executeContractWriteFunction(
     contractId: ContractId,
+    abi: readonly any[],
     functionName: string,
     functionParameters: ContractFunctionParameterBuilder,
     gasLimit: number,
   ) {
     const provider = getProvider();
     const signer = await provider.getSigner();
-    const abi = [
-      `function ${functionName}(${functionParameters.buildAbiFunctionParams()})`,
-    ];
 
     // create contract instance for the contract id
     // to call the function, use contract[functionName](...functionParameters, ethersOverrides)
     const contract = new ethers.Contract(
       `0x${contractId.toSolidityAddress()}`,
-      abi,
+      abi || [
+        // workaround for token transfer funcs
+        `function ${functionName}(${functionParameters.buildAbiFunctionParams()})`,
+      ],
+
       signer,
     );
+    console.log("contract", functionName, Array.from(contract as any));
     try {
       const txResult = await contract[functionName](
         ...functionParameters.buildEthersParams(),
         {
-          gasLimit: gasLimit === -1 ? undefined : gasLimit,
+          //          gasLimit: gasLimit === -1 ? undefined : gasLimit,
+          gasLimit: 5000000,
         },
       );
       return txResult.hash;

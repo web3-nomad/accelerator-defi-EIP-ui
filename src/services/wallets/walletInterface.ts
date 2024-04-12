@@ -4,6 +4,7 @@ import { ContractFunctionParameterBuilder } from "./contractFunctionParameterBui
 export interface WalletInterface {
   executeContractWriteFunction: (
     contractId: ContractId,
+    abi: readonly any[],
     functionName: string,
     functionParameters: ContractFunctionParameterBuilder,
     gasLimit: number,

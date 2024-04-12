@@ -22,14 +22,20 @@ export class ContractFunctionParameterBuilder {
 
   // Purpose: Build the ABI function parameters
   // Reason: The abi function parameters are required to construct the ethers.Contract object for calling a contract function using ethers
+  // Works as fallback if full ABI is not provided
   public buildAbiFunctionParams(): string {
-    return this.params.map((param) => `${param.type} ${param.name}`).join(", ");
+    const res = this.params
+      .map((param) => `${param.type} ${param.name}`)
+      .join(", ");
+    console.log("buildAbiFunctionParams", res);
+    return res;
   }
 
   // Purpose: Build the ethers compatible contract function call params
   // Reason: An array of strings is required to call a contract function using ethers
   public buildEthersParams(): string[] {
-    return this.params.map((param) => param.value.toString());
+    const res = this.params.map((param) => param.value);
+    return res;
   }
 
   // Purpose: Build the HAPI compatible contract function params
@@ -55,6 +61,8 @@ export class ContractFunctionParameterBuilder {
         );
       }
     }
+
+    console.log("buildHAPIParams", contractFunctionParams);
 
     return contractFunctionParams;
   }

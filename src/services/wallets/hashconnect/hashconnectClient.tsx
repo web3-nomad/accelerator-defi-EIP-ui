@@ -120,6 +120,7 @@ class HashConnectWallet implements WalletInterface {
   // Returns: Promise<TransactionId | null>
   async executeContractWriteFunction(
     contractId: ContractId,
+    abi: readonly any[],
     functionName: string,
     functionParameters: ContractFunctionParameterBuilder,
     gasLimit: number,

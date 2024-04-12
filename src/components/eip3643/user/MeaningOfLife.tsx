@@ -65,6 +65,7 @@ export default function MeaningOfLife() {
               0,
               "0x8546fc43a9F2dC6A10a2d3155f653F30B18eD56d",
             ),
+            [],
             "theMeaningOfLifeIs",
             new ContractFunctionParameterBuilder(),
             appConfig.constants.METAMASK_GAS_LIMIT_TRANSFER_FT,
