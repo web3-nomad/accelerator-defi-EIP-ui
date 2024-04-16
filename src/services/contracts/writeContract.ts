@@ -40,7 +40,6 @@ export async function writeContract<
   );
   let index = 0;
   const args = parameters.args as [];
-  console.log("args", args);
   const functionParameters = new ContractFunctionParameterBuilder();
   abiFunc.inputs?.forEach((input: any) => {
     functionParameters.addParam({

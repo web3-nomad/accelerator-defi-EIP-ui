@@ -14,6 +14,7 @@ import {
   TokenId,
   TransferTransaction,
 } from "@hashgraph/sdk";
+import { ethers } from "ethers";
 
 import EventEmitter from "events";
 
@@ -21,6 +22,7 @@ import { BladeContext } from "../../../contexts/BladeContext";
 import { WalletInterface } from "../walletInterface";
 import { ContractFunctionParameterBuilder } from "../contractFunctionParameterBuilder";
 import { formatRawTxId } from "../../util/helpers";
+import { estimateGas } from "../estimateGas";
 
 const bladeLocalStorage = "usedBladeForWalletPairing";
 
@@ -37,6 +39,22 @@ let bladeConnector: BladeConnector;
 const syncWithBladeEvent = new EventEmitter();
 
 class BladeWallet implements WalletInterface {
+  async getEvmAccountAddress(accountId: AccountId) {
+    const response: any = await fetch(
+      "https://testnet.mirrornode.hedera.com/api/v1/accounts/" +
+        accountId.toString(),
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    const responseJson = await response.json();
+    return responseJson.evm_address;
+  }
+
   async transferHBAR(toAddress: AccountId, amount: number) {
     const bladeSigner = bladeConnector.getSigners()[0];
     if (!bladeSigner) {
@@ -154,10 +172,36 @@ class BladeWallet implements WalletInterface {
     if (!bladeSigner) {
       return null;
     }
+
+    let gasLimitFinal = gasLimit;
+    if (!gasLimitFinal) {
+      const res = await estimateGas(
+        bladeSigner.getAccountId().toSolidityAddress(),
+        contractId,
+        abi,
+        functionName,
+        functionParameters.buildEthersParams(),
+      );
+      if (res.result) {
+        gasLimitFinal = parseInt(res.result, 16);
+      } else {
+        console.warn(res._status?.messages?.[0]);
+        return null;
+      }
+    }
+
+    const contractInterface = new ethers.Interface(abi as []);
+    const data = contractInterface.encodeFunctionData(
+      functionName,
+      functionParameters.buildEthersParams(),
+    );
+
     const tx = new ContractExecuteTransaction()
       .setContractId(contractId)
-      .setGas(gasLimit)
-      .setFunction(functionName, functionParameters.buildHAPIParams());
+      .setGas(gasLimitFinal)
+      .setFunctionParameters(
+        new Uint8Array(Buffer.from(data.substring(2), "hex")),
+      );
 
     const txFrozen = await tx.freezeWithSigner(bladeSigner as any);
     await txFrozen.executeWithSigner(bladeSigner as any);

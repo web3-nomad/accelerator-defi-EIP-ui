@@ -2,6 +2,9 @@ import { AccountId, ContractId, TokenId, TransactionId } from "@hashgraph/sdk";
 import { ContractFunctionParameterBuilder } from "./contractFunctionParameterBuilder";
 
 export interface WalletInterface {
+  getEvmAccountAddress: (
+    accountId: AccountId,
+  ) => Promise<`0x${string}` | undefined>;
   executeContractWriteFunction: (
     contractId: ContractId,
     abi: readonly any[],

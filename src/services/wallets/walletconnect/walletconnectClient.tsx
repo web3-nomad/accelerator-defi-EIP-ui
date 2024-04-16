@@ -74,6 +74,10 @@ class WalletConnectWallet implements WalletInterface {
     return `0x${accountIdString}`;
   }
 
+  async getEvmAccountAddress(accountId: AccountId) {
+    return accountId.toSolidityAddress() as `0x${string}`;
+  }
+
   // Purpose: Transfer HBAR
   // Returns: Promise<string>
   // Note: Use JSON RPC Relay to search by transaction hash
@@ -183,7 +187,6 @@ class WalletConnectWallet implements WalletInterface {
     const signer = await provider.getSigner();
 
     let gasLimitFinal = gasLimit;
-
     if (!gasLimitFinal) {
       const res = await estimateGas(
         signer.address,

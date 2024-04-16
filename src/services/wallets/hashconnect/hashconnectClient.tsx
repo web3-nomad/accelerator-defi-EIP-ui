@@ -11,12 +11,15 @@ import {
   TokenId,
   TransferTransaction,
   Signer,
+  EthereumTransaction,
 } from "@hashgraph/sdk";
 
 import { HashconnectContext } from "../../../contexts/HashconnectContext";
 import { WalletInterface } from "../walletInterface";
 import { ContractFunctionParameterBuilder } from "../contractFunctionParameterBuilder";
 import { formatRawTxId } from "../../util/helpers";
+import { estimateGas } from "../estimateGas";
+import { ethers } from "ethers";
 
 const appMetadata = {
   name: process.env.NEXT_PUBLIC_WALLET_DEFI_APP_NAME as string,
@@ -37,6 +40,22 @@ export const hashConnect = new HashConnect(
 const bladeLocalStorage = "usedBladeForWalletPairing";
 
 class HashConnectWallet implements WalletInterface {
+  async getEvmAccountAddress(accountId: AccountId) {
+    const response: any = await fetch(
+      "https://testnet.mirrornode.hedera.com/api/v1/accounts/" +
+        accountId.toString(),
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      },
+    );
+    const responseJson = await response.json();
+    return responseJson.evm_address;
+  }
+
   async transferHBAR(toAddress: AccountId, amount: number) {
     const accountId = hashConnect.connectedAccountIds[0];
     const hashConnectSigner = hashConnect.getSigner(accountId);
@@ -131,16 +150,41 @@ class HashConnectWallet implements WalletInterface {
       return null;
     }
 
+    let gasLimitFinal = gasLimit;
+    if (!gasLimitFinal) {
+      const res = await estimateGas(
+        "0x8daeC78633FdEA80d3609597277eA1400BEDb9D1",
+        contractId,
+        abi,
+        functionName,
+        functionParameters.buildEthersParams(),
+      );
+      if (res.result) {
+        gasLimitFinal = parseInt(res.result, 16);
+      } else {
+        console.warn(res._status?.messages?.[0]);
+        return null;
+      }
+    }
+
+    const contractInterface = new ethers.Interface(abi as []);
+    const data = contractInterface.encodeFunctionData(
+      functionName,
+      functionParameters.buildEthersParams(),
+    );
+
     const tx = new ContractExecuteTransaction()
       .setContractId(contractId)
-      .setGas(gasLimit)
-      .setFunction(functionName, functionParameters.buildHAPIParams());
+      .setGas(gasLimitFinal)
+      .setFunctionParameters(
+        new Uint8Array(Buffer.from(data.substring(2), "hex")),
+      );
+
+    console.log(contractId, gasLimitFinal, data);
 
     const txFrozen = await tx.freezeWithSigner(hashConnectSigner as any);
     await txFrozen.executeWithSigner(hashConnectSigner as any);
 
-    // in order to read the contract call results, you will need to query the contract call's results form a mirror node using the transaction id
-    // after getting the contract call results, use ethers and abi.decode to decode the call_result
     const txId = txFrozen.transactionId?.toString();
     return txId ? formatRawTxId(txId) : null;
   }

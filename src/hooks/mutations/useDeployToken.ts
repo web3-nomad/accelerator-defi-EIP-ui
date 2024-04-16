@@ -16,7 +16,8 @@ export function useDeployToken() {
 
   return useMutation({
     mutationFn: async () => {
-      const TOKEN_NAME = "RWA_R_US123"; // unique per deployer
+      const TOKEN_NAME = "RWA_R_US" + Math.floor(Math.random() * 1000); // unique per deployer
+      //      const TOKEN_NAME = "RWA_R_US"; // unique per deployer
       const TOKEN_SYMBOL = "RWARUS";
       const TOKEN_DECIMALS = 8;
 
@@ -33,11 +34,14 @@ export function useDeployToken() {
         issuerClaims: [],
       };
 
-      const currentDeployerAddress = convertAccountIdToSolidityAddress(
-        AccountId.fromString(accountId as string),
-      );
+      const currentDeployerAddress =
+        await walletInterface?.getEvmAccountAddress(
+          AccountId.fromString(accountId as string),
+        );
 
       console.log("L25 currentDeployerAddress ===", currentDeployerAddress);
+
+      if (!currentDeployerAddress) return null;
 
       const tokenDetails = {
         owner: currentDeployerAddress,
