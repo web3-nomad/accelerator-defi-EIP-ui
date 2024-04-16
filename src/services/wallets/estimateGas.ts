@@ -12,8 +12,6 @@ export async function estimateGas(
   const contractInterface = new ethers.Interface(abi as []);
 
   const data = contractInterface.encodeFunctionData(functionName, args as []);
-  console.log("estimateGas abi", abi);
-  console.log("estimateGas", functionName, args, data);
 
   const response = await fetch(
     "https://testnet.mirrornode.hedera.com/api/v1/contracts/call",

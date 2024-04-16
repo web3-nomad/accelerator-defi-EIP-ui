@@ -75,7 +75,7 @@ class WalletConnectWallet implements WalletInterface {
   }
 
   async getEvmAccountAddress(accountId: AccountId) {
-    return accountId.toSolidityAddress() as `0x${string}`;
+    return ("0x" + accountId.toSolidityAddress()) as `0x${string}`;
   }
 
   // Purpose: Transfer HBAR

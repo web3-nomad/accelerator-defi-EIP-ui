@@ -180,8 +180,6 @@ class HashConnectWallet implements WalletInterface {
         new Uint8Array(Buffer.from(data.substring(2), "hex")),
       );
 
-    console.log(contractId, gasLimitFinal, data);
-
     const txFrozen = await tx.freezeWithSigner(hashConnectSigner as any);
     await txFrozen.executeWithSigner(hashConnectSigner as any);
 

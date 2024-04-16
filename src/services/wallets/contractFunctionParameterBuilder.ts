@@ -24,7 +24,6 @@ export class ContractFunctionParameterBuilder {
     const res = this.params
       .map((param) => `${param.type} ${param.name}`)
       .join(", ");
-    console.log("buildAbiFunctionParams", res);
     return res;
   }
 
