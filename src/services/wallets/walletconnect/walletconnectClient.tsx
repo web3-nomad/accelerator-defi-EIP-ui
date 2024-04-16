@@ -43,7 +43,7 @@ const ethersConfig = defaultConfig({
 });
 
 // 5. Create a Web3Modal instance
-createWeb3Modal({
+const web3modal = createWeb3Modal({
   ethersConfig,
   chains: [hederaTestnetConfigWC],
   projectId,
@@ -53,15 +53,14 @@ createWeb3Modal({
 //@TODO find a way to use provider from web3wallet hook inside client functions - is it needed at all?
 //const { walletProvider } = useWeb3ModalProvider();
 //const provider = new ethers.BrowserProvider(walletProvider);
-/**
- * @deprecated
- */
 const getProvider = () => {
-  if (!window.ethereum) {
-    throw new Error("Metamask is not installed! Go install the extension!");
-  }
+  // if (!window.ethereum) {
+  //   throw new Error("Metamask is not installed! Go install the extension!");
+  // }
 
-  return new ethers.BrowserProvider(window.ethereum);
+  // return new ethers.BrowserProvider(window.ethereum);
+  const provider = web3modal.getWalletProvider();
+  return provider ? new ethers.BrowserProvider(provider) : undefined;
 };
 
 class WalletConnectWallet implements WalletInterface {
@@ -83,6 +82,7 @@ class WalletConnectWallet implements WalletInterface {
   // Note: Use JSON RPC Relay to search by transaction hash
   async transferHBAR(toAddress: AccountId, amount: number) {
     const provider = getProvider();
+    if (!provider) return null;
     const signer = await provider.getSigner();
     // build the transaction
     const tx = await signer.populateTransaction({
@@ -133,6 +133,7 @@ class WalletConnectWallet implements WalletInterface {
     serialNumber: number,
   ) {
     const provider = getProvider();
+    if (!provider) return null;
     const addresses = await provider.listAccounts();
     const hash = await this.executeContractWriteFunction(
       ContractId.fromString(tokenId.toString()),
@@ -184,6 +185,7 @@ class WalletConnectWallet implements WalletInterface {
     gasLimit: number | undefined,
   ) {
     const provider = getProvider();
+    if (!provider) return null;
     const signer = await provider.getSigner();
 
     let gasLimitFinal = gasLimit;
