@@ -153,7 +153,7 @@ class HashConnectWallet implements WalletInterface {
     let gasLimitFinal = gasLimit;
     if (!gasLimitFinal) {
       const res = await estimateGas(
-        "0x8daeC78633FdEA80d3609597277eA1400BEDb9D1",
+        accountId.toSolidityAddress(),
         contractId,
         abi,
         functionName,
