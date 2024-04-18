@@ -14,6 +14,8 @@ import MeaningOfLife from "@/components/eip3643/user/MeaningOfLife";
 import TransferHBAR from "@/components/eip3643/user/TransferHBAR";
 import TransferFungibleToken from "@/components/eip3643/user/TransferFungibleToken";
 import BalanceOfERC20 from "@/components/eip3643/user/BalanceOfERC20";
+import DeployToken from "@/components/eip3643/admin/DeployToken";
+import CreateIdentity from "@/components/eip3643/admin/CreateIdentity";
 
 export default function EIP3643() {
   const { accountId, walletName, walletInterface } = useWalletInterface();
@@ -65,7 +67,10 @@ export default function EIP3643() {
             <Divider my={10} />
           </TabPanel>
           <TabPanel>
-            <p>two!</p>
+            <DeployToken />
+            <Divider my={10} />
+            <CreateIdentity />
+            <Divider my={10} />
           </TabPanel>
         </TabPanels>
       </Tabs>

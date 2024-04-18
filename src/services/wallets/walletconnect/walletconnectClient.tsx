@@ -13,6 +13,7 @@ import { WalletConnectContext } from "@/contexts/WalletConnectContext";
 import { useWeb3ModalProvider } from "@web3modal/ethers/react";
 import { hederaTestnet } from "wagmi/chains";
 import { createWeb3Modal, defaultConfig } from "@web3modal/ethers/react";
+import { estimateGas } from "../estimateGas";
 
 // 1. Get projectId at https://cloud.walletconnect.com
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string;
@@ -27,6 +28,7 @@ const hederaTestnetConfigWC = {
   rpcUrl: hederaTestnet.rpcUrls.default.http[0],
 };
 
+// TODO: take from .env
 // 3. Create a metadata object
 const metadata = {
   name: "EIP 3643 POC",
@@ -41,7 +43,7 @@ const ethersConfig = defaultConfig({
 });
 
 // 5. Create a Web3Modal instance
-createWeb3Modal({
+const web3modal = createWeb3Modal({
   ethersConfig,
   chains: [hederaTestnetConfigWC],
   projectId,
@@ -51,15 +53,14 @@ createWeb3Modal({
 //@TODO find a way to use provider from web3wallet hook inside client functions - is it needed at all?
 //const { walletProvider } = useWeb3ModalProvider();
 //const provider = new ethers.BrowserProvider(walletProvider);
-/**
- * @deprecated
- */
 const getProvider = () => {
-  if (!window.ethereum) {
-    throw new Error("Metamask is not installed! Go install the extension!");
-  }
+  // if (!window.ethereum) {
+  //   throw new Error("Metamask is not installed! Go install the extension!");
+  // }
 
-  return new ethers.BrowserProvider(window.ethereum);
+  // return new ethers.BrowserProvider(window.ethereum);
+  const provider = web3modal.getWalletProvider();
+  return provider ? new ethers.BrowserProvider(provider) : undefined;
 };
 
 class WalletConnectWallet implements WalletInterface {
@@ -72,11 +73,16 @@ class WalletConnectWallet implements WalletInterface {
     return `0x${accountIdString}`;
   }
 
+  async getEvmAccountAddress(accountId: AccountId) {
+    return ("0x" + accountId.toSolidityAddress()) as `0x${string}`;
+  }
+
   // Purpose: Transfer HBAR
   // Returns: Promise<string>
   // Note: Use JSON RPC Relay to search by transaction hash
   async transferHBAR(toAddress: AccountId, amount: number) {
     const provider = getProvider();
+    if (!provider) return null;
     const signer = await provider.getSigner();
     // build the transaction
     const tx = await signer.populateTransaction({
@@ -102,6 +108,7 @@ class WalletConnectWallet implements WalletInterface {
   ) {
     const hash = await this.executeContractWriteFunction(
       ContractId.fromString(tokenId.toString()),
+      [],
       "transfer",
       new ContractFunctionParameterBuilder()
         .addParam({
@@ -126,9 +133,11 @@ class WalletConnectWallet implements WalletInterface {
     serialNumber: number,
   ) {
     const provider = getProvider();
+    if (!provider) return null;
     const addresses = await provider.listAccounts();
     const hash = await this.executeContractWriteFunction(
       ContractId.fromString(tokenId.toString()),
+      [],
       "transferFrom",
       new ContractFunctionParameterBuilder()
         .addParam({
@@ -157,6 +166,7 @@ class WalletConnectWallet implements WalletInterface {
     // convert tokenId to contract id
     const hash = await this.executeContractWriteFunction(
       ContractId.fromString(tokenId.toString()),
+      [],
       "associate",
       new ContractFunctionParameterBuilder(),
       appConfig.constants.METAMASK_GAS_LIMIT_ASSOCIATE,
@@ -169,28 +179,48 @@ class WalletConnectWallet implements WalletInterface {
   // Returns: Promise<TransactionId | null>
   async executeContractWriteFunction(
     contractId: ContractId,
+    abi: readonly any[],
     functionName: string,
     functionParameters: ContractFunctionParameterBuilder,
-    gasLimit: number,
+    gasLimit: number | undefined,
   ) {
     const provider = getProvider();
+    if (!provider) return null;
     const signer = await provider.getSigner();
-    const abi = [
-      `function ${functionName}(${functionParameters.buildAbiFunctionParams()})`,
-    ];
+
+    let gasLimitFinal = gasLimit;
+    if (!gasLimitFinal) {
+      const res = await estimateGas(
+        signer.address,
+        contractId,
+        abi,
+        functionName,
+        functionParameters.buildEthersParams(),
+      );
+      if (res.result) {
+        gasLimitFinal = parseInt(res.result, 16);
+      } else {
+        console.warn(res._status?.messages?.[0]);
+        return null;
+      }
+    }
 
     // create contract instance for the contract id
     // to call the function, use contract[functionName](...functionParameters, ethersOverrides)
     const contract = new ethers.Contract(
       `0x${contractId.toSolidityAddress()}`,
-      abi,
+      abi || [
+        // workaround for case when calling outside of wagmi-codegen | no abi present
+        `function ${functionName}(${functionParameters.buildAbiFunctionParams()})`,
+      ],
       signer,
     );
+
     try {
       const txResult = await contract[functionName](
         ...functionParameters.buildEthersParams(),
         {
-          gasLimit: gasLimit === -1 ? undefined : gasLimit,
+          gasLimit: gasLimitFinal,
         },
       );
       return txResult.hash;
@@ -206,6 +236,27 @@ class WalletConnectWallet implements WalletInterface {
     } else {
       alert("Please disconnect using the Metamask extension.");
     }
+  }
+
+  async deployContract(deployParams: any[], abi: any) {
+    const provider = getProvider();
+    if (!provider) return null;
+
+    const signer = await provider.getSigner();
+
+    const identityCA = new ethers.ContractFactory(
+      abi.abi,
+      abi.bytecode,
+      signer,
+    );
+
+    const identity = await identityCA.deploy(...deployParams);
+
+    await identity.waitForDeployment();
+
+    const resultAddress = await identity.getAddress();
+
+    return resultAddress;
   }
 }
 
