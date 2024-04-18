@@ -15,6 +15,7 @@ import TransferHBAR from "@/components/eip3643/user/TransferHBAR";
 import TransferFungibleToken from "@/components/eip3643/user/TransferFungibleToken";
 import BalanceOfERC20 from "@/components/eip3643/user/BalanceOfERC20";
 import { Eip3643ContextProvider } from "../../contexts/Eip3643Context";
+import DeployToken from "@/components/eip3643/admin/DeployToken";
 
 export default function EIP3643() {
   const { accountId, walletName, walletInterface } = useWalletInterface();
@@ -66,7 +67,8 @@ export default function EIP3643() {
             <Divider my={10} /> */}
           </TabPanel>
           <TabPanel>
-            <p>two!</p>
+            <DeployToken />
+            <Divider my={10} />
           </TabPanel>
         </TabPanels>
       </Tabs>
