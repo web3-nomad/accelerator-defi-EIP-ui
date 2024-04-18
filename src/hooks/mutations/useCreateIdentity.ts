@@ -2,10 +2,9 @@ import { useMutation } from "@tanstack/react-query";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { AccountId } from "@hashgraph/sdk";
 import abi from "@/assets/abi/IdentityProxy.json";
-import { implementations } from "../../../scripts/download-json.json";
 
 export function useCreateIdentity() {
-  const { accountId, walletName, walletInterface } = useWalletInterface();
+  const { accountId, walletInterface } = useWalletInterface();
 
   return useMutation({
     mutationFn: async () => {
@@ -14,19 +13,16 @@ export function useCreateIdentity() {
           AccountId.fromString(accountId as string),
         );
 
-      console.log("L25 currentDeployerAddress ===", currentDeployerAddress);
+      //@TODO testnet/mainnet switch or fetch from json
+      const implementationAuthority =
+        "0xb287549483D9d1daB6371C82b365dbfF19B492f4";
 
       const deployParams = [
-        `${implementations.ImplementationAuthority}`,
+        `${implementationAuthority}`,
         `${currentDeployerAddress}` as `0x${string}`,
       ];
 
-      console.log("L37 deployParams ===", deployParams);
-
-      // Process trasaction
-      const tx = await walletInterface?.deployContract(deployParams, abi);
-
-      return tx;
+      return await walletInterface?.deployContract(deployParams, abi);
     },
     onSuccess: (data, variables, context) => {
       console.log("L10 useCreateIdentity onSuccess data ===", data);
