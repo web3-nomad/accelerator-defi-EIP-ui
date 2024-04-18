@@ -14,6 +14,7 @@ import MeaningOfLife from "@/components/eip3643/user/MeaningOfLife";
 import TransferHBAR from "@/components/eip3643/user/TransferHBAR";
 import TransferFungibleToken from "@/components/eip3643/user/TransferFungibleToken";
 import BalanceOfERC20 from "@/components/eip3643/user/BalanceOfERC20";
+import { Eip3643ContextProvider } from "../../contexts/Eip3643Context";
 
 export default function EIP3643() {
   const { accountId, walletName, walletInterface } = useWalletInterface();
@@ -35,7 +36,7 @@ export default function EIP3643() {
     );
 
   return (
-    <>
+    <Eip3643ContextProvider>
       <Text
         fontSize="22px"
         fontWeight="700"
@@ -54,7 +55,7 @@ export default function EIP3643() {
         <TabPanels>
           <TabPanel>
             <EventsTest />
-            <Divider my={10} />
+            {/* <Divider my={10} />
             <MeaningOfLife />
             <Divider my={10} />
             <BalanceOfERC20 />
@@ -62,13 +63,13 @@ export default function EIP3643() {
             <TransferHBAR />
             <Divider my={10} />
             <TransferFungibleToken />
-            <Divider my={10} />
+            <Divider my={10} /> */}
           </TabPanel>
           <TabPanel>
             <p>two!</p>
           </TabPanel>
         </TabPanels>
       </Tabs>
-    </>
+    </Eip3643ContextProvider>
   );
 }
