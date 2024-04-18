@@ -237,6 +237,27 @@ class WalletConnectWallet implements WalletInterface {
       alert("Please disconnect using the Metamask extension.");
     }
   }
+
+  async deployContract(deployParams: any[], abi: any) {
+    const provider = getProvider();
+    if (!provider) return null;
+
+    const signer = await provider.getSigner();
+
+    const identityCA = new ethers.ContractFactory(
+      abi.abi,
+      abi.bytecode,
+      signer,
+    );
+
+    const identity = await identityCA.deploy(...deployParams);
+
+    await identity.waitForDeployment();
+
+    const resultAddress = await identity.getAddress();
+
+    return resultAddress;
+  }
 }
 
 export const walletconnectWallet = new WalletConnectWallet();

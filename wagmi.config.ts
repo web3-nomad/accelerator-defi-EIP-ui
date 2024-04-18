@@ -29,6 +29,12 @@ const contracts: Contracts = [
     address: "0x0000000000000000000000000000000000387719",
     url: `https://raw.githubusercontent.com/Swiss-Digital-Assets-Institute/token-wrapper/main/artifacts/contracts/ERC20.sol/ERC20.json`,
   },
+  //@TODO move to 296.json and find the way to get bytecode, as wagmi generates only ABIs
+  // {
+  //   name: "IdentityProxy",
+  //   address: "0x0000000000000000000000000000000000000000",
+  //   url: "https://raw.githubusercontent.com/web3-nomad/accelerator-defi-EIP/main/data/abis/IdentityProxy.json",
+  // },
 ];
 
 for (const key in rawJson) {

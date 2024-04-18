@@ -190,6 +190,10 @@ class HashConnectWallet implements WalletInterface {
   disconnect() {
     hashConnect.disconnect();
   }
+
+  async deployContract(deployParams: any[], abi: any) {
+    console.log("implement deployContract for hashconnect client");
+  }
 }
 export const hashConnectWallet = new HashConnectWallet();
 
