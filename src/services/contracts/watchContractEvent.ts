@@ -13,19 +13,19 @@ export type WatchContractEventParameters<
 
 export type WatchContractEventReturnType = viem_WatchContractEventReturnType;
 
-export async function watchContractEvent<
+export function watchContractEvent<
   const abi extends Abi | readonly unknown[],
   eventName extends ContractEventName<abi> | undefined,
   strict extends boolean | undefined = undefined,
 >(parameters: WatchContractEventParameters<abi, eventName, strict>) {
   const contractInterface = new ethers.Interface(parameters.abi as []);
-  let timeOut = 0;
+  let timeOut: NodeJS.Timeout;
   let isActive = true;
   let lastTimestamp = 0;
 
-  let unwatch: WatchContractEventReturnType | undefined = () => {
+  const unwatch: WatchContractEventReturnType | undefined = () => {
     isActive = false;
-    clearTimeout(timeOut);
+    timeOut && clearTimeout(timeOut);
   };
 
   const poll = async () => {
@@ -55,7 +55,7 @@ export async function watchContractEvent<
       }
     }
     if (isActive) {
-      setTimeout(poll, 2000);
+      timeOut = setTimeout(poll, result && result.length > 0 ? 100 : 5000);
     }
   };
 

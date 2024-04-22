@@ -162,8 +162,7 @@ class HashConnectWallet implements WalletInterface {
       if (res.result) {
         gasLimitFinal = parseInt(res.result, 16);
       } else {
-        console.warn(res._status?.messages?.[0]);
-        return null;
+        throw res._status?.messages?.[0]?.detail;
       }
     }
 

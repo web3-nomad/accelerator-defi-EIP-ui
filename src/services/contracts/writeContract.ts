@@ -50,8 +50,7 @@ export async function writeContract<
     index++;
   });
 
-  // TODO: test write function
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     walletInterface
       .executeContractWriteFunction(
         ContractId.fromEvmAddress(0, 0, parameters.address as "0x{string}"),
@@ -60,6 +59,9 @@ export async function writeContract<
         functionParameters,
         0,
       )
-      .then((txId: any) => resolve(txId));
+      .then((txId: any) => resolve(txId))
+      .catch((e: any) => {
+        reject(e);
+      });
   });
 }
