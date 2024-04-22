@@ -26,6 +26,7 @@
     "@web3modal/wagmi": "^4.0.13",
     "abitype": "^1.0.2",
     "ethers": "^6.11.1",
+    "formik": "^2.4.5",
     "framer-motion": "^11.0.8",
     "hashconnect": "^3.0.13",
     "next": "14.1.3",
