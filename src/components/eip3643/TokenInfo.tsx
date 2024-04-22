@@ -111,7 +111,7 @@ export default function TokenInfo({
           <Text>Is Frozen: {isFrozen}</Text>
           <Text>Is Agent: {isAgent}</Text>
           <Text>Identity registry address: {registry}</Text>
-
+          {/* 
           <Button onClick={onMint} isDisabled={isAgent !== "true"}>
             Mint 10 {isAgent !== "true" && "[not an agent]"}
           </Button>
@@ -122,7 +122,7 @@ export default function TokenInfo({
               <AlertTitle>Mint error!</AlertTitle>
               <AlertDescription>{mintError}</AlertDescription>
             </Alert>
-          )}
+          )} */}
         </>
       )}
     </>
