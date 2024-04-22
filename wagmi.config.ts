@@ -1,4 +1,4 @@
-import { defineConfig } from "@wagmi/cli";
+import { defineConfig, loadEnv } from "@wagmi/cli";
 import { fetch, actions } from "@wagmi/cli/plugins";
 import fs from "fs";
 
@@ -7,6 +7,11 @@ type RawJson = {
     [contractName: string]: string;
   };
 };
+
+const env = loadEnv({
+  mode: process.env.NODE_ENV,
+  envDir: process.cwd(),
+});
 
 const rawJson: RawJson = JSON.parse(
   fs.readFileSync("./scripts/download-json.json").toString(),
@@ -42,7 +47,7 @@ for (const key in rawJson) {
     contracts.push({
       name: contractName,
       address: rawJson[key][contractName],
-      url: `https://raw.githubusercontent.com/CamposBruno/accelerator-defi-EIP/fix/deployment/data/abis/${contractName}.json`,
+      url: `${env.SYNC_CONTRACTS_ABI_PATH}/${contractName}.json`,
     });
   }
 }
@@ -58,9 +63,13 @@ export default defineConfig({
         address: item.address as `0x${string}`,
       })),
       async parse({ response }) {
-        const json = await response.json();
-        if (json.status === "0") throw new Error(json.message);
-        return json.abi;
+        try {
+          const json = await response.json();
+          if (json.status === "0") throw new Error(JSON.stringify(response));
+          return json.abi;
+        } catch (e) {
+          throw new Error(JSON.stringify(e));
+        }
       },
       request(contract) {
         const url = contracts.find(

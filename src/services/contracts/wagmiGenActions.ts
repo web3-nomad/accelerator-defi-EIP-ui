@@ -115,7 +115,7 @@ export const claimTopicsRegistryAbi = [
 ] as const;
 
 export const claimTopicsRegistryAddress =
-  "0xaE4dc72e4e3D678D6C1C9D1e5Fbc5e7380882135" as const;
+  "0x6396f3444dc7b0E06E5D6453bf367E9dfa7A635C" as const;
 
 export const claimTopicsRegistryConfig = {
   address: claimTopicsRegistryAddress,
@@ -337,7 +337,7 @@ export const countryAllowModuleAbi = [
 ] as const;
 
 export const countryAllowModuleAddress =
-  "0xDeAe375d9A6facc4F5CB4Bb74f9c9a3df2400672" as const;
+  "0x73627F621c88A37B3cf212D33716531E53ffd460" as const;
 
 export const countryAllowModuleConfig = {
   address: countryAllowModuleAddress,
@@ -758,7 +758,7 @@ export const idFactoryAbi = [
 ] as const;
 
 export const idFactoryAddress =
-  "0xC0DF339c6457D78BAD39a8AAaC3dca6DbAb1c4b5" as const;
+  "0xCe444169a11761b361D212005334b13A9d454061" as const;
 
 export const idFactoryConfig = {
   address: idFactoryAddress,
@@ -1192,11 +1192,266 @@ export const identityAbi = [
 ] as const;
 
 export const identityAddress =
-  "0x250ED8654F682DBC716F77CEC4e98A11c355A062" as const;
+  "0xdf72070C2bCA419215f1b4A57837396F52c0e1B8" as const;
 
 export const identityConfig = {
   address: identityAddress,
   abi: identityAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// IdentityGateway
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const identityGatewayAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "idFactoryAddress", internalType: "address", type: "address" },
+      {
+        name: "signersToApprove",
+        internalType: "address[]",
+        type: "address[]",
+      },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "signature", internalType: "bytes", type: "bytes" }],
+    name: "ExpiredSignature",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "signature", internalType: "bytes", type: "bytes" }],
+    name: "RevokedSignature",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "signature", internalType: "bytes", type: "bytes" }],
+    name: "SignatureAlreadyRevoked",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "signature", internalType: "bytes", type: "bytes" }],
+    name: "SignatureNotRevoked",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "signer", internalType: "address", type: "address" }],
+    name: "SignerAlreadyApproved",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "signer", internalType: "address", type: "address" }],
+    name: "SignerAlreadyNotApproved",
+  },
+  { type: "error", inputs: [], name: "TooManySigners" },
+  {
+    type: "error",
+    inputs: [{ name: "signer", internalType: "address", type: "address" }],
+    name: "UnapprovedSigner",
+  },
+  { type: "error", inputs: [], name: "ZeroAddress" },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "previousOwner",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "newOwner",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "OwnershipTransferred",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "signature",
+        internalType: "bytes",
+        type: "bytes",
+        indexed: true,
+      },
+    ],
+    name: "SignatureApproved",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "signature",
+        internalType: "bytes",
+        type: "bytes",
+        indexed: true,
+      },
+    ],
+    name: "SignatureRevoked",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "signer",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "SignerApproved",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "signer",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "SignerRevoked",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "signature", internalType: "bytes", type: "bytes" }],
+    name: "approveSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "signer", internalType: "address", type: "address" }],
+    name: "approveSigner",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "", internalType: "address", type: "address" }],
+    name: "approvedSigners",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "data", internalType: "bytes", type: "bytes" }],
+    name: "callFactory",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "identityOwner", internalType: "address", type: "address" },
+    ],
+    name: "deployIdentityForWallet",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "identityOwner", internalType: "address", type: "address" },
+      { name: "salt", internalType: "string", type: "string" },
+      { name: "signatureExpiry", internalType: "uint256", type: "uint256" },
+      { name: "signature", internalType: "bytes", type: "bytes" },
+    ],
+    name: "deployIdentityWithSalt",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "identityOwner", internalType: "address", type: "address" },
+      { name: "salt", internalType: "string", type: "string" },
+      { name: "managementKeys", internalType: "bytes32[]", type: "bytes32[]" },
+      { name: "signatureExpiry", internalType: "uint256", type: "uint256" },
+      { name: "signature", internalType: "bytes", type: "bytes" },
+    ],
+    name: "deployIdentityWithSaltAndManagementKeys",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "idFactory",
+    outputs: [
+      { name: "", internalType: "contract IdFactory", type: "address" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "owner",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "renounceOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "signature", internalType: "bytes", type: "bytes" }],
+    name: "revokeSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "signer", internalType: "address", type: "address" }],
+    name: "revokeSigner",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "", internalType: "bytes", type: "bytes" }],
+    name: "revokedSignatures",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newOwner", internalType: "address", type: "address" }],
+    name: "transferFactoryOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newOwner", internalType: "address", type: "address" }],
+    name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
+export const identityGatewayAddress =
+  "0xcfCF11BEe5575c59e1F4a9D5a53c90A4e5e49D0C" as const;
+
+export const identityGatewayConfig = {
+  address: identityGatewayAddress,
+  abi: identityGatewayAbi,
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1615,7 +1870,7 @@ export const identityRegistryAbi = [
 ] as const;
 
 export const identityRegistryAddress =
-  "0xf2087897DFA5bb47cd9d19cEb452B450b6387240" as const;
+  "0xb0b0671aA04d79059BdcBAB5C59270bac5dc80A5" as const;
 
 export const identityRegistryConfig = {
   address: identityRegistryAddress,
@@ -1927,7 +2182,7 @@ export const identityRegistryStorageAbi = [
 ] as const;
 
 export const identityRegistryStorageAddress =
-  "0x1135245A5b2c40414989cd8B76bF3936173dFF93" as const;
+  "0xA0AEA5e7Caa342297c4a9309eC1Db7E9aa15a3EB" as const;
 
 export const identityRegistryStorageConfig = {
   address: identityRegistryStorageAddress,
@@ -2018,11 +2273,259 @@ export const implementationAuthorityAbi = [
 ] as const;
 
 export const implementationAuthorityAddress =
-  "0xb287549483D9d1daB6371C82b365dbfF19B492f4" as const;
+  "0x0EE2CDdFFcDe197319Ba2Ea8684469bbD25c2e79" as const;
 
 export const implementationAuthorityConfig = {
   address: implementationAuthorityAddress,
   abi: implementationAuthorityAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// MaxOwnershipByCountryModule
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const maxOwnershipByCountryModuleAbi = [
+  {
+    type: "error",
+    inputs: [
+      { name: "_compliance", internalType: "address", type: "address" },
+      { name: "_id", internalType: "address[]", type: "address[]" },
+      { name: "_balance", internalType: "uint256[]", type: "uint256[]" },
+    ],
+    name: "InvalidPresetValues",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "_compliance", internalType: "address", type: "address" },
+      { name: "_value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "MaxOwnershipExceeded",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "OnlyComplianceOwnerCanCall",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "TokenAlreadyBound",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "_compliance",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "ComplianceBound",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "_compliance",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "ComplianceUnbound",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "_compliance",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      { name: "_id", internalType: "address", type: "address", indexed: true },
+      {
+        name: "_balance",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "IDBalancePreSet",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "_compliance",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "_maxPercetageLocal",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: true,
+      },
+      {
+        name: "_maxPercetageNonlocal",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: true,
+      },
+    ],
+    name: "MaxPercentageSet",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_compliance", internalType: "address", type: "address" },
+      { name: "_id", internalType: "address[]", type: "address[]" },
+      { name: "_balance", internalType: "uint256[]", type: "uint256[]" },
+    ],
+    name: "batchPreSetModuleState",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "bindCompliance",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "canComplianceBind",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_compliance", internalType: "address", type: "address" },
+      { name: "_identity", internalType: "address", type: "address" },
+    ],
+    name: "getIDBalance",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "isComplianceBound",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "isPlugAndPlay",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_from", internalType: "address", type: "address" },
+      { name: "_value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "moduleBurnAction",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "", internalType: "address", type: "address" },
+      { name: "_to", internalType: "address", type: "address" },
+      { name: "_value", internalType: "uint256", type: "uint256" },
+      { name: "_compliance", internalType: "address", type: "address" },
+    ],
+    name: "moduleCheck",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_to", internalType: "address", type: "address" },
+      { name: "_value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "moduleMintAction",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_from", internalType: "address", type: "address" },
+      { name: "_to", internalType: "address", type: "address" },
+      { name: "_value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "moduleTransferAction",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "name",
+    outputs: [{ name: "_name", internalType: "string", type: "string" }],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_compliance", internalType: "address", type: "address" },
+      { name: "_id", internalType: "address", type: "address" },
+      { name: "_balance", internalType: "uint256", type: "uint256" },
+    ],
+    name: "preSetModuleState",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "presetCompleted",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_country", internalType: "uint16", type: "uint16" },
+      { name: "_maxLocal", internalType: "uint16", type: "uint16" },
+      { name: "_maxNonlocal", internalType: "uint16", type: "uint16" },
+    ],
+    name: "setMaxPercentage",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "unbindCompliance",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
+export const maxOwnershipByCountryModuleAddress =
+  "0x66bf2c085f88AF1b1993364ddB1332095B7AD3Ae" as const;
+
+export const maxOwnershipByCountryModuleConfig = {
+  address: maxOwnershipByCountryModuleAddress,
+  abi: maxOwnershipByCountryModuleAbi,
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2305,7 +2808,7 @@ export const modularComplianceAbi = [
 ] as const;
 
 export const modularComplianceAddress =
-  "0xafd21595d8484A3E949c09CEF74eB63A19073Fa9" as const;
+  "0x3134520cBB0cC9d0fEA9EAE182cCc29b3b20f0C8" as const;
 
 export const modularComplianceConfig = {
   address: modularComplianceAddress,
@@ -2477,7 +2980,7 @@ export const requiresNftModuleAbi = [
 ] as const;
 
 export const requiresNftModuleAddress =
-  "0xA1C46b80dC649F80667DD6d5eBd8069b038A93AC" as const;
+  "0xA318d349488531882b4fCa6b412A8766F7421044" as const;
 
 export const requiresNftModuleConfig = {
   address: requiresNftModuleAddress,
@@ -2723,7 +3226,7 @@ export const trexFactoryAbi = [
 ] as const;
 
 export const trexFactoryAddress =
-  "0xb7d3b7992174Bcc5fc72922685A3A70020145231" as const;
+  "0xf17A4C9E2B00398fB11c88060FdE39066b6269b0" as const;
 
 export const trexFactoryConfig = {
   address: trexFactoryAddress,
@@ -3219,7 +3722,7 @@ export const trexGatewayAbi = [
 ] as const;
 
 export const trexGatewayAddress =
-  "0xcB7F1652520938dEFE28383aD26086577EbBe309" as const;
+  "0x56C433eca9E534FF5024Eaedb95C652d31B44a09" as const;
 
 export const trexGatewayConfig = {
   address: trexGatewayAddress,
@@ -3788,7 +4291,7 @@ export const trexImplementationAuthorityAbi = [
 ] as const;
 
 export const trexImplementationAuthorityAddress =
-  "0xF9693d202D21b7005927950aB5aC14dA8616C327" as const;
+  "0x94eDe092ea4480e00174C73BC615c2466743f3dA" as const;
 
 export const trexImplementationAuthorityConfig = {
   address: trexImplementationAuthorityAddress,
@@ -4477,7 +4980,7 @@ export const tokenAbi = [
 ] as const;
 
 export const tokenAddress =
-  "0xD0a3F3628abd0C813107fDa9cF754328B43A5438" as const;
+  "0xB0f1AD71bA47Cc10cD925f06E1b467A5544e9592" as const;
 
 export const tokenConfig = { address: tokenAddress, abi: tokenAbi } as const;
 
@@ -4684,7 +5187,7 @@ export const trustedIssuersRegistryAbi = [
 ] as const;
 
 export const trustedIssuersRegistryAddress =
-  "0x92B47b5b7720DdE20fbA335aACcdD8c971B5802C" as const;
+  "0x9872BAaDb06D14f998e0185138745e8593E6D3D7" as const;
 
 export const trustedIssuersRegistryConfig = {
   address: trustedIssuersRegistryAddress,
@@ -6060,6 +6563,345 @@ export const watchIdentityKeyRemovedEvent =
   });
 
 /**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link identityGatewayAbi}__
+ */
+export const readIdentityGateway = /*#__PURE__*/ createReadContract({
+  abi: identityGatewayAbi,
+  address: identityGatewayAddress,
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"approvedSigners"`
+ */
+export const readIdentityGatewayApprovedSigners =
+  /*#__PURE__*/ createReadContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "approvedSigners",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"idFactory"`
+ */
+export const readIdentityGatewayIdFactory = /*#__PURE__*/ createReadContract({
+  abi: identityGatewayAbi,
+  address: identityGatewayAddress,
+  functionName: "idFactory",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"owner"`
+ */
+export const readIdentityGatewayOwner = /*#__PURE__*/ createReadContract({
+  abi: identityGatewayAbi,
+  address: identityGatewayAddress,
+  functionName: "owner",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"revokedSignatures"`
+ */
+export const readIdentityGatewayRevokedSignatures =
+  /*#__PURE__*/ createReadContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "revokedSignatures",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link identityGatewayAbi}__
+ */
+export const writeIdentityGateway = /*#__PURE__*/ createWriteContract({
+  abi: identityGatewayAbi,
+  address: identityGatewayAddress,
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"approveSignature"`
+ */
+export const writeIdentityGatewayApproveSignature =
+  /*#__PURE__*/ createWriteContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "approveSignature",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"approveSigner"`
+ */
+export const writeIdentityGatewayApproveSigner =
+  /*#__PURE__*/ createWriteContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "approveSigner",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"callFactory"`
+ */
+export const writeIdentityGatewayCallFactory =
+  /*#__PURE__*/ createWriteContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "callFactory",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"deployIdentityForWallet"`
+ */
+export const writeIdentityGatewayDeployIdentityForWallet =
+  /*#__PURE__*/ createWriteContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "deployIdentityForWallet",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"deployIdentityWithSalt"`
+ */
+export const writeIdentityGatewayDeployIdentityWithSalt =
+  /*#__PURE__*/ createWriteContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "deployIdentityWithSalt",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"deployIdentityWithSaltAndManagementKeys"`
+ */
+export const writeIdentityGatewayDeployIdentityWithSaltAndManagementKeys =
+  /*#__PURE__*/ createWriteContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "deployIdentityWithSaltAndManagementKeys",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const writeIdentityGatewayRenounceOwnership =
+  /*#__PURE__*/ createWriteContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "renounceOwnership",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"revokeSignature"`
+ */
+export const writeIdentityGatewayRevokeSignature =
+  /*#__PURE__*/ createWriteContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "revokeSignature",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"revokeSigner"`
+ */
+export const writeIdentityGatewayRevokeSigner =
+  /*#__PURE__*/ createWriteContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "revokeSigner",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"transferFactoryOwnership"`
+ */
+export const writeIdentityGatewayTransferFactoryOwnership =
+  /*#__PURE__*/ createWriteContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "transferFactoryOwnership",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const writeIdentityGatewayTransferOwnership =
+  /*#__PURE__*/ createWriteContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "transferOwnership",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link identityGatewayAbi}__
+ */
+export const simulateIdentityGateway = /*#__PURE__*/ createSimulateContract({
+  abi: identityGatewayAbi,
+  address: identityGatewayAddress,
+});
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"approveSignature"`
+ */
+export const simulateIdentityGatewayApproveSignature =
+  /*#__PURE__*/ createSimulateContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "approveSignature",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"approveSigner"`
+ */
+export const simulateIdentityGatewayApproveSigner =
+  /*#__PURE__*/ createSimulateContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "approveSigner",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"callFactory"`
+ */
+export const simulateIdentityGatewayCallFactory =
+  /*#__PURE__*/ createSimulateContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "callFactory",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"deployIdentityForWallet"`
+ */
+export const simulateIdentityGatewayDeployIdentityForWallet =
+  /*#__PURE__*/ createSimulateContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "deployIdentityForWallet",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"deployIdentityWithSalt"`
+ */
+export const simulateIdentityGatewayDeployIdentityWithSalt =
+  /*#__PURE__*/ createSimulateContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "deployIdentityWithSalt",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"deployIdentityWithSaltAndManagementKeys"`
+ */
+export const simulateIdentityGatewayDeployIdentityWithSaltAndManagementKeys =
+  /*#__PURE__*/ createSimulateContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "deployIdentityWithSaltAndManagementKeys",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const simulateIdentityGatewayRenounceOwnership =
+  /*#__PURE__*/ createSimulateContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "renounceOwnership",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"revokeSignature"`
+ */
+export const simulateIdentityGatewayRevokeSignature =
+  /*#__PURE__*/ createSimulateContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "revokeSignature",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"revokeSigner"`
+ */
+export const simulateIdentityGatewayRevokeSigner =
+  /*#__PURE__*/ createSimulateContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "revokeSigner",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"transferFactoryOwnership"`
+ */
+export const simulateIdentityGatewayTransferFactoryOwnership =
+  /*#__PURE__*/ createSimulateContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "transferFactoryOwnership",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link identityGatewayAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const simulateIdentityGatewayTransferOwnership =
+  /*#__PURE__*/ createSimulateContract({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    functionName: "transferOwnership",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link identityGatewayAbi}__
+ */
+export const watchIdentityGatewayEvent = /*#__PURE__*/ createWatchContractEvent(
+  { abi: identityGatewayAbi, address: identityGatewayAddress },
+);
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link identityGatewayAbi}__ and `eventName` set to `"OwnershipTransferred"`
+ */
+export const watchIdentityGatewayOwnershipTransferredEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    eventName: "OwnershipTransferred",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link identityGatewayAbi}__ and `eventName` set to `"SignatureApproved"`
+ */
+export const watchIdentityGatewaySignatureApprovedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    eventName: "SignatureApproved",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link identityGatewayAbi}__ and `eventName` set to `"SignatureRevoked"`
+ */
+export const watchIdentityGatewaySignatureRevokedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    eventName: "SignatureRevoked",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link identityGatewayAbi}__ and `eventName` set to `"SignerApproved"`
+ */
+export const watchIdentityGatewaySignerApprovedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    eventName: "SignerApproved",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link identityGatewayAbi}__ and `eventName` set to `"SignerRevoked"`
+ */
+export const watchIdentityGatewaySignerRevokedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: identityGatewayAbi,
+    address: identityGatewayAddress,
+    eventName: "SignerRevoked",
+  });
+
+/**
  * Wraps __{@link readContract}__ with `abi` set to __{@link identityRegistryAbi}__
  */
 export const readIdentityRegistry = /*#__PURE__*/ createReadContract({
@@ -7081,6 +7923,323 @@ export const watchImplementationAuthorityUpdatedImplementationEvent =
     abi: implementationAuthorityAbi,
     address: implementationAuthorityAddress,
     eventName: "UpdatedImplementation",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__
+ */
+export const readMaxOwnershipByCountryModule = /*#__PURE__*/ createReadContract(
+  {
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+  },
+);
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"canComplianceBind"`
+ */
+export const readMaxOwnershipByCountryModuleCanComplianceBind =
+  /*#__PURE__*/ createReadContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "canComplianceBind",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"getIDBalance"`
+ */
+export const readMaxOwnershipByCountryModuleGetIdBalance =
+  /*#__PURE__*/ createReadContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "getIDBalance",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"isComplianceBound"`
+ */
+export const readMaxOwnershipByCountryModuleIsComplianceBound =
+  /*#__PURE__*/ createReadContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "isComplianceBound",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"isPlugAndPlay"`
+ */
+export const readMaxOwnershipByCountryModuleIsPlugAndPlay =
+  /*#__PURE__*/ createReadContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "isPlugAndPlay",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"moduleCheck"`
+ */
+export const readMaxOwnershipByCountryModuleModuleCheck =
+  /*#__PURE__*/ createReadContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "moduleCheck",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"name"`
+ */
+export const readMaxOwnershipByCountryModuleName =
+  /*#__PURE__*/ createReadContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "name",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__
+ */
+export const writeMaxOwnershipByCountryModule =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"batchPreSetModuleState"`
+ */
+export const writeMaxOwnershipByCountryModuleBatchPreSetModuleState =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "batchPreSetModuleState",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"bindCompliance"`
+ */
+export const writeMaxOwnershipByCountryModuleBindCompliance =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "bindCompliance",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"moduleBurnAction"`
+ */
+export const writeMaxOwnershipByCountryModuleModuleBurnAction =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "moduleBurnAction",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"moduleMintAction"`
+ */
+export const writeMaxOwnershipByCountryModuleModuleMintAction =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "moduleMintAction",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"moduleTransferAction"`
+ */
+export const writeMaxOwnershipByCountryModuleModuleTransferAction =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "moduleTransferAction",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"preSetModuleState"`
+ */
+export const writeMaxOwnershipByCountryModulePreSetModuleState =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "preSetModuleState",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"presetCompleted"`
+ */
+export const writeMaxOwnershipByCountryModulePresetCompleted =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "presetCompleted",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"setMaxPercentage"`
+ */
+export const writeMaxOwnershipByCountryModuleSetMaxPercentage =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "setMaxPercentage",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"unbindCompliance"`
+ */
+export const writeMaxOwnershipByCountryModuleUnbindCompliance =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "unbindCompliance",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__
+ */
+export const simulateMaxOwnershipByCountryModule =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"batchPreSetModuleState"`
+ */
+export const simulateMaxOwnershipByCountryModuleBatchPreSetModuleState =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "batchPreSetModuleState",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"bindCompliance"`
+ */
+export const simulateMaxOwnershipByCountryModuleBindCompliance =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "bindCompliance",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"moduleBurnAction"`
+ */
+export const simulateMaxOwnershipByCountryModuleModuleBurnAction =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "moduleBurnAction",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"moduleMintAction"`
+ */
+export const simulateMaxOwnershipByCountryModuleModuleMintAction =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "moduleMintAction",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"moduleTransferAction"`
+ */
+export const simulateMaxOwnershipByCountryModuleModuleTransferAction =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "moduleTransferAction",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"preSetModuleState"`
+ */
+export const simulateMaxOwnershipByCountryModulePreSetModuleState =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "preSetModuleState",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"presetCompleted"`
+ */
+export const simulateMaxOwnershipByCountryModulePresetCompleted =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "presetCompleted",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"setMaxPercentage"`
+ */
+export const simulateMaxOwnershipByCountryModuleSetMaxPercentage =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "setMaxPercentage",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `functionName` set to `"unbindCompliance"`
+ */
+export const simulateMaxOwnershipByCountryModuleUnbindCompliance =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    functionName: "unbindCompliance",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__
+ */
+export const watchMaxOwnershipByCountryModuleEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `eventName` set to `"ComplianceBound"`
+ */
+export const watchMaxOwnershipByCountryModuleComplianceBoundEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    eventName: "ComplianceBound",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `eventName` set to `"ComplianceUnbound"`
+ */
+export const watchMaxOwnershipByCountryModuleComplianceUnboundEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    eventName: "ComplianceUnbound",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `eventName` set to `"IDBalancePreSet"`
+ */
+export const watchMaxOwnershipByCountryModuleIdBalancePreSetEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    eventName: "IDBalancePreSet",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link maxOwnershipByCountryModuleAbi}__ and `eventName` set to `"MaxPercentageSet"`
+ */
+export const watchMaxOwnershipByCountryModuleMaxPercentageSetEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: maxOwnershipByCountryModuleAbi,
+    address: maxOwnershipByCountryModuleAddress,
+    eventName: "MaxPercentageSet",
   });
 
 /**
