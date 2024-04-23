@@ -18,6 +18,7 @@ import { Eip3643ContextProvider } from "../../contexts/Eip3643Context";
 import DeployToken from "@/components/eip3643/admin/DeployToken";
 import CreateIdentity from "@/components/eip3643/admin/CreateIdentity";
 import AddKeyToIdentity from "@/components/eip3643/admin/AddKeyToIdentity";
+import RegisterIdentity from "@/components/eip3643/admin/RegisterIdentity";
 
 export default function EIP3643() {
   const { accountId, walletName, walletInterface } = useWalletInterface();
@@ -74,6 +75,8 @@ export default function EIP3643() {
             <CreateIdentity />
             <Divider my={10} />
             <AddKeyToIdentity />
+            <Divider my={10} />
+            <RegisterIdentity />
             <Divider my={10} />
           </TabPanel>
         </TabPanels>

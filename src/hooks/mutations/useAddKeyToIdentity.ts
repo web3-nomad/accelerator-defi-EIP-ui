@@ -25,7 +25,7 @@ export function useAddKeyToIdentity() {
   return useMutation({
     mutationFn: async () => {
       //@TODO pass from input or event of previous step
-      const IDENTITY_PROXY_ADDR = "0xf36b77a8aecf1346f05966588ef2a34b4817f0b0";
+      const IDENTITY_PROXY_ADDR = "0x0D02b42f72f8d3724ea222D2993061e3d027bBDc";
 
       const currentAccountAddress = convertAccountIdToSolidityAddress(
         AccountId.fromString(accountId as string),
