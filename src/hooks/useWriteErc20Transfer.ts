@@ -22,10 +22,6 @@ export function useWriteErc20Transfer() {
         walletInterface as WalletInterface, //@TODO prevent walletInterface as null from useWalletInterface
         {
           args: [to, amount],
-          account: convertAccountIdToSolidityAddress(
-            AccountId.fromString(accountId as string), //@TODO prevent accountId as null from useWalletInterface
-          ),
-          chain: hederaTestnet, //@TODO could not use app config, imported from viem
         },
       );
 

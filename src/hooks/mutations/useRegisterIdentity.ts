@@ -2,7 +2,6 @@ import { useMutation } from "@tanstack/react-query";
 import { writeIdentityRegistryRegisterIdentity } from "@/services/contracts/wagmiGenActions";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { WalletInterface } from "@/services/wallets/walletInterface";
-import { hederaTestnet } from "wagmi/chains";
 import { convertAccountIdToSolidityAddress } from "@/services/util/helpers";
 import { AccountId } from "@hashgraph/sdk";
 
@@ -28,11 +27,7 @@ export function useRegisterIdentity() {
 
       const registerResult = writeIdentityRegistryRegisterIdentity(
         walletInterface as WalletInterface,
-        {
-          args: [currentAccountAddress, IDENTITY_PROXY_ADDR, COUNTRY],
-          account: currentAccountAddress,
-          chain: hederaTestnet,
-        },
+        { args: [currentAccountAddress, IDENTITY_PROXY_ADDR, COUNTRY] },
         IDENTITY_REGISTRY_ADDRESS,
       );
 
