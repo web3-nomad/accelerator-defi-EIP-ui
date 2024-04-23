@@ -1,5 +1,6 @@
 import type { Abi, ContractFunctionArgs, ContractFunctionName } from "viem";
 import {
+  //  type ReadContractParameters as viem_WriteContractParameters,
   type WriteContractParameters as viem_WriteContractParameters,
   type WriteContractReturnType as viem_WriteContractReturnType,
 } from "viem/actions";
@@ -20,16 +21,21 @@ export type WriteContractParameters<
     "nonpayable" | "payable",
     functionName
   > = ContractFunctionArgs<abi, "nonpayable" | "payable", functionName>,
-> =
-  // TODO: test if typechecks run ok after implementing write contract functionality
-  Evaluate<viem_WriteContractParameters<abi, functionName, args>>;
+> = Omit<
+  viem_WriteContractParameters<abi, functionName, args>,
+  "chain" | "account"
+>;
 
 export type WriteContractReturnType = viem_WriteContractReturnType;
 
 export async function writeContract<
   const abi extends Abi | readonly unknown[],
-  functionName extends ContractFunctionName<abi, "pure" | "view">,
-  args extends ContractFunctionArgs<abi, "pure" | "view", functionName>,
+  functionName extends ContractFunctionName<abi, "nonpayable" | "payable">,
+  args extends ContractFunctionArgs<
+    abi,
+    "nonpayable" | "payable",
+    functionName
+  >,
 >(
   walletInterface: WalletInterface,
   parameters: WriteContractParameters<abi, functionName, args>,

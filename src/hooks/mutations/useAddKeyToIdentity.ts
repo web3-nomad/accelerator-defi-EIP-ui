@@ -3,7 +3,6 @@ import { writeIdentityAddKey } from "@/services/contracts/wagmiGenActions";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { convertAccountIdToSolidityAddress } from "@/services/util/helpers";
 import { AccountId } from "@hashgraph/sdk";
-import { hederaTestnet } from "wagmi/chains";
 import { WalletInterface } from "@/services/wallets/walletInterface";
 import { AbiCoder, ethers } from "ethers";
 
@@ -47,8 +46,6 @@ export function useAddKeyToIdentity() {
             BigInt(ADD_KEY_IDENTITY_PURPOSE.ACTION),
             BigInt(ADD_KEY_IDENTITY_TYPE.ECDSA),
           ],
-          account: currentAccountAddress,
-          chain: hederaTestnet,
         },
         IDENTITY_PROXY_ADDR,
       );
