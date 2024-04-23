@@ -1,11 +1,9 @@
 import type { Abi, ContractFunctionArgs, ContractFunctionName } from "viem";
 import {
-  //  type ReadContractParameters as viem_WriteContractParameters,
   type WriteContractParameters as viem_WriteContractParameters,
   type WriteContractReturnType as viem_WriteContractReturnType,
 } from "viem/actions";
 
-import type { Evaluate } from "@/services/util/wagmiTypes";
 import { WalletInterface } from "../wallets/walletInterface";
 import { ContractFunctionParameterBuilder } from "../wallets/contractFunctionParameterBuilder";
 import { ContractId } from "@hashgraph/sdk";
