@@ -14,14 +14,18 @@ import MeaningOfLife from "@/components/eip3643/user/MeaningOfLife";
 import TransferHBAR from "@/components/eip3643/user/TransferHBAR";
 import TransferFungibleToken from "@/components/eip3643/user/TransferFungibleToken";
 import BalanceOfERC20 from "@/components/eip3643/user/BalanceOfERC20";
-import { Eip3643ContextProvider } from "../../contexts/Eip3643Context";
+import { Eip3643Context } from "@/contexts/Eip3643Context";
 import DeployToken from "@/components/eip3643/admin/DeployToken";
 import CreateIdentity from "@/components/eip3643/admin/CreateIdentity";
 import AddKeyToIdentity from "@/components/eip3643/admin/AddKeyToIdentity";
 import RegisterIdentity from "@/components/eip3643/admin/RegisterIdentity";
+import CreateIdentityFactory from "@/components/eip3643/admin/CreateIdentityFactory";
+import { useContext } from "react";
 
 export default function EIP3643() {
   const { accountId, walletName, walletInterface } = useWalletInterface();
+
+  const { currentIdentityAddress } = useContext(Eip3643Context);
 
   if (!accountId)
     return (
@@ -40,7 +44,7 @@ export default function EIP3643() {
     );
 
   return (
-    <Eip3643ContextProvider>
+    <>
       <Text
         fontSize="22px"
         fontWeight="700"
@@ -50,6 +54,7 @@ export default function EIP3643() {
       >
         Operations for {accountId} via {walletName}
       </Text>
+      <Text>Current present Identity Address is: {currentIdentityAddress}</Text>
       <Tabs>
         <TabList>
           <Tab>User Area</Tab>
@@ -72,7 +77,9 @@ export default function EIP3643() {
           <TabPanel>
             <DeployToken />
             <Divider my={10} />
-            <CreateIdentity />
+            {/*<CreateIdentity />*/}
+            {/*<Divider my={10} />*/}
+            <CreateIdentityFactory />
             <Divider my={10} />
             <AddKeyToIdentity />
             <Divider my={10} />
@@ -81,6 +88,6 @@ export default function EIP3643() {
           </TabPanel>
         </TabPanels>
       </Tabs>
-    </Eip3643ContextProvider>
+    </>
   );
 }
