@@ -5,12 +5,8 @@ import { readTokenName } from "@/services/contracts/wagmiGenActions";
 import { useContext, useEffect, useState } from "react";
 import { Eip3643Context } from "../../../contexts/Eip3643Context";
 
-import TokenInfo from "../TokenInfo";
-
-type TokenNameItem = {
-  address: `0x${string}`;
-  name: string;
-};
+import TokenInfo from "./TokenInfo";
+import { TokenNameItem } from "../../../types/types";
 
 export default function EventsTest() {
   const [selectedToken, setSelectedToken] = useState(
@@ -59,6 +55,7 @@ export default function EventsTest() {
           );
           tokenItem && setSelectedToken(tokenItem);
         }}
+        variant="outline"
       >
         {tokenNames.map((item) => (
           <option key={item.address} value={item.address}>
@@ -66,7 +63,7 @@ export default function EventsTest() {
           </option>
         ))}
       </Select>
-      <TokenInfo selectedToken={selectedToken}></TokenInfo>
+      <TokenInfo tokenSelected={selectedToken}></TokenInfo>
     </VStack>
   );
 }

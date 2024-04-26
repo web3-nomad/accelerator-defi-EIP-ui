@@ -11,11 +11,11 @@ import theme from "@/theme/Theme";
 import { Fonts } from "@/components/Fonts";
 import { Focus } from "@/components/Focus";
 import { ScrollBar } from "@/components/Scrollbar";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { AllWalletsProvider } from "@/services/wallets/AllWalletsProvider";
 
 import EIP3643 from "@/views/eip3643/EIP3643";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Eip3643ContextProvider } from "@/contexts/Eip3643Context";
 
 interface LayoutProps {
@@ -35,7 +35,7 @@ const Layout = ({ children }: LayoutProps) => {
             <Topbar />
             <Flex>
               <Sidebar />
-              <Box p={10}>
+              <Box p={10} width={"100%"}>
                 {/* {children} TODO: we can't use next.js routing due to build error of 'crypto' module */}
                 <Eip3643ContextProvider>
                   <EIP3643 />

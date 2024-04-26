@@ -4,8 +4,12 @@ import { createContext, ReactNode, useState } from "react";
 const defaultValue = {
   deployedTokens: [],
   setDeployedTokens: (newValue: []) => {},
+  identities: [],
+  setIdentities: (newValue: []) => {},
   currentIdentityAddress: "",
   setCurrentIdentityAddress: (newValue: "") => {},
+  currentIdentityWallet: "",
+  setCurrentIdentityWallet: (newValue: "") => {},
 };
 
 export const Eip3643Context = createContext(defaultValue);
@@ -16,7 +20,10 @@ export const Eip3643ContextProvider = (props: {
   const [deployedTokens, setDeployedTokens] = useState(
     defaultValue.deployedTokens,
   );
-
+  const [identities, setIdentities] = useState(defaultValue.identities);
+  const [currentIdentityWallet, setCurrentIdentityWallet] = useState(
+    defaultValue.currentIdentityAddress,
+  );
   const [currentIdentityAddress, setCurrentIdentityAddress] = useState(
     defaultValue.currentIdentityAddress,
   );
@@ -26,8 +33,12 @@ export const Eip3643ContextProvider = (props: {
       value={{
         deployedTokens,
         setDeployedTokens,
+        identities,
+        setIdentities,
         currentIdentityAddress,
         setCurrentIdentityAddress,
+        currentIdentityWallet,
+        setCurrentIdentityWallet,
       }}
     >
       {props.children}

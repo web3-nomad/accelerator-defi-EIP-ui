@@ -1,39 +1,79 @@
-import { Button, Text, useToast } from "@chakra-ui/react";
-import { useEffect } from "react";
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Button,
+  FormControl,
+  FormHelperText,
+  Text,
+} from "@chakra-ui/react";
+import { useContext, useEffect, useState } from "react";
 import { useRegisterIdentity } from "@/hooks/mutations/useRegisterIdentity";
+import { readTokenIdentityRegistry } from "../../../services/contracts/wagmiGenActions";
+import { TokenNameItem } from "../../../types/types";
+import { Eip3643Context } from "../../../contexts/Eip3643Context";
 
-export default function RegisterIdentity() {
-  const { data, mutateAsync: register, error } = useRegisterIdentity();
-  const toast = useToast();
+export default function RegisterIdentity({
+  tokenSelected,
+}: {
+  tokenSelected: TokenNameItem | null;
+}) {
+  const [registry, setRegistry] = useState("");
+  const { currentIdentityAddress, currentIdentityWallet } =
+    useContext(Eip3643Context);
+  const {
+    data,
+    mutateAsync: register,
+    error,
+    isPending,
+  } = useRegisterIdentity();
 
   useEffect(() => {
-    if (error) {
-      toast({
-        title: "Error adding identity to registry",
-        description: `${error.toString()}`,
-        status: "error",
-        isClosable: true,
-      });
-    }
-  }, [error, toast]);
+    tokenSelected &&
+      readTokenIdentityRegistry({ args: [] }, tokenSelected.address).then(
+        (res) => setRegistry(res[0]),
+      );
+  }, [tokenSelected]);
+
+  if (!tokenSelected) return null;
 
   return (
     <>
       <Button
+        isLoading={isPending}
         onClick={async () => {
-          register();
+          register({
+            address: currentIdentityWallet as `0x${string}`,
+            identity: currentIdentityAddress as `0x${string}`,
+            registry: registry as `0x${string}`,
+          });
         }}
       >
         Add Identity to Registry
       </Button>
-      <Text>
-        Using Identity (HARDCODED!): 0x0D02b42f72f8d3724ea222D2993061e3d027bBDc
-      </Text>
-      <Text>
-        Using Identity Registry (HARDCODED!):
-        0x9928352D4DCD68cB76512AB71940D8AD912246be
-      </Text>
-      <Text>Result: {data}</Text>
+      <FormControl>
+        <FormHelperText>
+          <b>Using Identity:</b> {currentIdentityAddress}
+        </FormHelperText>
+        <FormHelperText>
+          <b>Using Identity Registry:</b> {registry}
+        </FormHelperText>
+      </FormControl>
+      {error && (
+        <Alert status="error">
+          <AlertIcon />
+          <AlertTitle>Create identity error!</AlertTitle>
+          <AlertDescription>{error.toString()}</AlertDescription>
+        </Alert>
+      )}
+      {data && (
+        <Alert status="success">
+          <AlertIcon />
+          <AlertTitle>Create identity success!</AlertTitle>
+          <AlertDescription>TxId: {data}</AlertDescription>
+        </Alert>
+      )}
     </>
   );
 }

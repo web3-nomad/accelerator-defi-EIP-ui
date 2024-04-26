@@ -4,20 +4,17 @@ import { AccountId } from "@hashgraph/sdk";
 import { writeIdentityGatewayDeployIdentityForWallet } from "@/services/contracts/wagmiGenActions";
 import { WalletInterface } from "@/services/wallets/walletInterface";
 import { convertAccountIdToSolidityAddress } from "@/services/util/helpers";
+import { CreateIdentityRequest } from "@/types/types";
 
 export function useCreateIdentityFactory() {
   const { accountId, walletInterface } = useWalletInterface();
 
   return useMutation({
-    mutationFn: async () => {
-      const currentAccountAddress = convertAccountIdToSolidityAddress(
-        AccountId.fromString(accountId as string),
-      );
-
+    mutationFn: async ({ address }: CreateIdentityRequest) => {
       const result = await writeIdentityGatewayDeployIdentityForWallet(
         walletInterface as WalletInterface,
         {
-          args: [currentAccountAddress],
+          args: [address],
         },
       );
 
