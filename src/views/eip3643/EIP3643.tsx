@@ -20,19 +20,26 @@ import { WatchContractEventReturnType } from "viem";
 
 export default function EIP3643() {
   const { accountId } = useWalletInterface();
-  const { setDeployedTokens, setIdentities } = useContext(Eip3643Context);
+  const { setDeployedTokens, identities, setIdentities } =
+    useContext(Eip3643Context);
 
   useEffect(() => {
     const unsubTokens: WatchContractEventReturnType =
       watchTrexFactoryTrexSuiteDeployedEvent({
         onLogs: (data) => {
-          setDeployedTokens(data as any);
+          setDeployedTokens(((prev: any) => {
+            console.log("prev1", prev);
+            return [...prev, ...data];
+          }) as any);
         },
       });
     const unsubIdentities: WatchContractEventReturnType =
       watchIdFactoryWalletLinkedEvent({
         onLogs: (data: any) => {
-          setIdentities(data);
+          setIdentities(((prev: any) => {
+            console.log("prev2", prev);
+            return [...prev, ...data];
+          }) as any);
         },
       });
     return () => {
