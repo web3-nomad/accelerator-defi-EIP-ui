@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import {
   Alert,
   AlertDescription,
@@ -14,11 +13,22 @@ import {
 import { WatchContractEventReturnType } from "viem";
 import { useFormik } from "formik";
 import { useCreateIdentityFactory } from "@/hooks/mutations/useCreateIdentityFactory";
+import { useContext, useEffect } from "react";
 import { watchIdFactoryWalletLinkedEvent } from "@/services/contracts/wagmiGenActions";
+import { Eip3643Context } from "@/contexts/Eip3643Context";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
+import { convertAccountIdToSolidityAddress } from "@/services/util/helpers";
+import { AccountId } from "@hashgraph/sdk";
 
 export default function CreateIdentityFactory() {
-  const { accountId } = useWalletInterface();
+  const { accountId, walletName, walletInterface } = useWalletInterface();
+
+  const currentAccountAddress = convertAccountIdToSolidityAddress(
+    AccountId.fromString(accountId as string),
+  );
+
+  const { currentIdentityAddress, setCurrentIdentityAddress } =
+    useContext(Eip3643Context);
   const {
     error,
     isPending,
@@ -39,20 +49,36 @@ export default function CreateIdentityFactory() {
   useEffect(() => {
     const unsub: WatchContractEventReturnType = watchIdFactoryWalletLinkedEvent(
       {
-        onLogs: (data: any[]) => {
+        onLogs: (data: any) => {
+          console.log(
+            "watchIdFactoryWalletLinkedEvent data length",
+            data.length,
+          );
           data.map((item: any) => {
             console.log(
               "L15 watchIdFactoryDeployedEvent onlogs data ===",
               item["args"],
             );
           });
+
+          const currentIdentities = data.filter((item: any) => {
+            const walletId = item["args"]?.[0];
+
+            return (
+              `${walletId}`.toLowerCase() ==
+              `${currentAccountAddress}`.toLowerCase()
+            );
+          });
+
+          //@TODO fix if we can have several identities per wallet
+          setCurrentIdentityAddress(currentIdentities[0]?.["args"]?.[1]);
         },
       },
     );
     return () => {
       unsub();
     };
-  }, []);
+  }, [currentAccountAddress, setCurrentIdentityAddress]);
 
   return (
     <form onSubmit={form.handleSubmit}>
@@ -67,6 +93,9 @@ export default function CreateIdentityFactory() {
             onChange={form.handleChange}
           />
         </FormControl>
+        <Text>
+          Current present Identity Address is: {currentIdentityAddress}
+        </Text>
         {error && (
           <Alert status="error">
             <AlertIcon />

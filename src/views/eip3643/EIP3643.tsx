@@ -31,6 +31,8 @@ export default function EIP3643() {
     };
   }, [setDeployedTokens]);
 
+  const { currentIdentityAddress } = useContext(Eip3643Context);
+
   if (!accountId)
     return (
       <Flex
@@ -48,19 +50,22 @@ export default function EIP3643() {
     );
 
   return (
-    <Tabs>
-      <TabList>
-        <Tab>User Area</Tab>
-        <Tab>Admin Area</Tab>
-      </TabList>
-      <TabPanels>
-        <TabPanel>
-          <User />
-        </TabPanel>
-        <TabPanel>
-          <Admin />
-        </TabPanel>
-      </TabPanels>
-    </Tabs>
+    <>
+      <Text>Current present Identity Address is: {currentIdentityAddress}</Text>
+      <Tabs>
+        <TabList>
+          <Tab>User Area</Tab>
+          <Tab>Admin Area</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel>
+            <User />
+          </TabPanel>
+          <TabPanel>
+            <Admin />
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    </>
   );
 }
