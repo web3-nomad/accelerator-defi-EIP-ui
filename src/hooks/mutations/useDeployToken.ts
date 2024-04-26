@@ -4,12 +4,7 @@ import { writeTrexGatewayDeployTrexSuite } from "@/services/contracts/wagmiGenAc
 import { AccountId } from "@hashgraph/sdk";
 import { WalletInterface } from "@/services/wallets/walletInterface";
 import { ethers } from "ethers";
-
-type DeployTokenRequest = {
-  name: string;
-  symbol: string;
-  decimals: number;
-};
+import { DeployTokenRequest } from "@/types/types";
 
 export function useDeployToken() {
   const { accountId, walletName, walletInterface } = useWalletInterface();

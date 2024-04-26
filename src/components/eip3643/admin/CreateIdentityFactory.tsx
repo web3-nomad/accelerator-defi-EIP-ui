@@ -5,6 +5,7 @@ import {
   AlertTitle,
   Button,
   FormControl,
+  FormHelperText,
   FormLabel,
   Input,
   Text,
@@ -27,8 +28,13 @@ export default function CreateIdentityFactory() {
     AccountId.fromString(accountId as string),
   );
 
-  const { currentIdentityAddress, setCurrentIdentityAddress } =
-    useContext(Eip3643Context);
+  const {
+    currentIdentityAddress,
+    setCurrentIdentityAddress,
+    currentIdentityWallet,
+    setCurrentIdentityWallet,
+    identities,
+  } = useContext(Eip3643Context);
   const {
     error,
     isPending,
@@ -41,76 +47,64 @@ export default function CreateIdentityFactory() {
       address: accountId?.toString(),
     },
     onSubmit: ({ address }) => {
-      console.log("address", address);
-      // createIdentityFactory();
+      createIdentityFactory({ address: address as `0x${string}` });
     },
   });
 
   useEffect(() => {
-    const unsub: WatchContractEventReturnType = watchIdFactoryWalletLinkedEvent(
-      {
-        onLogs: (data: any) => {
-          console.log(
-            "watchIdFactoryWalletLinkedEvent data length",
-            data.length,
-          );
-          data.map((item: any) => {
-            console.log(
-              "L15 watchIdFactoryDeployedEvent onlogs data ===",
-              item["args"],
-            );
-          });
-
-          const currentIdentities = data.filter((item: any) => {
-            const walletId = item["args"]?.[0];
-
-            return (
-              `${walletId}`.toLowerCase() ==
-              `${currentAccountAddress}`.toLowerCase()
-            );
-          });
-
-          //@TODO fix if we can have several identities per wallet
-          setCurrentIdentityAddress(currentIdentities[0]?.["args"]?.[1]);
-        },
-      },
-    );
-    return () => {
-      unsub();
-    };
-  }, [currentAccountAddress, setCurrentIdentityAddress]);
+    let isFound = false;
+    (identities as any).map((item: any) => {
+      //@TODO fix if we can have several identities per wallet
+      if (item["args"]?.[0] === form.values.address) {
+        isFound = true;
+        setCurrentIdentityWallet(item?.["args"]?.[0]);
+        setCurrentIdentityAddress(item?.["args"]?.[1]);
+      }
+    });
+    if (!isFound) {
+      setCurrentIdentityAddress("");
+      setCurrentIdentityWallet("");
+    }
+  }, [accountId, identities, form.values.address]);
 
   return (
-    <form onSubmit={form.handleSubmit}>
-      <VStack gap={2} alignItems="flex-start">
-        {/* <Heading size={"md"}>Deploy new token</Heading> */}
-        <FormControl isRequired>
-          <FormLabel>Identity owner address</FormLabel>
-          <Input
-            name="address"
-            variant="outline"
-            value={form.values.address}
-            onChange={form.handleChange}
-          />
-        </FormControl>
-        <Text>
-          Current present Identity Address is: {currentIdentityAddress}
-        </Text>
-        {error && (
-          <Alert status="error">
-            <AlertIcon />
-            <AlertTitle>Create identity error!</AlertTitle>
-            <AlertDescription>{error.toString()}</AlertDescription>
-          </Alert>
-        )}
-        {data && (
-          <Alert status="success">
-            <AlertIcon />
-            <AlertTitle>Create identity success!</AlertTitle>
-            <AlertDescription>Address: {data}</AlertDescription>
-          </Alert>
-        )}
-      </VStack>
-    </form>
+    <>
+      <form onSubmit={form.handleSubmit}>
+        <VStack gap={2} alignItems="flex-start">
+          <FormControl isRequired>
+            <FormLabel>Identity wallet address</FormLabel>
+            <Input
+              name="address"
+              variant="outline"
+              value={form.values.address}
+              onChange={form.handleChange}
+            />
+            <FormHelperText>
+              <b>Current present Identity Address is:</b>{" "}
+              {currentIdentityAddress || "Not created yet"}
+            </FormHelperText>
+          </FormControl>
+          {!currentIdentityAddress && (
+            <Button type="submit" isLoading={isPending}>
+              Create identity
+            </Button>
+          )}
+          {error && (
+            <Alert status="error">
+              <AlertIcon />
+              <AlertTitle>Create identity error!</AlertTitle>
+              <AlertDescription>{error.toString()}</AlertDescription>
+            </Alert>
+          )}
+          {data && (
+            <Alert status="success">
+              <AlertIcon />
+              <AlertTitle>Create identity success!</AlertTitle>
+              <AlertDescription>Address: {data}</AlertDescription>
+            </Alert>
+          )}
+        </VStack>
+      </form>
+    </>
   );
 }

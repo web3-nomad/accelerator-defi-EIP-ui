@@ -83,7 +83,7 @@ export default function Admin() {
           <Divider my={10} />
           <CreateIdentityFactory />
           <Divider my={10} />
-          <RegisterIdentity />
+          <RegisterIdentity tokenSelected={tokenSelected} />
           <Divider my={10} />
         </>
       )}

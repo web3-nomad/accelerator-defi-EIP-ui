@@ -12,26 +12,34 @@ import { Eip3643Context } from "@/contexts/Eip3643Context";
 import Admin from "@/components/eip3643/Admin";
 import User from "@/components/eip3643/User";
 import { useContext, useEffect } from "react";
-import { watchTrexFactoryTrexSuiteDeployedEvent } from "@/services/contracts/wagmiGenActions";
+import {
+  watchIdFactoryWalletLinkedEvent,
+  watchTrexFactoryTrexSuiteDeployedEvent,
+} from "@/services/contracts/wagmiGenActions";
 import { WatchContractEventReturnType } from "viem";
 
 export default function EIP3643() {
   const { accountId } = useWalletInterface();
-  const { setDeployedTokens } = useContext(Eip3643Context);
+  const { setDeployedTokens, setIdentities } = useContext(Eip3643Context);
 
   useEffect(() => {
-    const unsub: WatchContractEventReturnType =
+    const unsubTokens: WatchContractEventReturnType =
       watchTrexFactoryTrexSuiteDeployedEvent({
         onLogs: (data) => {
           setDeployedTokens(data as any);
         },
       });
+    const unsubIdentities: WatchContractEventReturnType =
+      watchIdFactoryWalletLinkedEvent({
+        onLogs: (data: any) => {
+          setIdentities(data);
+        },
+      });
     return () => {
-      unsub();
+      unsubTokens();
+      unsubIdentities();
     };
-  }, [setDeployedTokens]);
-
-  const { currentIdentityAddress } = useContext(Eip3643Context);
+  }, [setDeployedTokens, setIdentities]);
 
   if (!accountId)
     return (
@@ -51,7 +59,6 @@ export default function EIP3643() {
 
   return (
     <>
-      <Text>Current present Identity Address is: {currentIdentityAddress}</Text>
       <Tabs>
         <TabList>
           <Tab>User Area</Tab>
