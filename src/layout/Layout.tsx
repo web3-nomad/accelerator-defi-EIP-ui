@@ -16,6 +16,7 @@ import { AllWalletsProvider } from "@/services/wallets/AllWalletsProvider";
 
 import EIP3643 from "@/views/eip3643/EIP3643";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Eip3643ContextProvider } from "@/contexts/Eip3643Context";
 
 interface LayoutProps {
   children: ReactNode;
@@ -36,7 +37,9 @@ const Layout = ({ children }: LayoutProps) => {
               <Sidebar />
               <Box p={10}>
                 {/* {children} TODO: we can't use next.js routing due to build error of 'crypto' module */}
-                <EIP3643 />
+                <Eip3643ContextProvider>
+                  <EIP3643 />
+                </Eip3643ContextProvider>
               </Box>
             </Flex>
             <Footer />
