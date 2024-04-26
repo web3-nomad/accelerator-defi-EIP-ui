@@ -28,7 +28,6 @@ export default function EIP3643() {
       watchTrexFactoryTrexSuiteDeployedEvent({
         onLogs: (data) => {
           setDeployedTokens(((prev: any) => {
-            console.log("prev1", prev);
             return [...prev, ...data];
           }) as any);
         },
@@ -37,7 +36,6 @@ export default function EIP3643() {
       watchIdFactoryWalletLinkedEvent({
         onLogs: (data: any) => {
           setIdentities(((prev: any) => {
-            console.log("prev2", prev);
             return [...prev, ...data];
           }) as any);
         },
