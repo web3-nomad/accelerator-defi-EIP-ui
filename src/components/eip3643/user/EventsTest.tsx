@@ -5,7 +5,7 @@ import { readTokenName } from "@/services/contracts/wagmiGenActions";
 import { useContext, useEffect, useState } from "react";
 import { Eip3643Context } from "../../../contexts/Eip3643Context";
 
-import TokenInfo from "../TokenInfo";
+import TokenInfo from "./TokenInfo";
 import { TokenNameItem } from "../../../types/types";
 
 export default function EventsTest() {
@@ -63,7 +63,7 @@ export default function EventsTest() {
           </option>
         ))}
       </Select>
-      <TokenInfo selectedToken={selectedToken}></TokenInfo>
+      <TokenInfo tokenSelected={selectedToken}></TokenInfo>
     </VStack>
   );
 }

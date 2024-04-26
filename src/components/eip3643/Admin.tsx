@@ -1,7 +1,6 @@
 import { Button, Divider, Select, Stack, Text } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 
-import EventsTest from "@/components/eip3643/user/EventsTest";
 import DeployToken from "@/components/eip3643/admin/DeployToken";
 import RegisterIdentity from "@/components/eip3643/admin/RegisterIdentity";
 import CreateIdentityFactory from "@/components/eip3643/admin/CreateIdentityFactory";
@@ -12,6 +11,7 @@ import {
 } from "@/services/contracts/wagmiGenActions";
 import { TokenNameItem } from "@/types/types";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
+import TokenInfo from "@/components/eip3643/admin/TokenInfo";
 
 export default function Admin() {
   const [isDeploy, setIsDeploy] = useState(false);
@@ -77,11 +77,16 @@ export default function Admin() {
       {isDeploy && !tokenSelected && (
         <DeployToken onClose={() => setIsDeploy(false)} />
       )}
-      {/* <Divider my={10} />
-      <CreateIdentityFactory />
-      <Divider my={10} />
-      <RegisterIdentity />
-      <Divider my={10} /> */}
+      {tokenSelected && (
+        <>
+          <TokenInfo tokenSelected={tokenSelected}></TokenInfo>
+          <Divider my={10} />
+          <CreateIdentityFactory />
+          <Divider my={10} />
+          <RegisterIdentity />
+          <Divider my={10} />
+        </>
+      )}
     </>
   );
 }
