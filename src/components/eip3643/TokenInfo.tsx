@@ -1,16 +1,13 @@
 import {
   Heading,
-  VStack,
   Text,
-  Select,
   Button,
   Alert,
   AlertIcon,
   AlertTitle,
   AlertDescription,
 } from "@chakra-ui/react";
-import { useContext, useEffect, useState } from "react";
-import { Eip3643Context } from "../../contexts/Eip3643Context";
+import { useEffect, useState } from "react";
 import {
   readTokenAllowance,
   readTokenBalanceOf,
@@ -19,8 +16,8 @@ import {
   readTokenIsFrozen,
   readTokenOwner,
   writeTokenMint,
-} from "../../services/contracts/wagmiGenActions";
-import { useWalletInterface } from "../../services/wallets/useWalletInterface";
+} from "@/services/contracts/wagmiGenActions";
+import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 
 type TokenNameItem = {
   address: `0x${string}`;
@@ -94,7 +91,7 @@ export default function TokenInfo({
         setOwner(res.toString()),
       );
     }
-  }, [setBalance, selectedToken, readBalance, accountId]);
+  }, [selectedToken, accountId]);
 
   return (
     <>

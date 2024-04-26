@@ -2,6 +2,7 @@ import { extendTheme } from "@chakra-ui/react";
 import { Button } from "./components/Button";
 import { Text } from "./components/Text";
 import { Select } from "./components/Select";
+import { NumberInput } from "./components/NumberInput";
 import { Input } from "./components/Input";
 import { FormLabel } from "./components/FormLabel";
 import { Heading } from "./components/Heading";
@@ -70,6 +71,7 @@ const theme = extendTheme({
     Select,
     FormLabel,
     Input,
+    NumberInput,
     Heading,
     Tabs,
     FormError,

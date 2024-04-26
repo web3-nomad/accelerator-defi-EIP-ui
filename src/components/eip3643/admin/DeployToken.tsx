@@ -4,6 +4,7 @@ import {
   Button,
   Text,
   Input,
+  Stack,
   VStack,
   Heading,
   FormLabel,
@@ -19,7 +20,7 @@ import {
   AlertDescription,
 } from "@chakra-ui/react";
 
-export default function DeployToken() {
+export default function DeployToken({ onClose = () => {} }) {
   const {
     error,
     isPending,
@@ -50,7 +51,7 @@ export default function DeployToken() {
           <FormLabel>Name</FormLabel>
           <Input
             name="name"
-            variant="filled"
+            variant="outline"
             value={form.values.name}
             onChange={form.handleChange}
           />
@@ -59,7 +60,7 @@ export default function DeployToken() {
           <FormLabel>Symbol</FormLabel>
           <Input
             name="symbol"
-            variant="filled"
+            variant="outline"
             value={form.values.symbol}
             onChange={form.handleChange}
           />
@@ -68,7 +69,7 @@ export default function DeployToken() {
           <FormLabel>Decimals</FormLabel>
           <NumberInput
             name="decimals"
-            variant="filled"
+            variant="outline"
             value={form.values.decimals}
             min={0}
             max={18}
@@ -81,9 +82,22 @@ export default function DeployToken() {
             </NumberInputStepper>
           </NumberInput>
         </FormControl>
-        <Button type="submit" isLoading={isPending}>
-          Deploy
-        </Button>
+        {!deployResult && (
+          <Stack spacing={4} direction="row" align="center">
+            <Button type="submit" isLoading={isPending}>
+              Deploy
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                onClose();
+              }}
+              isLoading={isPending}
+            >
+              Cancel
+            </Button>
+          </Stack>
+        )}
         {error && (
           <Alert status="error">
             <AlertIcon />
@@ -92,11 +106,21 @@ export default function DeployToken() {
           </Alert>
         )}
         {deployResult && (
-          <Alert status="success">
-            <AlertIcon />
-            <AlertTitle>Deploy success!</AlertTitle>
-            <AlertDescription>TxId: {deployResult}</AlertDescription>
-          </Alert>
+          <>
+            <Alert status="success">
+              <AlertIcon />
+              <AlertTitle>Deploy success!</AlertTitle>
+              <AlertDescription>TxId: {deployResult}</AlertDescription>
+            </Alert>
+            <Button
+              onClick={() => {
+                onClose();
+              }}
+              isLoading={isPending}
+            >
+              Close
+            </Button>
+          </>
         )}
       </VStack>
     </form>
