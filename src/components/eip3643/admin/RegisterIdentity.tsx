@@ -4,21 +4,32 @@ import {
   AlertIcon,
   AlertTitle,
   Button,
+  Divider,
   FormControl,
   FormHelperText,
+  Heading,
+  ListItem,
+  OrderedList,
   Text,
 } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 import { useRegisterIdentity } from "@/hooks/mutations/useRegisterIdentity";
-import { readTokenIdentityRegistry } from "../../../services/contracts/wagmiGenActions";
+import {
+  readTokenIdentityRegistry,
+  watchIdentityRegistryAgentAddedEvent,
+  watchIdentityRegistryIdentityRegisteredEvent,
+  watchTokenIdentityRegistryAddedEvent,
+} from "../../../services/contracts/wagmiGenActions";
 import { TokenNameItem } from "../../../types/types";
 import { Eip3643Context } from "../../../contexts/Eip3643Context";
+import { WatchContractEventReturnType } from "../../../services/contracts/watchContractEvent";
 
 export default function RegisterIdentity({
   tokenSelected,
 }: {
   tokenSelected: TokenNameItem | null;
 }) {
+  const [registryAgents, setRegistryAgents] = useState([] as any[]);
   const [registry, setRegistry] = useState("");
   const { currentIdentityAddress, currentIdentityWallet } =
     useContext(Eip3643Context);
@@ -28,19 +39,45 @@ export default function RegisterIdentity({
     error,
     isPending,
   } = useRegisterIdentity();
+  let unsub: WatchContractEventReturnType | null = null;
 
   useEffect(() => {
     tokenSelected &&
       readTokenIdentityRegistry({ args: [] }, tokenSelected.address).then(
-        (res) => setRegistry(res[0]),
+        (res) => {
+          setRegistry(res[0]);
+          setRegistryAgents([]);
+          unsub && unsub();
+          unsub = watchIdentityRegistryIdentityRegisteredEvent(
+            {
+              onLogs: (data) => {
+                setRegistryAgents((prev: any) => {
+                  return [
+                    ...prev,
+                    ...data
+                      .map((item: any) => item.args[0])
+                      .filter((item) => !prev.includes(item)),
+                  ];
+                });
+              },
+            },
+            res[0] as `0x${string}`,
+          );
+        },
       );
+    return () => {
+      unsub && unsub();
+    };
   }, [tokenSelected]);
 
   if (!tokenSelected) return null;
-
   return (
     <>
       <Button
+        isDisabled={
+          !currentIdentityAddress ||
+          registryAgents.includes(currentIdentityWallet)
+        }
         isLoading={isPending}
         onClick={async () => {
           register({
@@ -60,6 +97,14 @@ export default function RegisterIdentity({
           <b>Using Identity Registry:</b> {registry}
         </FormHelperText>
       </FormControl>
+      <Divider my={10} />
+      <Heading size={"md"}>Registered identities addresses</Heading>
+      <OrderedList>
+        {registryAgents.map((item) => (
+          <ListItem key={item}>{item}</ListItem>
+        ))}
+      </OrderedList>
+      {registryAgents.length === 0 && <Text>No identities found</Text>}
       {error && (
         <Alert status="error">
           <AlertIcon />

@@ -8,14 +8,11 @@ import {
   FormHelperText,
   FormLabel,
   Input,
-  Text,
   VStack,
 } from "@chakra-ui/react";
-import { WatchContractEventReturnType } from "viem";
 import { useFormik } from "formik";
 import { useCreateIdentityFactory } from "@/hooks/mutations/useCreateIdentityFactory";
 import { useContext, useEffect } from "react";
-import { watchIdFactoryWalletLinkedEvent } from "@/services/contracts/wagmiGenActions";
 import { Eip3643Context } from "@/contexts/Eip3643Context";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { convertAccountIdToSolidityAddress } from "@/services/util/helpers";
@@ -84,11 +81,13 @@ export default function CreateIdentityFactory() {
               {currentIdentityAddress || "Not created yet"}
             </FormHelperText>
           </FormControl>
-          {!currentIdentityAddress && (
-            <Button type="submit" isLoading={isPending}>
-              Create identity
-            </Button>
-          )}
+          <Button
+            isDisabled={!!currentIdentityAddress}
+            type="submit"
+            isLoading={isPending}
+          >
+            Create identity
+          </Button>
           {error && (
             <Alert status="error">
               <AlertIcon />

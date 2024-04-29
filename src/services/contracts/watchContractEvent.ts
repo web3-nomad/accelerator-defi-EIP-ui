@@ -48,7 +48,7 @@ export function watchContractEvent<
         return contractInterface.parseLog(item);
       });
       const decodeResultsFiltered = decodeResults.filter((item: any) => {
-        return item.name === parameters.eventName;
+        return item?.name === parameters.eventName;
       });
       if (decodeResultsFiltered && isActive) {
         parameters.onLogs(decodeResultsFiltered);
