@@ -4,6 +4,12 @@ export type DeployTokenRequest = {
   decimals: number;
 };
 
+export type MintTokenRequest = {
+  address: `0x${string}`;
+  value: string;
+  token: `0x${string}`;
+};
+
 export type CreateIdentityRequest = {
   address: `0x${string}`;
 };
