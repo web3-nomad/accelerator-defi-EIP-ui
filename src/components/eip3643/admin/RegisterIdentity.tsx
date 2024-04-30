@@ -16,9 +16,7 @@ import { useContext, useEffect, useState } from "react";
 import { useRegisterIdentity } from "@/hooks/mutations/useRegisterIdentity";
 import {
   readTokenIdentityRegistry,
-  watchIdentityRegistryAgentAddedEvent,
   watchIdentityRegistryIdentityRegisteredEvent,
-  watchTokenIdentityRegistryAddedEvent,
 } from "../../../services/contracts/wagmiGenActions";
 import { TokenNameItem } from "../../../types/types";
 import { Eip3643Context } from "../../../contexts/Eip3643Context";
