@@ -17,11 +17,6 @@ export function useRegisterIdentity() {
     }: AddIdentityToRegistryRequest) => {
       //@TODO country code selector (if needed)
       const COUNTRY = 840; // ISO United States country code (see: https://www.iso.org/obp/ui/#search)
-
-      const currentAccountAddress = convertAccountIdToSolidityAddress(
-        AccountId.fromString(accountId as string),
-      );
-
       const registerResult = writeIdentityRegistryRegisterIdentity(
         walletInterface as WalletInterface,
         { args: [address, identity, COUNTRY] },

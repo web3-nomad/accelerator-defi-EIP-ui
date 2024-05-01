@@ -15,20 +15,13 @@ import { useCreateIdentityFactory } from "@/hooks/mutations/useCreateIdentityFac
 import { useContext, useEffect } from "react";
 import { Eip3643Context } from "@/contexts/Eip3643Context";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
-import { convertAccountIdToSolidityAddress } from "@/services/util/helpers";
-import { AccountId } from "@hashgraph/sdk";
 
 export default function CreateIdentityFactory() {
-  const { accountId, walletName, walletInterface } = useWalletInterface();
-
-  const currentAccountAddress = convertAccountIdToSolidityAddress(
-    AccountId.fromString(accountId as string),
-  );
+  const { accountEvm } = useWalletInterface();
 
   const {
     currentIdentityAddress,
     setCurrentIdentityAddress,
-    currentIdentityWallet,
     setCurrentIdentityWallet,
     identities,
   } = useContext(Eip3643Context);
@@ -41,7 +34,7 @@ export default function CreateIdentityFactory() {
 
   const form = useFormik({
     initialValues: {
-      address: accountId?.toString(),
+      address: accountEvm,
     },
     onSubmit: ({ address }) => {
       createIdentityFactory({ address: address as `0x${string}` });
@@ -52,7 +45,9 @@ export default function CreateIdentityFactory() {
     let isFound = false;
     (identities as any).map((item: any) => {
       //@TODO fix if we can have several identities per wallet
-      if (item["args"]?.[0] === form.values.address) {
+      if (
+        item["args"]?.[0].toLowerCase() === form.values.address?.toLowerCase()
+      ) {
         isFound = true;
         setCurrentIdentityWallet(item?.["args"]?.[0]);
         setCurrentIdentityAddress(item?.["args"]?.[1]);
@@ -62,7 +57,7 @@ export default function CreateIdentityFactory() {
       setCurrentIdentityAddress("");
       setCurrentIdentityWallet("");
     }
-  }, [accountId, identities, form.values.address]);
+  }, [identities, form.values.address]);
 
   return (
     <>
@@ -86,7 +81,7 @@ export default function CreateIdentityFactory() {
             type="submit"
             isLoading={isPending}
           >
-            Create identity
+            Create identity {!!currentIdentityAddress && "[Already created]"}
           </Button>
           {error && (
             <Alert status="error">

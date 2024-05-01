@@ -10,14 +10,9 @@ export function useMintToken() {
 
   return useMutation({
     mutationFn: async ({ token, address, value }: MintTokenRequest) => {
-      const evmAddress = await walletInterface?.getEvmAccountAddress(
-        AccountId.fromString(address as string),
-      );
-      if (!evmAddress) return null;
-
       const mintResult = await writeTokenMint(
         walletInterface as WalletInterface,
-        { args: [evmAddress, BigInt(value)] },
+        { args: [address, BigInt(value)] },
         token,
       );
       return mintResult;

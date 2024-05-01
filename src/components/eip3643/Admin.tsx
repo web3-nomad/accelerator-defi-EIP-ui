@@ -19,7 +19,7 @@ export default function Admin() {
     null as TokenNameItem | null,
   );
   const [ownTokens, setOwnTokens] = useState([] as Array<TokenNameItem>);
-  const { accountId, walletName, walletInterface } = useWalletInterface();
+  const { accountEvm } = useWalletInterface();
   const { deployedTokens } = useContext(Eip3643Context);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function Admin() {
           readTokenName({}, tokenAddress),
           readTokenOwner({}, tokenAddress),
         ]).then((res) => {
-          res[1][0].toString() === accountId?.toString() &&
+          res[1][0].toString().toLowerCase() === accountEvm?.toLowerCase() &&
             setOwnTokens((prev) => {
               return [
                 ...prev.filter((itemSub) => itemSub.address !== tokenAddress),
@@ -42,7 +42,7 @@ export default function Admin() {
             });
         });
     });
-  }, [deployedTokens, accountId, setOwnTokens]);
+  }, [deployedTokens, accountEvm, setOwnTokens]);
 
   return (
     <>
