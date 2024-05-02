@@ -1,20 +1,21 @@
 import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
   Button,
   FormControl,
   FormHelperText,
   FormLabel,
+  Heading,
   Input,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
   NumberInput,
   NumberInputField,
-  NumberInputStepper,
   VStack,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { useTransferToken } from "@/hooks/mutations/useTransferToken";
-import { TransferTokenFromRequest } from "@/types/types";
 
 export default function TransferToken() {
   const { accountId, walletName, walletInterface } = useWalletInterface();
@@ -31,20 +32,10 @@ export default function TransferToken() {
       tokenAddress: "",
       fromAddress: "",
       toAddress: "",
-      // amount: BigInt(0),
       amount: 0,
     },
     onSubmit: ({ tokenAddress, fromAddress, toAddress, amount }) => {
-      console.log("L32 onSubmit tokenAddress===", tokenAddress);
-      console.log("L32 onSubmit fromAddress===", fromAddress);
-      console.log("L32 onSubmit toAddress===", toAddress);
-      console.log("L32 onSubmit amount===", amount);
-      console.log("L32 onSubmit amount BIGINT===", BigInt(amount));
-
       const amountConverted = BigInt(amount);
-
-      //@TODO Uncaught (in promise) Transfer not possible
-      // what do i need to transfer? which requirements are not met?
 
       transferToken({
         tokenAddress,
@@ -57,6 +48,7 @@ export default function TransferToken() {
 
   return (
     <>
+      <Heading size={"sm"}>Transfer token</Heading>
       <form onSubmit={form.handleSubmit}>
         <VStack gap={2} alignItems="flex-start">
           <FormControl isRequired>
@@ -99,7 +91,6 @@ export default function TransferToken() {
               variant="outline"
               value={form.values.amount}
               clampValueOnBlur={false}
-              //@TODO do i need onchange why cant write directly?
               onChange={(val) => form.setFieldValue("amount", val)}
             >
               <NumberInputField />
@@ -111,6 +102,16 @@ export default function TransferToken() {
           </Button>
         </VStack>
       </form>
+      {error && (
+        <Alert status="error">
+          <AlertIcon />
+          <AlertTitle>Transfer token error!</AlertTitle>
+          <AlertDescription>
+            {error.toString()} Potential reasons: no identity present in
+            identity registry
+          </AlertDescription>
+        </Alert>
+      )}
     </>
   );
 }
