@@ -149,11 +149,14 @@ class HashConnectWallet implements WalletInterface {
     if (!hashConnectSigner) {
       return null;
     }
+    const evmAddress = await this.getEvmAccountAddress(
+      AccountId.fromString(accountId.toString()),
+    );
 
     let gasLimitFinal = gasLimit;
     if (!gasLimitFinal) {
       const res = await estimateGas(
-        accountId.toSolidityAddress(),
+        evmAddress,
         contractId,
         abi,
         functionName,
@@ -211,7 +214,7 @@ const hashConnectInitPromise = new Promise(async (resolve) => {
 // this component will sync the hashconnect state with the context
 export const HashConnectClient = () => {
   // use the HashpackContext to keep track of the hashpack account and connection
-  const { setAccountId, setIsConnected, setIsAvailable } =
+  const { setAccountId, setAccountEvm, setIsConnected, setIsAvailable } =
     useContext(HashconnectContext);
 
   // sync the hashconnect state with the context
@@ -221,14 +224,20 @@ export const HashConnectClient = () => {
 
       if (accountId) {
         setAccountId(accountId);
+        hashConnectWallet
+          .getEvmAccountAddress(AccountId.fromString(accountId as string))
+          .then((res) => {
+            setAccountEvm(res);
+          });
         setIsConnected(true);
       } else {
         setAccountId("");
+        setAccountEvm("");
         setIsConnected(false);
       }
     }
     setIsAvailable(true);
-  }, [setAccountId, setIsConnected, setIsAvailable]);
+  }, [setAccountId, setAccountEvm, setIsConnected, setIsAvailable]);
 
   useEffect(() => {
     syncWithHashConnect();

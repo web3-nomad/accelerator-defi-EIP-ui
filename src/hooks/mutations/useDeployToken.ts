@@ -7,7 +7,7 @@ import { ethers } from "ethers";
 import { DeployTokenRequest } from "@/types/types";
 
 export function useDeployToken() {
-  const { accountId, walletName, walletInterface } = useWalletInterface();
+  const { accountEvm, walletInterface } = useWalletInterface();
 
   return useMutation({
     mutationFn: async ({ name, symbol, decimals }: DeployTokenRequest) => {
@@ -23,14 +23,7 @@ export function useDeployToken() {
         issuers: [],
         issuerClaims: [],
       };
-
-      const currentDeployerAddress =
-        await walletInterface?.getEvmAccountAddress(
-          AccountId.fromString(accountId as string),
-        );
-
-      if (!currentDeployerAddress) return null;
-
+      const currentDeployerAddress = accountEvm as `0x${string}`;
       const tokenDetails = {
         owner: currentDeployerAddress,
         name,

@@ -172,11 +172,14 @@ class BladeWallet implements WalletInterface {
     if (!bladeSigner) {
       return null;
     }
+    const evmAddress = await this.getEvmAccountAddress(
+      bladeSigner.getAccountId(),
+    );
 
     let gasLimitFinal = gasLimit;
     if (!gasLimitFinal) {
       const res = await estimateGas(
-        bladeSigner.getAccountId().toSolidityAddress(),
+        evmAddress,
         contractId,
         abi,
         functionName,
@@ -264,7 +267,7 @@ export const BladeClient = () => {
   const [usedBlade, setUsedBlade] = useState(false);
 
   // use the BladeContext to keep track of the hashpack account and connection
-  const { setAccountId, setIsConnected, setIsAvailable } =
+  const { setAccountId, setAccountEvm, setIsConnected, setIsAvailable } =
     useContext(BladeContext);
 
   // sync with blade state with the context so the context is aware of connected account id
@@ -274,25 +277,34 @@ export const BladeClient = () => {
       if (bladeSigner) {
         const accountId = bladeSigner.getAccountId();
         setAccountId(accountId.toString());
+        bladeWallet
+          .getEvmAccountAddress(AccountId.fromString(accountId as string))
+          .then((res) => {
+            setAccountEvm(res);
+          });
         setIsConnected(true);
         bladeConnector.onSessionDisconnect(() => {
           setAccountId("");
+          setAccountEvm("");
           setIsConnected(false);
         });
       } else {
         setAccountId("");
+        setAccountEvm("");
         setIsConnected(false);
       }
     } catch (error) {
       setAccountId("");
+      setAccountEvm("");
       setIsConnected(false);
     }
   }, [setIsConnected, setAccountId]);
 
   const syncWithBladeDisconnected = useCallback(() => {
     setAccountId("");
+    setAccountEvm("");
     setIsConnected(false);
-  }, [setIsConnected, setAccountId]);
+  }, [setIsConnected, setAccountId, setAccountEvm]);
 
   // sync the blade state with the context
   useEffect(() => {
