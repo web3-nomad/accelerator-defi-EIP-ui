@@ -44,7 +44,6 @@ export default function CreateIdentityFactory() {
   useEffect(() => {
     let isFound = false;
     (identities as any).map((item: any) => {
-      //@TODO fix if we can have several identities per wallet
       if (
         item["args"]?.[0].toLowerCase() === form.values.address?.toLowerCase()
       ) {
@@ -57,7 +56,12 @@ export default function CreateIdentityFactory() {
       setCurrentIdentityAddress("");
       setCurrentIdentityWallet("");
     }
-  }, [identities, form.values.address]);
+  }, [
+    identities,
+    form.values.address,
+    setCurrentIdentityWallet,
+    setCurrentIdentityAddress,
+  ]);
 
   return (
     <>
