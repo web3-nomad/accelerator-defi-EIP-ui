@@ -25,7 +25,6 @@ export const Button: ComponentSingleStyleConfig = {
     primary: {
       bgColor: "dark.primary",
       color: "brand.white",
-      w: "182px", // seems to be that it is not working from baseStyle
       _disabled: {
         _hover: {
           bgColor: "dark.primary",
@@ -45,7 +44,6 @@ export const Button: ComponentSingleStyleConfig = {
       border: "1px solid",
       bgColor: "brand.white",
       color: "brand.primary",
-      w: "182px",
       _disabled: {
         _hover: {
           bgColor: "brand.white",

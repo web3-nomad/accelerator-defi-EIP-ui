@@ -22,7 +22,8 @@ import {
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { useMintToken } from "@/hooks/mutations/useMintToken";
 import { useFormik } from "formik";
-import { WatchContractEventReturnType } from "../../../services/contracts/watchContractEvent";
+import { WatchContractEventReturnType } from "@/services/contracts/watchContractEvent";
+import { ethers } from "ethers";
 
 type TokenNameItem = {
   address: `0x${string}`;
@@ -34,7 +35,7 @@ export default function TokenInfo({
 }: {
   tokenSelected: TokenNameItem | null;
 }) {
-  const { accountId } = useWalletInterface();
+  const { accountEvm } = useWalletInterface();
   const [balance, setBalance] = useState("");
   let unsub: WatchContractEventReturnType | null = null;
 
@@ -42,7 +43,7 @@ export default function TokenInfo({
 
   const form = useFormik({
     initialValues: {
-      address: accountId?.toString(),
+      address: accountEvm,
       value: "10",
     },
     onSubmit: ({ address, value }) => {
@@ -58,10 +59,12 @@ export default function TokenInfo({
   useEffect(() => {
     if (tokenSelected) {
       const checkBalance = () => {
-        readTokenBalanceOf(
-          { args: [form.values.address as `0x${string}`] },
-          tokenSelected.address,
-        ).then((res) => setBalance(res.toString()));
+        ethers.isAddress(form.values.address)
+          ? readTokenBalanceOf(
+              { args: [form.values.address as `0x${string}`] },
+              tokenSelected.address,
+            ).then((res) => setBalance(res.toString()))
+          : setBalance("Non valid address");
       };
 
       unsub && unsub();

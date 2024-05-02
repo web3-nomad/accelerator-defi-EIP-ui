@@ -77,6 +77,7 @@ export default function RegisterIdentity({
           registryAgents.includes(currentIdentityWallet)
         }
         isLoading={isPending}
+        size={"md"}
         onClick={async () => {
           register({
             address: currentIdentityWallet as `0x${string}`,
@@ -85,7 +86,10 @@ export default function RegisterIdentity({
           });
         }}
       >
-        Add Identity to Registry
+        Add Identity to Registry{" "}
+        {(!currentIdentityAddress ||
+          registryAgents.includes(currentIdentityWallet)) &&
+          "[Already added]"}
       </Button>
       <FormControl>
         <FormHelperText>
