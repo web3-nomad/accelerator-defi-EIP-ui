@@ -16,6 +16,8 @@ import {
 import { useFormik } from "formik";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { useTransferToken } from "@/hooks/mutations/useTransferToken";
+import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
+import { TransferTokenFromRequest } from "@/types/types";
 
 export default function TransferToken() {
   const { accountId, walletName, walletInterface } = useWalletInterface();
@@ -42,9 +44,13 @@ export default function TransferToken() {
         fromAddress,
         toAddress,
         amount: amountConverted,
-      });
+      } as TransferTokenFromRequest);
     },
   });
+
+  const { data: tokenBalance, error: tokenBalanceError } = useReadBalanceOf(
+    form.values.tokenAddress as `0x${string}`,
+  );
 
   return (
     <>
@@ -59,6 +65,14 @@ export default function TransferToken() {
               value={form.values.tokenAddress}
               onChange={form.handleChange}
             />
+            <FormHelperText>
+              Balance of token: {`${tokenBalance}`}
+            </FormHelperText>
+            {tokenBalanceError && (
+              <FormHelperText color={"red"}>
+                Error fetching balance of token: {form.values.tokenAddress}
+              </FormHelperText>
+            )}
           </FormControl>
 
           <FormControl isRequired>

@@ -98,7 +98,7 @@ export default function CreateIdentityFactory() {
             <Alert status="success">
               <AlertIcon />
               <AlertTitle>Create identity success!</AlertTitle>
-              <AlertDescription>Address: {data}</AlertDescription>
+              <AlertDescription>TxId: {data}</AlertDescription>
             </Alert>
           )}
         </VStack>
