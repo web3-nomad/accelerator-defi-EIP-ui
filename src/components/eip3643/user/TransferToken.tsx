@@ -107,8 +107,8 @@ export default function TransferToken() {
           <AlertIcon />
           <AlertTitle>Transfer token error!</AlertTitle>
           <AlertDescription>
-            {error.toString()} Potential reasons: no identity present in
-            identity registry
+            {error.toString()} Potential reasons: - no sender or recipient
+            identity present in the identity registry
           </AlertDescription>
         </Alert>
       )}
