@@ -57,6 +57,7 @@ export default function TokenInfo({
       });
   };
 
+  //@TODO use useReadBalanceOf query here, disable if no token selected
   const readBalance = useCallback(() => {
     setBalance("pending...");
     selectedToken &&

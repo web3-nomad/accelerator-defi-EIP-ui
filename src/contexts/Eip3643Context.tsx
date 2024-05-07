@@ -1,15 +1,26 @@
-import { LogDescription } from "ethers";
+import { LogDescription, Log } from "ethers";
 import { createContext, ReactNode, useState } from "react";
 
-const defaultValue = {
+type defaultContextType = {
+  deployedTokens: LogDescription[];
+  setDeployedTokens: (newValue: []) => void;
+  identities: LogDescription[];
+  setIdentities: (newValue: []) => void;
+  currentIdentityAddress: string;
+  setCurrentIdentityAddress: (newValue: string) => void;
+  currentIdentityWallet: string;
+  setCurrentIdentityWallet: (newValue: string) => void;
+};
+
+const defaultValue: defaultContextType = {
   deployedTokens: [],
-  setDeployedTokens: (newValue: []) => {},
+  setDeployedTokens: (newValue) => {},
   identities: [],
   setIdentities: (newValue: []) => {},
   currentIdentityAddress: "",
-  setCurrentIdentityAddress: (newValue: "") => {},
+  setCurrentIdentityAddress: (newValue) => {},
   currentIdentityWallet: "",
-  setCurrentIdentityWallet: (newValue: "") => {},
+  setCurrentIdentityWallet: (newValue) => {},
 };
 
 export const Eip3643Context = createContext(defaultValue);

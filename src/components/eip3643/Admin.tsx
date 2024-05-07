@@ -47,7 +47,7 @@ export default function Admin() {
   return (
     <>
       {!isDeploy && (
-        <Stack spacing={4} direction="row" align="center">
+        <Stack spacing={4} align="center">
           <Select
             placeholder="Select token for operation"
             onChange={(item) => {
