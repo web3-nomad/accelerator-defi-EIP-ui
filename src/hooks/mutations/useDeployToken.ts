@@ -1,7 +1,9 @@
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { useMutation } from "@tanstack/react-query";
-import { writeTrexGatewayDeployTrexSuite } from "@/services/contracts/wagmiGenActions";
-import { AccountId } from "@hashgraph/sdk";
+import {
+  requiresNftModuleAddress,
+  writeTrexGatewayDeployTrexSuite,
+} from "@/services/contracts/wagmiGenActions";
 import { WalletInterface } from "@/services/wallets/walletInterface";
 import { ethers } from "ethers";
 import { DeployTokenRequest } from "@/types/types";
@@ -10,12 +12,26 @@ export function useDeployToken() {
   const { accountEvm, walletInterface } = useWalletInterface();
 
   return useMutation({
-    mutationFn: async ({ name, symbol, decimals }: DeployTokenRequest) => {
+    mutationFn: async ({
+      name,
+      symbol,
+      decimals,
+      nftAddress,
+    }: DeployTokenRequest) => {
       // admin should be able to select the desired compliance module to include in the token
-      const compliance = {
-        modules: [],
-        settings: [],
+      let compliance = {
+        modules: [] as `0x${string}`[],
+        settings: [] as `0x${string}`[],
       };
+
+      // Sample compliance support using requireNFT (optional)
+      if (nftAddress) {
+        const requiresNftModuleCall = new ethers.Interface([
+          "function requireNFT(address _nftAddress)",
+        ]).encodeFunctionData("requireNFT", [nftAddress]) as `0x${string}`;
+        compliance.modules.push(requiresNftModuleAddress);
+        compliance.settings.push(requiresNftModuleCall);
+      }
 
       // claims are not needed right now
       const claims = {
