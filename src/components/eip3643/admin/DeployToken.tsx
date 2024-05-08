@@ -17,6 +17,7 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  FormHelperText,
 } from "@chakra-ui/react";
 
 export default function DeployToken({ onClose = () => {} }) {
@@ -32,12 +33,14 @@ export default function DeployToken({ onClose = () => {} }) {
       name: "",
       symbol: "",
       decimals: 18,
+      nftAddress: "",
     },
-    onSubmit: ({ name, symbol, decimals }) => {
+    onSubmit: ({ name, symbol, decimals, nftAddress }) => {
       deployToken({
         name,
         symbol,
         decimals,
+        nftAddress: nftAddress as `0x${string}`,
       });
     },
   });
@@ -80,6 +83,20 @@ export default function DeployToken({ onClose = () => {} }) {
               <NumberDecrementStepper />
             </NumberInputStepper>
           </NumberInput>
+        </FormControl>
+        <FormControl>
+          <FormLabel>NFT address for compliance module (optional)</FormLabel>
+          <Input
+            name="nftAddress"
+            variant="outline"
+            value={form.values.nftAddress}
+            onChange={form.handleChange}
+          />
+          <FormHelperText>
+            If entered, it will be required to token operators to have an NFT at
+            provided address. Otherwise, compliance functionality will be
+            ignored.
+          </FormHelperText>
         </FormControl>
         {!deployResult && (
           <Stack spacing={4} direction="row" align="center">
