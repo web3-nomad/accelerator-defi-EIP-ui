@@ -25,3 +25,10 @@ export type TokenNameItem = {
   address: `0x${string}`;
   name: string;
 };
+
+export type TransferTokenFromRequest = {
+  tokenAddress: `0x${string}`;
+  fromAddress: `0x${string}`;
+  toAddress: `0x${string}`;
+  amount: bigint;
+};
