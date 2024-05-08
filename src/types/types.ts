@@ -2,7 +2,7 @@ export type DeployTokenRequest = {
   name: string;
   symbol: string;
   decimals: number;
-  nftAddress: `0x${string}` | null;
+  nftAddress?: `0x${string}`;
 };
 
 export type MintTokenRequest = {
