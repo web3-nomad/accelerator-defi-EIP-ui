@@ -93,9 +93,9 @@ export default function DeployToken({ onClose = () => {} }) {
             onChange={form.handleChange}
           />
           <FormHelperText>
-            If entered, it will be required to token operators to have an NFT at
-            provided address. Otherwise, compliance functionality will be
-            ignored.
+            If entered, it will be required for the token operators to have an
+            NFT of the provided address. If empty, compliance functionality will
+            be ignored.
           </FormHelperText>
         </FormControl>
         {!deployResult && (

@@ -12,6 +12,7 @@ import {
 import { TokenNameItem } from "@/types/types";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import TokenInfo from "@/components/eip3643/admin/TokenInfo";
+import Compliance from "@/components/eip3643/admin/Compliance";
 
 export default function Admin() {
   const [isDeploy, setIsDeploy] = useState(false);
@@ -84,6 +85,8 @@ export default function Admin() {
           <CreateIdentityFactory />
           <Divider my={10} />
           <RegisterIdentity tokenSelected={tokenSelected} />
+          <Divider my={10} />
+          <Compliance tokenSelected={tokenSelected} />
           <Divider my={10} />
         </>
       )}
