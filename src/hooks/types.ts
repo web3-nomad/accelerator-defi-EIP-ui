@@ -4,4 +4,5 @@ export enum QueryKeys {
   ReadTokenName = "readTokenName",
   ReadBalanceOf = "readBalanceOf",
   ReadTokenCompliance = "readTokenCompliance",
+  ReadModularComplianceGetModules = "readModularComplianceGetModules",
 }
