@@ -37,15 +37,14 @@ export default function RegisterIdentity({
     error,
     isPending,
   } = useRegisterIdentity();
-  let unsub: WatchContractEventReturnType | null = null;
 
   useEffect(() => {
+    let unsub: WatchContractEventReturnType | null = null;
     tokenSelected &&
       readTokenIdentityRegistry({ args: [] }, tokenSelected.address).then(
         (res) => {
           setRegistry(res[0]);
           setRegistryAgents([]);
-          unsub && unsub();
           unsub = watchIdentityRegistryIdentityRegisteredEvent(
             {
               onLogs: (data) => {
