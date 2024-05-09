@@ -17,10 +17,10 @@ import { useRegisterIdentity } from "@/hooks/mutations/useRegisterIdentity";
 import {
   readTokenIdentityRegistry,
   watchIdentityRegistryIdentityRegisteredEvent,
-} from "../../../services/contracts/wagmiGenActions";
-import { TokenNameItem } from "../../../types/types";
-import { Eip3643Context } from "../../../contexts/Eip3643Context";
-import { WatchContractEventReturnType } from "../../../services/contracts/watchContractEvent";
+} from "@/services/contracts/wagmiGenActions";
+import { TokenNameItem } from "@/types/types";
+import { Eip3643Context } from "@/contexts/Eip3643Context";
+import { WatchContractEventReturnType } from "@/services/contracts/watchContractEvent";
 
 export default function RegisterIdentity({
   tokenSelected,
