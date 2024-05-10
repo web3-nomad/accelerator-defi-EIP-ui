@@ -1,4 +1,5 @@
 import { Button, Flex, Text } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 import Icon from "../../components/Icon";
 
 interface SidebarOptionProps {
@@ -21,8 +22,9 @@ const SidebarOption = ({
   isHidden = false,
 }: SidebarOptionProps) => {
   const isActive = false;
+  const navigate = useNavigate();
   const handleNavigate = () => {
-    console.log(route);
+    navigate(route);
   };
 
   return (

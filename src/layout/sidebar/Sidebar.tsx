@@ -13,14 +13,15 @@ const routes: optionsProps[] = [
   {
     icon: "Coin",
     title: "EIP-3643",
-    route: "/",
+    route: "/eip3643",
     isDisabled: false,
   },
-  // {
-  //   icon: "GearSix",
-  //   title: "EIP-3643 Admin",
-  //   route: "/eip3643/admin",
-  // },
+  {
+    icon: "Coin",
+    title: "EIP-4626",
+    route: "/eip4626",
+    isDisabled: false,
+  },
 ];
 
 const Sidebar = () => {

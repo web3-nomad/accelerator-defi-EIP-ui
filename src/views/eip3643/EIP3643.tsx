@@ -1,12 +1,4 @@
-import {
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
-  Text,
-  Flex,
-} from "@chakra-ui/react";
+import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { Eip3643Context } from "@/contexts/Eip3643Context";
 import Admin from "@/components/eip3643/Admin";
@@ -17,6 +9,7 @@ import {
   watchTrexFactoryTrexSuiteDeployedEvent,
 } from "@/services/contracts/wagmiGenActions";
 import { WatchContractEventReturnType } from "viem";
+import NoWalletConnected from "@/components/NoWalletConnected";
 
 export default function EIP3643() {
   const { accountId } = useWalletInterface();
@@ -46,21 +39,7 @@ export default function EIP3643() {
     };
   }, [setDeployedTokens, setIdentities]);
 
-  if (!accountId)
-    return (
-      <Flex
-        bgColor="white"
-        w="100%"
-        h="100%"
-        justifyContent="center"
-        alignItems="center"
-        flexDirection="column"
-      >
-        <Text fontSize="22px" fontWeight="700" lineHeight="16px" mb="16px">
-          Connect wallet to start operating!
-        </Text>
-      </Flex>
-    );
+  if (!accountId) return <NoWalletConnected />;
 
   return (
     <>
