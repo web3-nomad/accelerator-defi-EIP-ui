@@ -1,7 +1,13 @@
 "use client";
 
-import { Box, Divider, Flex } from "@chakra-ui/react";
-import type { ReactNode } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+
+import { Box, Flex } from "@chakra-ui/react";
 import Sidebar from "./sidebar/Sidebar";
 import Topbar from "./topbar/Topbar";
 import Footer from "./footer/Footer";
@@ -17,33 +23,53 @@ import { AllWalletsProvider } from "@/services/wallets/AllWalletsProvider";
 
 import EIP3643 from "@/views/eip3643/EIP3643";
 import { Eip3643ContextProvider } from "@/contexts/Eip3643Context";
-
-interface LayoutProps {
-  children: ReactNode;
-}
+import EIP4626 from "@/views/eip4626/EIP4626";
+import { Eip4626ContextProvider } from "@/contexts/Eip4626Context";
 
 const queryClient = new QueryClient();
 
-const Layout = ({ children }: LayoutProps) => {
+const Layout = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <ChakraProvider theme={theme}>
         <Focus />
         <Fonts />
         <AllWalletsProvider>
-          <Box>
-            <Topbar />
-            <Flex>
-              <Sidebar />
-              <Box p={10} width={"100%"}>
-                {/* {children} TODO: we can't use next.js routing due to build error of 'crypto' module */}
-                <Eip3643ContextProvider>
-                  <EIP3643 />
-                </Eip3643ContextProvider>
-              </Box>
-            </Flex>
-            <Footer />
-          </Box>
+          <Router>
+            <Box>
+              <Topbar />
+              <Flex>
+                <Sidebar />
+                <Box p={10} width={"100%"}>
+                  <Routes>
+                    <Route path="/">
+                      <Route
+                        path="eip3643"
+                        element={
+                          <Eip3643ContextProvider>
+                            <EIP3643 />
+                          </Eip3643ContextProvider>
+                        }
+                      />
+                      <Route
+                        path="eip4626"
+                        element={
+                          <Eip4626ContextProvider>
+                            <EIP4626 />
+                          </Eip4626ContextProvider>
+                        }
+                      />
+                    </Route>
+                    <Route
+                      path="*"
+                      element={<Navigate to="/eip3643" replace />}
+                    />
+                  </Routes>
+                </Box>
+              </Flex>
+              <Footer />
+            </Box>
+          </Router>
         </AllWalletsProvider>
         <ScrollBar />
       </ChakraProvider>
