@@ -32,16 +32,14 @@ export default function TransferToken() {
   const form = useFormik({
     initialValues: {
       tokenAddress: "",
-      fromAddress: "",
       toAddress: "",
       amount: 0,
     },
-    onSubmit: ({ tokenAddress, fromAddress, toAddress, amount }) => {
+    onSubmit: ({ tokenAddress, toAddress, amount }) => {
       const amountConverted = BigInt(amount);
 
       transferToken({
         tokenAddress,
-        fromAddress,
         toAddress,
         amount: amountConverted,
       } as TransferTokenFromRequest);
@@ -76,19 +74,6 @@ export default function TransferToken() {
           </FormControl>
 
           <FormControl isRequired>
-            <FormLabel>Send from address</FormLabel>
-            <Input
-              name="fromAddress"
-              variant="outline"
-              value={form.values.fromAddress}
-              onChange={form.handleChange}
-            />
-            <FormHelperText>
-              <b>Connected wallet address:</b> {accountId || "Not connected"}
-            </FormHelperText>
-          </FormControl>
-
-          <FormControl isRequired>
             <FormLabel>Send to address</FormLabel>
             <Input
               name="toAddress"
@@ -96,6 +81,10 @@ export default function TransferToken() {
               value={form.values.toAddress}
               onChange={form.handleChange}
             />
+
+            <FormHelperText>
+              <b>Connected wallet address:</b> {accountId || "Not connected"}
+            </FormHelperText>
           </FormControl>
 
           <FormControl isRequired>
@@ -121,8 +110,10 @@ export default function TransferToken() {
           <AlertIcon />
           <AlertTitle>Transfer token error!</AlertTitle>
           <AlertDescription>
-            {error.toString()} Potential reasons: - no sender or recipient
-            identity present in the identity registry
+            {error.toString()}
+            Potential reasons: - no sender or recipient identity present in the
+            identity registry - sender or recipient does not have KYC NFT
+            present
           </AlertDescription>
         </Alert>
       )}
