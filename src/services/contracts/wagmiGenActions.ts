@@ -10,6 +10,18 @@ import {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const claimTopicsRegistryAbi = [
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  {
+    type: "error",
+    inputs: [{ name: "owner", internalType: "address", type: "address" }],
+    name: "OwnableInvalidOwner",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "OwnableUnauthorizedAccount",
+  },
   {
     type: "event",
     anonymous: false,
@@ -40,7 +52,12 @@ export const claimTopicsRegistryAbi = [
     type: "event",
     anonymous: false,
     inputs: [
-      { name: "version", internalType: "uint8", type: "uint8", indexed: false },
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
     ],
     name: "Initialized",
   },
@@ -502,6 +519,698 @@ export const erc20Address =
 export const erc20Config = { address: erc20Address, abi: erc20Abi } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// HederaVault
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const hederaVaultAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "_underlying", internalType: "contract ERC20", type: "address" },
+      { name: "_name", internalType: "string", type: "string" },
+      { name: "_symbol", internalType: "string", type: "string" },
+      {
+        name: "_feeConfig",
+        internalType: "struct FeeConfiguration.FeeConfig",
+        type: "tuple",
+        components: [
+          { name: "receiver", internalType: "address", type: "address" },
+          { name: "token", internalType: "address", type: "address" },
+          { name: "feePercentage", internalType: "uint256", type: "uint256" },
+        ],
+      },
+      {
+        name: "_vaultRewardController",
+        internalType: "address",
+        type: "address",
+      },
+      {
+        name: "_feeConfigController",
+        internalType: "address",
+        type: "address",
+      },
+    ],
+    stateMutability: "payable",
+  },
+  { type: "error", inputs: [], name: "AccessControlBadConfirmation" },
+  {
+    type: "error",
+    inputs: [
+      { name: "account", internalType: "address", type: "address" },
+      { name: "neededRole", internalType: "bytes32", type: "bytes32" },
+    ],
+    name: "AccessControlUnauthorizedAccount",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "AddressInsufficientBalance",
+  },
+  { type: "error", inputs: [], name: "FailedInnerCall" },
+  { type: "error", inputs: [], name: "MaxRewardTokensAmount" },
+  { type: "error", inputs: [], name: "ReentrancyGuardReentrantCall" },
+  {
+    type: "error",
+    inputs: [
+      { name: "numberOfShares", internalType: "uint256", type: "uint256" },
+    ],
+    name: "ZeroShares",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "owner",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "spender",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "Approval",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "createdToken",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "CreatedToken",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "sender",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "receiver",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "assets",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "shares",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "Deposit",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "feeConfig",
+        internalType: "struct FeeConfiguration.FeeConfig",
+        type: "tuple",
+        components: [
+          { name: "receiver", internalType: "address", type: "address" },
+          { name: "token", internalType: "address", type: "address" },
+          { name: "feePercentage", internalType: "uint256", type: "uint256" },
+        ],
+        indexed: false,
+      },
+    ],
+    name: "FeeConfigUpdated",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "rewardToken",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "RewardAdded",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "role", internalType: "bytes32", type: "bytes32", indexed: true },
+      {
+        name: "previousAdminRole",
+        internalType: "bytes32",
+        type: "bytes32",
+        indexed: true,
+      },
+      {
+        name: "newAdminRole",
+        internalType: "bytes32",
+        type: "bytes32",
+        indexed: true,
+      },
+    ],
+    name: "RoleAdminChanged",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "role", internalType: "bytes32", type: "bytes32", indexed: true },
+      {
+        name: "account",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "sender",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "RoleGranted",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "role", internalType: "bytes32", type: "bytes32", indexed: true },
+      {
+        name: "account",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "sender",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "RoleRevoked",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "from", internalType: "address", type: "address", indexed: true },
+      { name: "to", internalType: "address", type: "address", indexed: true },
+      {
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "Transfer",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "sender",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "receiver",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "assets",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+      {
+        name: "shares",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "Withdraw",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "DEFAULT_ADMIN_ROLE",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "DOMAIN_SEPARATOR",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "FEE_CONFIG_CONTROLLER_ROLE",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "VAULT_REWARD_CONTROLLER_ROLE",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_token", internalType: "address", type: "address" },
+      { name: "_amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "addReward",
+    outputs: [],
+    stateMutability: "payable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "address", type: "address" },
+    ],
+    name: "allowance",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "spender", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "approve",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "asset",
+    outputs: [{ name: "", internalType: "contract ERC20", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "assetTotalSupply",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "user", internalType: "address", type: "address" }],
+    name: "assetsOf",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "assetsPerShare",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "", internalType: "address", type: "address" }],
+    name: "balanceOf",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_id", internalType: "uint256", type: "uint256" }],
+    name: "calculateReward",
+    outputs: [{ name: "reward", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_startPosition", internalType: "uint256", type: "uint256" },
+    ],
+    name: "claimAllReward",
+    outputs: [
+      { name: "", internalType: "uint256", type: "uint256" },
+      { name: "", internalType: "uint256", type: "uint256" },
+    ],
+    stateMutability: "payable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "decimals",
+    outputs: [{ name: "", internalType: "uint8", type: "uint8" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "assets", internalType: "uint256", type: "uint256" },
+      { name: "receiver", internalType: "address", type: "address" },
+    ],
+    name: "deposit",
+    outputs: [{ name: "shares", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "feeConfig",
+    outputs: [
+      { name: "receiver", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "feePercentage", internalType: "uint256", type: "uint256" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "role", internalType: "bytes32", type: "bytes32" }],
+    name: "getRoleAdmin",
+    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "role", internalType: "bytes32", type: "bytes32" },
+      { name: "account", internalType: "address", type: "address" },
+    ],
+    name: "grantRole",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "role", internalType: "bytes32", type: "bytes32" },
+      { name: "account", internalType: "address", type: "address" },
+    ],
+    name: "hasRole",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "", internalType: "address", type: "address" }],
+    name: "maxDeposit",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "", internalType: "address", type: "address" }],
+    name: "maxMint",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "user", internalType: "address", type: "address" }],
+    name: "maxRedeem",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "user", internalType: "address", type: "address" }],
+    name: "maxWithdraw",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "shares", internalType: "uint256", type: "uint256" },
+      { name: "to", internalType: "address", type: "address" },
+    ],
+    name: "mint",
+    outputs: [{ name: "amount", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "name",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "", internalType: "address", type: "address" }],
+    name: "nonces",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "owner",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "owner", internalType: "address", type: "address" },
+      { name: "spender", internalType: "address", type: "address" },
+      { name: "value", internalType: "uint256", type: "uint256" },
+      { name: "deadline", internalType: "uint256", type: "uint256" },
+      { name: "v", internalType: "uint8", type: "uint8" },
+      { name: "r", internalType: "bytes32", type: "bytes32" },
+      { name: "s", internalType: "bytes32", type: "bytes32" },
+    ],
+    name: "permit",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "amount", internalType: "uint256", type: "uint256" }],
+    name: "previewDeposit",
+    outputs: [{ name: "shares", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "shares", internalType: "uint256", type: "uint256" }],
+    name: "previewMint",
+    outputs: [{ name: "amount", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "shares", internalType: "uint256", type: "uint256" }],
+    name: "previewRedeem",
+    outputs: [{ name: "amount", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "amount", internalType: "uint256", type: "uint256" }],
+    name: "previewWithdraw",
+    outputs: [{ name: "shares", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "shares", internalType: "uint256", type: "uint256" },
+      { name: "receiver", internalType: "address", type: "address" },
+      { name: "from", internalType: "address", type: "address" },
+    ],
+    name: "redeem",
+    outputs: [{ name: "amount", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "role", internalType: "bytes32", type: "bytes32" },
+      { name: "callerConfirmation", internalType: "address", type: "address" },
+    ],
+    name: "renounceRole",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "role", internalType: "bytes32", type: "bytes32" },
+      { name: "account", internalType: "address", type: "address" },
+    ],
+    name: "revokeRole",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    name: "rewardTokens",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "share",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "symbol",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "", internalType: "address", type: "address" }],
+    name: "tokensRewardInfo",
+    outputs: [
+      { name: "amount", internalType: "uint256", type: "uint256" },
+      { name: "exist", internalType: "bool", type: "bool" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "totalAssets",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "totalSupply",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "to", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "transfer",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "from", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "transferFrom",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      {
+        name: "_feeConfig",
+        internalType: "struct FeeConfiguration.FeeConfig",
+        type: "tuple",
+        components: [
+          { name: "receiver", internalType: "address", type: "address" },
+          { name: "token", internalType: "address", type: "address" },
+          { name: "feePercentage", internalType: "uint256", type: "uint256" },
+        ],
+      },
+    ],
+    name: "updateFeeConfig",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "", internalType: "address", type: "address" }],
+    name: "userContribution",
+    outputs: [
+      { name: "sharesAmount", internalType: "uint256", type: "uint256" },
+      { name: "exist", internalType: "bool", type: "bool" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "amount", internalType: "uint256", type: "uint256" },
+      { name: "receiver", internalType: "address", type: "address" },
+      { name: "from", internalType: "address", type: "address" },
+    ],
+    name: "withdraw",
+    outputs: [{ name: "shares", internalType: "uint256", type: "uint256" }],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
+export const hederaVaultAddress =
+  "0xe95E635753a8A233cB736c5CB0dF181Bb865a90b" as const;
+
+export const hederaVaultConfig = {
+  address: hederaVaultAddress,
+  abi: hederaVaultAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // IdFactory
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -516,6 +1225,16 @@ export const idFactoryAbi = [
       },
     ],
     stateMutability: "nonpayable",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "owner", internalType: "address", type: "address" }],
+    name: "OwnableInvalidOwner",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "OwnableUnauthorizedAccount",
   },
   {
     type: "event",
@@ -1216,10 +1935,31 @@ export const identityGatewayAbi = [
     ],
     stateMutability: "nonpayable",
   },
+  { type: "error", inputs: [], name: "ECDSAInvalidSignature" },
+  {
+    type: "error",
+    inputs: [{ name: "length", internalType: "uint256", type: "uint256" }],
+    name: "ECDSAInvalidSignatureLength",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "s", internalType: "bytes32", type: "bytes32" }],
+    name: "ECDSAInvalidSignatureS",
+  },
   {
     type: "error",
     inputs: [{ name: "signature", internalType: "bytes", type: "bytes" }],
     name: "ExpiredSignature",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "owner", internalType: "address", type: "address" }],
+    name: "OwnableInvalidOwner",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "OwnableUnauthorizedAccount",
   },
   {
     type: "error",
@@ -1245,6 +1985,14 @@ export const identityGatewayAbi = [
     type: "error",
     inputs: [{ name: "signer", internalType: "address", type: "address" }],
     name: "SignerAlreadyNotApproved",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "value", internalType: "uint256", type: "uint256" },
+      { name: "length", internalType: "uint256", type: "uint256" },
+    ],
+    name: "StringsInsufficientHexLength",
   },
   { type: "error", inputs: [], name: "TooManySigners" },
   {
@@ -1459,6 +2207,18 @@ export const identityGatewayConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const identityRegistryAbi = [
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  {
+    type: "error",
+    inputs: [{ name: "owner", internalType: "address", type: "address" }],
+    name: "OwnableInvalidOwner",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "OwnableUnauthorizedAccount",
+  },
   {
     type: "event",
     anonymous: false,
@@ -1591,7 +2351,12 @@ export const identityRegistryAbi = [
     type: "event",
     anonymous: false,
     inputs: [
-      { name: "version", internalType: "uint8", type: "uint8", indexed: false },
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
     ],
     name: "Initialized",
   },
@@ -1882,6 +2647,18 @@ export const identityRegistryConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const identityRegistryStorageAbi = [
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  {
+    type: "error",
+    inputs: [{ name: "owner", internalType: "address", type: "address" }],
+    name: "OwnableInvalidOwner",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "OwnableUnauthorizedAccount",
+  },
   {
     type: "event",
     anonymous: false,
@@ -2014,7 +2791,12 @@ export const identityRegistryStorageAbi = [
     type: "event",
     anonymous: false,
     inputs: [
-      { name: "version", internalType: "uint8", type: "uint8", indexed: false },
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
     ],
     name: "Initialized",
   },
@@ -2202,6 +2984,16 @@ export const implementationAuthorityAbi = [
     stateMutability: "nonpayable",
   },
   {
+    type: "error",
+    inputs: [{ name: "owner", internalType: "address", type: "address" }],
+    name: "OwnableInvalidOwner",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "OwnableUnauthorizedAccount",
+  },
+  {
     type: "event",
     anonymous: false,
     inputs: [
@@ -2294,6 +3086,7 @@ export const maxOwnershipByCountryModuleAbi = [
     ],
     name: "InvalidPresetValues",
   },
+  { type: "error", inputs: [], name: "MathOverflowedMulDiv" },
   {
     type: "error",
     inputs: [
@@ -2529,13 +3322,22 @@ export const maxOwnershipByCountryModuleConfig = {
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// MeaningOfLife
+// ModularCompliance
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export const meaningOfLifeAbi = [
-  { type: "constructor", inputs: [], stateMutability: "nonpayable" },
+export const modularComplianceAbi = [
   { type: "error", inputs: [], name: "InvalidInitialization" },
   { type: "error", inputs: [], name: "NotInitializing" },
+  {
+    type: "error",
+    inputs: [{ name: "owner", internalType: "address", type: "address" }],
+    name: "OwnableInvalidOwner",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "OwnableUnauthorizedAccount",
+  },
   {
     type: "event",
     anonymous: false,
@@ -2546,43 +3348,6 @@ export const meaningOfLifeAbi = [
         type: "uint64",
         indexed: false,
       },
-    ],
-    name: "Initialized",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "initialize",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "theMeaningOfLifeIs",
-    outputs: [{ name: "meaning", internalType: "uint32", type: "uint32" }],
-    stateMutability: "pure",
-  },
-] as const;
-
-export const meaningOfLifeAddress =
-  "0x8546fc43a9F2dC6A10a2d3155f653F30B18eD56d" as const;
-
-export const meaningOfLifeConfig = {
-  address: meaningOfLifeAddress,
-  abi: meaningOfLifeAbi,
-} as const;
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// ModularCompliance
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-export const modularComplianceAbi = [
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      { name: "version", internalType: "uint8", type: "uint8", indexed: false },
     ],
     name: "Initialized",
   },
@@ -3005,6 +3770,16 @@ export const trexFactoryAbi = [
     stateMutability: "nonpayable",
   },
   {
+    type: "error",
+    inputs: [{ name: "owner", internalType: "address", type: "address" }],
+    name: "OwnableInvalidOwner",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "OwnableUnauthorizedAccount",
+  },
+  {
     type: "event",
     anonymous: false,
     inputs: [
@@ -3265,10 +4040,28 @@ export const trexGatewayAbi = [
   { type: "error", inputs: [], name: "DeploymentFeesAlreadyEnabled" },
   { type: "error", inputs: [], name: "DiscountOutOfRange" },
   { type: "error", inputs: [], name: "OnlyAdminCall" },
+  {
+    type: "error",
+    inputs: [{ name: "owner", internalType: "address", type: "address" }],
+    name: "OwnableInvalidOwner",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "OwnableUnauthorizedAccount",
+  },
   { type: "error", inputs: [], name: "PublicCannotDeployOnBehalf" },
   { type: "error", inputs: [], name: "PublicDeploymentAlreadyDisabled" },
   { type: "error", inputs: [], name: "PublicDeploymentAlreadyEnabled" },
   { type: "error", inputs: [], name: "PublicDeploymentsNotAllowed" },
+  {
+    type: "error",
+    inputs: [
+      { name: "value", internalType: "uint256", type: "uint256" },
+      { name: "length", internalType: "uint256", type: "uint256" },
+    ],
+    name: "StringsInsufficientHexLength",
+  },
   { type: "error", inputs: [], name: "ZeroAddress" },
   {
     type: "event",
@@ -3742,6 +4535,16 @@ export const trexImplementationAuthorityAbi = [
       { name: "iaFactory", internalType: "address", type: "address" },
     ],
     stateMutability: "nonpayable",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "owner", internalType: "address", type: "address" }],
+    name: "OwnableInvalidOwner",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "OwnableUnauthorizedAccount",
   },
   {
     type: "event",
@@ -4303,6 +5106,18 @@ export const trexImplementationAuthorityConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const tokenAbi = [
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  {
+    type: "error",
+    inputs: [{ name: "owner", internalType: "address", type: "address" }],
+    name: "OwnableInvalidOwner",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "OwnableUnauthorizedAccount",
+  },
   {
     type: "event",
     anonymous: false,
@@ -4404,7 +5219,12 @@ export const tokenAbi = [
     type: "event",
     anonymous: false,
     inputs: [
-      { name: "version", internalType: "uint8", type: "uint8", indexed: false },
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
     ],
     name: "Initialized",
   },
@@ -4989,6 +5809,18 @@ export const tokenConfig = { address: tokenAddress, abi: tokenAbi } as const;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const trustedIssuersRegistryAbi = [
+  { type: "error", inputs: [], name: "InvalidInitialization" },
+  { type: "error", inputs: [], name: "NotInitializing" },
+  {
+    type: "error",
+    inputs: [{ name: "owner", internalType: "address", type: "address" }],
+    name: "OwnableInvalidOwner",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "OwnableUnauthorizedAccount",
+  },
   {
     type: "event",
     anonymous: false,
@@ -5012,7 +5844,12 @@ export const trustedIssuersRegistryAbi = [
     type: "event",
     anonymous: false,
     inputs: [
-      { name: "version", internalType: "uint8", type: "uint8", indexed: false },
+      {
+        name: "version",
+        internalType: "uint64",
+        type: "uint64",
+        indexed: false,
+      },
     ],
     name: "Initialized",
   },
@@ -5893,6 +6730,721 @@ export const watchErc20TransferEvent = /*#__PURE__*/ createWatchContractEvent({
   address: erc20Address,
   eventName: "Transfer",
 });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__
+ */
+export const readHederaVault = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"DEFAULT_ADMIN_ROLE"`
+ */
+export const readHederaVaultDefaultAdminRole = /*#__PURE__*/ createReadContract(
+  {
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    functionName: "DEFAULT_ADMIN_ROLE",
+  },
+);
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"DOMAIN_SEPARATOR"`
+ */
+export const readHederaVaultDomainSeparator = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "DOMAIN_SEPARATOR",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"FEE_CONFIG_CONTROLLER_ROLE"`
+ */
+export const readHederaVaultFeeConfigControllerRole =
+  /*#__PURE__*/ createReadContract({
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    functionName: "FEE_CONFIG_CONTROLLER_ROLE",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"VAULT_REWARD_CONTROLLER_ROLE"`
+ */
+export const readHederaVaultVaultRewardControllerRole =
+  /*#__PURE__*/ createReadContract({
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    functionName: "VAULT_REWARD_CONTROLLER_ROLE",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"allowance"`
+ */
+export const readHederaVaultAllowance = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "allowance",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"asset"`
+ */
+export const readHederaVaultAsset = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "asset",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"assetTotalSupply"`
+ */
+export const readHederaVaultAssetTotalSupply = /*#__PURE__*/ createReadContract(
+  {
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    functionName: "assetTotalSupply",
+  },
+);
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"assetsOf"`
+ */
+export const readHederaVaultAssetsOf = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "assetsOf",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"assetsPerShare"`
+ */
+export const readHederaVaultAssetsPerShare = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "assetsPerShare",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"balanceOf"`
+ */
+export const readHederaVaultBalanceOf = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "balanceOf",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"calculateReward"`
+ */
+export const readHederaVaultCalculateReward = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "calculateReward",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"decimals"`
+ */
+export const readHederaVaultDecimals = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "decimals",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"feeConfig"`
+ */
+export const readHederaVaultFeeConfig = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "feeConfig",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"getRoleAdmin"`
+ */
+export const readHederaVaultGetRoleAdmin = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "getRoleAdmin",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"hasRole"`
+ */
+export const readHederaVaultHasRole = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "hasRole",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"maxDeposit"`
+ */
+export const readHederaVaultMaxDeposit = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "maxDeposit",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"maxMint"`
+ */
+export const readHederaVaultMaxMint = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "maxMint",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"maxRedeem"`
+ */
+export const readHederaVaultMaxRedeem = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "maxRedeem",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"maxWithdraw"`
+ */
+export const readHederaVaultMaxWithdraw = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "maxWithdraw",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"name"`
+ */
+export const readHederaVaultName = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "name",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"nonces"`
+ */
+export const readHederaVaultNonces = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "nonces",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"owner"`
+ */
+export const readHederaVaultOwner = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "owner",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"previewDeposit"`
+ */
+export const readHederaVaultPreviewDeposit = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "previewDeposit",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"previewMint"`
+ */
+export const readHederaVaultPreviewMint = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "previewMint",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"previewRedeem"`
+ */
+export const readHederaVaultPreviewRedeem = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "previewRedeem",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"previewWithdraw"`
+ */
+export const readHederaVaultPreviewWithdraw = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "previewWithdraw",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"rewardTokens"`
+ */
+export const readHederaVaultRewardTokens = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "rewardTokens",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"share"`
+ */
+export const readHederaVaultShare = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "share",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"supportsInterface"`
+ */
+export const readHederaVaultSupportsInterface =
+  /*#__PURE__*/ createReadContract({
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    functionName: "supportsInterface",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"symbol"`
+ */
+export const readHederaVaultSymbol = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "symbol",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"tokensRewardInfo"`
+ */
+export const readHederaVaultTokensRewardInfo = /*#__PURE__*/ createReadContract(
+  {
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    functionName: "tokensRewardInfo",
+  },
+);
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"totalAssets"`
+ */
+export const readHederaVaultTotalAssets = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "totalAssets",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"totalSupply"`
+ */
+export const readHederaVaultTotalSupply = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "totalSupply",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"userContribution"`
+ */
+export const readHederaVaultUserContribution = /*#__PURE__*/ createReadContract(
+  {
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    functionName: "userContribution",
+  },
+);
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaVaultAbi}__
+ */
+export const writeHederaVault = /*#__PURE__*/ createWriteContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"addReward"`
+ */
+export const writeHederaVaultAddReward = /*#__PURE__*/ createWriteContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "addReward",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"approve"`
+ */
+export const writeHederaVaultApprove = /*#__PURE__*/ createWriteContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "approve",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"claimAllReward"`
+ */
+export const writeHederaVaultClaimAllReward = /*#__PURE__*/ createWriteContract(
+  {
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    functionName: "claimAllReward",
+  },
+);
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"deposit"`
+ */
+export const writeHederaVaultDeposit = /*#__PURE__*/ createWriteContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "deposit",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"grantRole"`
+ */
+export const writeHederaVaultGrantRole = /*#__PURE__*/ createWriteContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "grantRole",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"mint"`
+ */
+export const writeHederaVaultMint = /*#__PURE__*/ createWriteContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "mint",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"permit"`
+ */
+export const writeHederaVaultPermit = /*#__PURE__*/ createWriteContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "permit",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"redeem"`
+ */
+export const writeHederaVaultRedeem = /*#__PURE__*/ createWriteContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "redeem",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"renounceRole"`
+ */
+export const writeHederaVaultRenounceRole = /*#__PURE__*/ createWriteContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "renounceRole",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"revokeRole"`
+ */
+export const writeHederaVaultRevokeRole = /*#__PURE__*/ createWriteContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "revokeRole",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"transfer"`
+ */
+export const writeHederaVaultTransfer = /*#__PURE__*/ createWriteContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "transfer",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"transferFrom"`
+ */
+export const writeHederaVaultTransferFrom = /*#__PURE__*/ createWriteContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "transferFrom",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"updateFeeConfig"`
+ */
+export const writeHederaVaultUpdateFeeConfig =
+  /*#__PURE__*/ createWriteContract({
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    functionName: "updateFeeConfig",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"withdraw"`
+ */
+export const writeHederaVaultWithdraw = /*#__PURE__*/ createWriteContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "withdraw",
+});
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaVaultAbi}__
+ */
+export const simulateHederaVault = /*#__PURE__*/ createSimulateContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+});
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"addReward"`
+ */
+export const simulateHederaVaultAddReward =
+  /*#__PURE__*/ createSimulateContract({
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    functionName: "addReward",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"approve"`
+ */
+export const simulateHederaVaultApprove = /*#__PURE__*/ createSimulateContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "approve",
+});
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"claimAllReward"`
+ */
+export const simulateHederaVaultClaimAllReward =
+  /*#__PURE__*/ createSimulateContract({
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    functionName: "claimAllReward",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"deposit"`
+ */
+export const simulateHederaVaultDeposit = /*#__PURE__*/ createSimulateContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "deposit",
+});
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"grantRole"`
+ */
+export const simulateHederaVaultGrantRole =
+  /*#__PURE__*/ createSimulateContract({
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    functionName: "grantRole",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"mint"`
+ */
+export const simulateHederaVaultMint = /*#__PURE__*/ createSimulateContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "mint",
+});
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"permit"`
+ */
+export const simulateHederaVaultPermit = /*#__PURE__*/ createSimulateContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "permit",
+});
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"redeem"`
+ */
+export const simulateHederaVaultRedeem = /*#__PURE__*/ createSimulateContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "redeem",
+});
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"renounceRole"`
+ */
+export const simulateHederaVaultRenounceRole =
+  /*#__PURE__*/ createSimulateContract({
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    functionName: "renounceRole",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"revokeRole"`
+ */
+export const simulateHederaVaultRevokeRole =
+  /*#__PURE__*/ createSimulateContract({
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    functionName: "revokeRole",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"transfer"`
+ */
+export const simulateHederaVaultTransfer = /*#__PURE__*/ createSimulateContract(
+  {
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    functionName: "transfer",
+  },
+);
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"transferFrom"`
+ */
+export const simulateHederaVaultTransferFrom =
+  /*#__PURE__*/ createSimulateContract({
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    functionName: "transferFrom",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"updateFeeConfig"`
+ */
+export const simulateHederaVaultUpdateFeeConfig =
+  /*#__PURE__*/ createSimulateContract({
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    functionName: "updateFeeConfig",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"withdraw"`
+ */
+export const simulateHederaVaultWithdraw = /*#__PURE__*/ createSimulateContract(
+  {
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    functionName: "withdraw",
+  },
+);
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link hederaVaultAbi}__
+ */
+export const watchHederaVaultEvent = /*#__PURE__*/ createWatchContractEvent({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+});
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link hederaVaultAbi}__ and `eventName` set to `"Approval"`
+ */
+export const watchHederaVaultApprovalEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    eventName: "Approval",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link hederaVaultAbi}__ and `eventName` set to `"CreatedToken"`
+ */
+export const watchHederaVaultCreatedTokenEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    eventName: "CreatedToken",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link hederaVaultAbi}__ and `eventName` set to `"Deposit"`
+ */
+export const watchHederaVaultDepositEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    eventName: "Deposit",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link hederaVaultAbi}__ and `eventName` set to `"FeeConfigUpdated"`
+ */
+export const watchHederaVaultFeeConfigUpdatedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    eventName: "FeeConfigUpdated",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link hederaVaultAbi}__ and `eventName` set to `"RewardAdded"`
+ */
+export const watchHederaVaultRewardAddedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    eventName: "RewardAdded",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link hederaVaultAbi}__ and `eventName` set to `"RoleAdminChanged"`
+ */
+export const watchHederaVaultRoleAdminChangedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    eventName: "RoleAdminChanged",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link hederaVaultAbi}__ and `eventName` set to `"RoleGranted"`
+ */
+export const watchHederaVaultRoleGrantedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    eventName: "RoleGranted",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link hederaVaultAbi}__ and `eventName` set to `"RoleRevoked"`
+ */
+export const watchHederaVaultRoleRevokedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    eventName: "RoleRevoked",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link hederaVaultAbi}__ and `eventName` set to `"Transfer"`
+ */
+export const watchHederaVaultTransferEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    eventName: "Transfer",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link hederaVaultAbi}__ and `eventName` set to `"Withdraw"`
+ */
+export const watchHederaVaultWithdrawEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    eventName: "Withdraw",
+  });
 
 /**
  * Wraps __{@link readContract}__ with `abi` set to __{@link idFactoryAbi}__
@@ -8240,77 +9792,6 @@ export const watchMaxOwnershipByCountryModuleMaxPercentageSetEvent =
     abi: maxOwnershipByCountryModuleAbi,
     address: maxOwnershipByCountryModuleAddress,
     eventName: "MaxPercentageSet",
-  });
-
-/**
- * Wraps __{@link readContract}__ with `abi` set to __{@link meaningOfLifeAbi}__
- */
-export const readMeaningOfLife = /*#__PURE__*/ createReadContract({
-  abi: meaningOfLifeAbi,
-  address: meaningOfLifeAddress,
-});
-
-/**
- * Wraps __{@link readContract}__ with `abi` set to __{@link meaningOfLifeAbi}__ and `functionName` set to `"theMeaningOfLifeIs"`
- */
-export const readMeaningOfLifeTheMeaningOfLifeIs =
-  /*#__PURE__*/ createReadContract({
-    abi: meaningOfLifeAbi,
-    address: meaningOfLifeAddress,
-    functionName: "theMeaningOfLifeIs",
-  });
-
-/**
- * Wraps __{@link writeContract}__ with `abi` set to __{@link meaningOfLifeAbi}__
- */
-export const writeMeaningOfLife = /*#__PURE__*/ createWriteContract({
-  abi: meaningOfLifeAbi,
-  address: meaningOfLifeAddress,
-});
-
-/**
- * Wraps __{@link writeContract}__ with `abi` set to __{@link meaningOfLifeAbi}__ and `functionName` set to `"initialize"`
- */
-export const writeMeaningOfLifeInitialize = /*#__PURE__*/ createWriteContract({
-  abi: meaningOfLifeAbi,
-  address: meaningOfLifeAddress,
-  functionName: "initialize",
-});
-
-/**
- * Wraps __{@link simulateContract}__ with `abi` set to __{@link meaningOfLifeAbi}__
- */
-export const simulateMeaningOfLife = /*#__PURE__*/ createSimulateContract({
-  abi: meaningOfLifeAbi,
-  address: meaningOfLifeAddress,
-});
-
-/**
- * Wraps __{@link simulateContract}__ with `abi` set to __{@link meaningOfLifeAbi}__ and `functionName` set to `"initialize"`
- */
-export const simulateMeaningOfLifeInitialize =
-  /*#__PURE__*/ createSimulateContract({
-    abi: meaningOfLifeAbi,
-    address: meaningOfLifeAddress,
-    functionName: "initialize",
-  });
-
-/**
- * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link meaningOfLifeAbi}__
- */
-export const watchMeaningOfLifeEvent = /*#__PURE__*/ createWatchContractEvent({
-  abi: meaningOfLifeAbi,
-  address: meaningOfLifeAddress,
-});
-
-/**
- * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link meaningOfLifeAbi}__ and `eventName` set to `"Initialized"`
- */
-export const watchMeaningOfLifeInitializedEvent =
-  /*#__PURE__*/ createWatchContractEvent({
-    abi: meaningOfLifeAbi,
-    address: meaningOfLifeAddress,
-    eventName: "Initialized",
   });
 
 /**

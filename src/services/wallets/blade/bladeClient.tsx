@@ -298,7 +298,7 @@ export const BladeClient = () => {
       setAccountEvm("");
       setIsConnected(false);
     }
-  }, [setIsConnected, setAccountId]);
+  }, [setIsConnected, setAccountId, setAccountEvm]);
 
   const syncWithBladeDisconnected = useCallback(() => {
     setAccountId("");

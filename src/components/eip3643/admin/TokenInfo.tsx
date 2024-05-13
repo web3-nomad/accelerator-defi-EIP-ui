@@ -37,7 +37,6 @@ export default function TokenInfo({
 }) {
   const { accountEvm } = useWalletInterface();
   const [balance, setBalance] = useState("");
-  let unsub: WatchContractEventReturnType | null = null;
 
   const { data, mutateAsync: mint, error, isPending } = useMintToken();
 
@@ -57,6 +56,7 @@ export default function TokenInfo({
   });
 
   useEffect(() => {
+    let unsub: WatchContractEventReturnType | null = null;
     if (tokenSelected) {
       const checkBalance = () => {
         ethers.isAddress(form.values.address)
@@ -67,7 +67,6 @@ export default function TokenInfo({
           : setBalance("Non valid address");
       };
 
-      unsub && unsub();
       unsub = watchTokenTransferEvent(
         {
           onLogs: (data) => {
