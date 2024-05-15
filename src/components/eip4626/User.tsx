@@ -1,12 +1,15 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
+  hederaVaultAddress,
   readHederaVaultAsset,
   readHederaVaultAssetTotalSupply,
   readHederaVaultBalanceOf,
   readHederaVaultDecimals,
   readHederaVaultMaxMint,
   readHederaVaultOwner,
-} from "../../services/contracts/wagmiGenActions";
+} from "@/services/contracts/wagmiGenActions";
+import { VaultInfo } from "@/components/eip4626/user/VaultInfo";
+import { EvmAddress } from "@/types/types";
 
 export default function User() {
   useEffect(() => {
@@ -27,5 +30,15 @@ export default function User() {
     });
   }, []);
 
-  return <>WIP</>;
+  //@TODO add vault switching functionality or show as the list
+  const [vaultAddress, setVaultAddress] = useState(
+    hederaVaultAddress as EvmAddress,
+  );
+
+  return (
+    <>
+      WIP
+      <VaultInfo vaultAddress={vaultAddress} />
+    </>
+  );
 }
