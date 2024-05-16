@@ -10,6 +10,8 @@ import {
 } from "@/services/contracts/wagmiGenActions";
 import { VaultInfo } from "@/components/eip4626/user/VaultInfo";
 import { EvmAddress } from "@/types/types";
+import { VaultDeposit } from "@/components/eip4626/user/VaultDeposit";
+import { Divider } from "@chakra-ui/react";
 
 export default function User() {
   useEffect(() => {
@@ -37,8 +39,9 @@ export default function User() {
 
   return (
     <>
-      WIP
       <VaultInfo vaultAddress={vaultAddress} />
+      <Divider my={10} />
+      <VaultDeposit vaultAddress={vaultAddress} />
     </>
   );
 }
