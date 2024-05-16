@@ -1,13 +1,14 @@
 import { useContext } from "react";
 
 import { Flex, Button } from "@chakra-ui/react";
-import { useDisconnect, useWeb3Modal } from "@web3modal/ethers/react";
+//import { useDisconnect, useWeb3Modal } from "@web3modal/ethers/react";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { connectToBladeWallet } from "@/services/wallets/blade/bladeClient";
 import { connectToHashconnectWallet } from "@/services/wallets/hashconnect/hashconnectClient";
 import { HashconnectContext } from "@/contexts/HashconnectContext";
 import { BladeContext } from "@/contexts/BladeContext";
 import { WalletConnectContext } from "@/contexts/WalletConnectContext";
+import { connectToWalletConnectWallet } from "@/services/wallets/walletconnect/walletconnectClient";
 
 const WalletButtons = () => {
   const hashconnectCtx = useContext(HashconnectContext);
@@ -15,8 +16,6 @@ const WalletButtons = () => {
   const walletconnectCtx = useContext(WalletConnectContext);
 
   const { accountId, walletName, walletInterface } = useWalletInterface();
-  const { open } = useWeb3Modal();
-  const { disconnect } = useDisconnect();
 
   return (
     <Flex gap={5}>
@@ -45,7 +44,7 @@ const WalletButtons = () => {
             // isDisabled={!walletconnectCtx.isAvailable}
             colorScheme="blue"
             onClick={() => {
-              open();
+              connectToWalletConnectWallet();
             }}
           >
             WalletConnect
@@ -58,9 +57,9 @@ const WalletButtons = () => {
             width="100%"
             onClick={() => {
               walletInterface?.disconnect(() => {
-                disconnect();
-                walletconnectCtx.setIsAvailable(false);
-                walletconnectCtx.setWalletConnectAccountAddress("");
+                //                disconnect();
+                // walletconnectCtx.setIsAvailable(false);
+                // walletconnectCtx.setWalletConnectAccountAddress("");
               });
             }}
           >

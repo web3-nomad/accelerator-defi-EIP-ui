@@ -28,5 +28,4 @@ export interface WalletInterface {
     serialNumber: number,
   ) => Promise<TransactionId | string | null>;
   associateToken: (tokenId: TokenId) => Promise<TransactionId | string | null>;
-  deployContract: (params: any, currentDeployerAddress: any) => any;
 }

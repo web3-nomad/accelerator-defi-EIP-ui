@@ -219,10 +219,6 @@ class BladeWallet implements WalletInterface {
     bladeConnector.killSession();
     localStorage.removeItem(bladeLocalStorage);
   }
-
-  async deployContract(deployParams: any[], abi: any) {
-    console.log("implement deployContract for blade client");
-  }
 }
 export const bladeWallet = new BladeWallet();
 

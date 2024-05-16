@@ -7,7 +7,7 @@ import { bladeWallet } from "./blade/bladeClient";
 import { hashConnectWallet } from "./hashconnect/hashconnectClient";
 import { WalletInterface } from "./walletInterface";
 import { WalletConnectContext } from "@/contexts/WalletConnectContext";
-import { walletconnectWallet } from "@/services/wallets/walletconnect/walletconnectClient";
+import { walletConnectWallet } from "@/services/wallets/walletconnect/walletconnectClient";
 
 export const useWalletInterface = () => {
   const hashconnectCtx = useContext(HashconnectContext);
@@ -33,7 +33,7 @@ export const useWalletInterface = () => {
       walletName: "WalletConnect",
       accountId: walletconnectCtx.walletConnectAccountAddress,
       accountEvm: walletconnectCtx.walletConnectAccountAddress, // TODO: Check for non-metamask wallets bridged over wc
-      walletInterface: walletconnectWallet as WalletInterface,
+      walletInterface: walletConnectWallet as WalletInterface,
     };
   } else {
     return {

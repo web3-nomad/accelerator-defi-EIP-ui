@@ -1,104 +1,125 @@
-"use client";
-
-// TODO: migrate transactions if needed https://docs.ethers.org/v6/migrating/
-
-import { ContractId, AccountId } from "@hashgraph/sdk";
-import { TokenId } from "@hashgraph/sdk";
-import { ethers } from "ethers";
-import { useContext, useEffect } from "react";
-import { appConfig } from "@/config";
-import { ContractFunctionParameterBuilder } from "../contractFunctionParameterBuilder";
+import { WalletConnectContext } from "../../../contexts/WalletConnectContext";
+import { useCallback, useContext, useEffect } from "react";
 import { WalletInterface } from "../walletInterface";
-import { WalletConnectContext } from "@/contexts/WalletConnectContext";
-import { useWeb3ModalProvider } from "@web3modal/ethers/react";
-import { hederaTestnet } from "wagmi/chains";
-import { createWeb3Modal, defaultConfig } from "@web3modal/ethers/react";
-import { estimateGas } from "../estimateGas";
+import {
+  AccountId,
+  ContractExecuteTransaction,
+  ContractId,
+  LedgerId,
+  TokenAssociateTransaction,
+  TokenId,
+  Transaction,
+  TransactionId,
+  TransferTransaction,
+  Client,
+} from "@hashgraph/sdk";
+import { ContractFunctionParameterBuilder } from "../contractFunctionParameterBuilder";
+import { appConfig } from "../../../config";
+import { SignClientTypes } from "@walletconnect/types";
+import {
+  DAppConnector,
+  HederaJsonRpcMethod,
+  HederaSessionEvent,
+  HederaChainId,
+  SignAndExecuteTransactionParams,
+  transactionToBase64String,
+} from "@hashgraph/hedera-wallet-connect";
+import EventEmitter from "events";
 
-// 1. Get projectId at https://cloud.walletconnect.com
-const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string;
+// Created refreshEvent because `dappConnector.walletConnectClient.on(eventName, syncWithWalletConnectContext)` would not call syncWithWalletConnectContext
+// Reference usage from walletconnect implementation https://github.com/hashgraph/hedera-wallet-connect/blob/main/src/lib/dapp/index.ts#L120C1-L124C9
+const refreshEvent = new EventEmitter();
 
-// 2. Set chains
-//@TODO add mainnet
-const hederaTestnetConfigWC = {
-  chainId: hederaTestnet.id,
-  name: hederaTestnet.name,
-  currency: hederaTestnet.nativeCurrency.name,
-  explorerUrl: hederaTestnet.blockExplorers.default.url,
-  rpcUrl: hederaTestnet.rpcUrls.default.http[0],
+// Create a new project in walletconnect cloud to generate a project id
+const walletConnectProjectId = process.env
+  .NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string;
+const currentNetworkConfig = appConfig.networks.testnet;
+const hederaNetwork = currentNetworkConfig.network;
+const hederaClient = Client.forName(hederaNetwork);
+
+// Adapted from walletconnect dapp example:
+// https://github.com/hashgraph/hedera-wallet-connect/blob/main/src/examples/typescript/dapp/main.ts#L87C1-L101C4
+const metadata: SignClientTypes.Metadata = {
+  name: process.env.NEXT_PUBLIC_WALLET_DEFI_APP_NAME as string,
+  description: process.env.NEXT_PUBLIC_WALLET_DEFI_APP_DESCRIPTION as string,
+  icons: [process.env.NEXT_PUBLIC_WALLET_DEFI_APP_ICON as string],
+  url: process.env.NEXT_PUBLIC_WALLET_DEFI_APP_URL as string,
 };
-
-// TODO: take from .env
-// 3. Create a metadata object
-const metadata = {
-  name: "EIP 3643 POC",
-  description: "EIP 3643 POC",
-  url: "https://eip.zilbo.com/", // origin must match your domain & subdomain
-  icons: ["https://avatars.mywebsite.com/"],
-};
-
-// 4. Create Ethers config
-const ethersConfig = defaultConfig({
+const dappConnector = new DAppConnector(
   metadata,
-});
+  LedgerId.fromString(hederaNetwork),
+  walletConnectProjectId,
+  Object.values(HederaJsonRpcMethod),
+  [HederaSessionEvent.ChainChanged, HederaSessionEvent.AccountsChanged],
+  [HederaChainId.Testnet],
+);
 
-// 5. Create a Web3Modal instance
-const web3modal = createWeb3Modal({
-  ethersConfig,
-  chains: [hederaTestnetConfigWC],
-  projectId,
-  enableAnalytics: true, // Optional - defaults to your Cloud configuration
-});
+// ensure walletconnect is initialized only once
+let walletConnectInitPromise: Promise<void> | undefined = undefined;
+const initializeWalletConnect = async () => {
+  if (walletConnectInitPromise === undefined) {
+    walletConnectInitPromise = dappConnector.init();
+  }
+  await walletConnectInitPromise;
+};
 
-//@TODO find a way to use provider from web3wallet hook inside client functions - is it needed at all?
-//const { walletProvider } = useWeb3ModalProvider();
-//const provider = new ethers.BrowserProvider(walletProvider);
-const getProvider = () => {
-  // if (!window.ethereum) {
-  //   throw new Error("Metamask is not installed! Go install the extension!");
-  // }
-
-  // return new ethers.BrowserProvider(window.ethereum);
-  const provider = web3modal.getWalletProvider();
-  return provider ? new ethers.BrowserProvider(provider) : undefined;
+export const connectToWalletConnectWallet = async () => {
+  await initializeWalletConnect();
+  await dappConnector.openModal().then((x) => {
+    refreshEvent.emit("sync");
+  });
 };
 
 class WalletConnectWallet implements WalletInterface {
-  private convertAccountIdToSolidityAddress(accountId: AccountId): string {
-    const accountIdString =
-      accountId.evmAddress !== null
-        ? accountId.evmAddress.toString()
-        : accountId.toSolidityAddress();
-
-    return `0x${accountIdString}`;
+  private accountId() {
+    // Need to convert from walletconnect's AccountId to hashgraph/sdk's AccountId because walletconnect's AccountId and hashgraph/sdk's AccountId are not the same!
+    return AccountId.fromString(
+      dappConnector.signers[0].getAccountId().toString(),
+    );
   }
 
   async getEvmAccountAddress(accountId: AccountId) {
     return ("0x" + accountId.toSolidityAddress()) as `0x${string}`;
   }
 
-  // Purpose: Transfer HBAR
-  // Returns: Promise<string>
-  // Note: Use JSON RPC Relay to search by transaction hash
-  async transferHBAR(toAddress: AccountId, amount: number) {
-    const provider = getProvider();
-    if (!provider) return null;
-    const signer = await provider.getSigner();
-    // build the transaction
-    const tx = await signer.populateTransaction({
-      to: this.convertAccountIdToSolidityAddress(toAddress),
-      value: ethers.parseEther(amount.toString()),
-    });
+  // can be replaced when walletconnect provides a signer that satisfies Transaction.executeWithSigner
+  private async signAndExecuteTransaction(transaction: Transaction) {
+    const params: SignAndExecuteTransactionParams = {
+      signerAccountId: `::${this.accountId().toString()}`, // dApps seem to expect two colons in front of the signerAccountId, I'm not sure why. Hoping this gets cleaned up by wallets and walletconnect.
+      transactionList: transactionToBase64String(transaction),
+    };
+    /**
+     * this is not working as expected according to walletconnect's type definitions for dappConnector.signAndExecuteTransaction
+     *
+     * For HashPack, needed to put in try-catch because hashpack was throwing execptions in dappConnector.signAndExecuteTransaction
+     * For Blade, dappConnector.signAndExecuteTransaction does not throw, but result.result is always undefined. So everywhere that this result is used, I had to add something like `txResult ? txResult.transactionId : null`
+     * Basically for either wallet, the transactionId is not usable.
+     */
     try {
-      // send the transaction
-      const { hash } = await signer.sendTransaction(tx);
-      await provider.waitForTransaction(hash);
-
-      return hash;
-    } catch (error: any) {
-      console.warn(error.message ? error.message : error);
+      const result = await dappConnector.signAndExecuteTransaction(params);
+      return result.result;
+    } catch {
       return null;
     }
+  }
+
+  // can be replaced when walletconnect provides a signer that satisfies Transaction.freezeWithSigner
+  private freezeTx(transaction: Transaction) {
+    const nodeAccountIds = hederaClient._network.getNodeAccountIdsForExecute();
+    return transaction
+      .setTransactionId(TransactionId.generate(this.accountId()))
+      .setNodeAccountIds(nodeAccountIds)
+      .freeze();
+  }
+
+  async transferHBAR(toAddress: AccountId, amount: number) {
+    const transferHBARTransaction = new TransferTransaction()
+      .addHbarTransfer(this.accountId(), -amount)
+      .addHbarTransfer(toAddress, amount);
+
+    const frozenTx = this.freezeTx(transferHBARTransaction);
+    const txResult = await this.signAndExecuteTransaction(frozenTx);
+    return txResult ? txResult.transactionId : null;
   }
 
   async transferFungibleToken(
@@ -106,25 +127,13 @@ class WalletConnectWallet implements WalletInterface {
     tokenId: TokenId,
     amount: number,
   ) {
-    const hash = await this.executeContractWriteFunction(
-      ContractId.fromString(tokenId.toString()),
-      [],
-      "transfer",
-      new ContractFunctionParameterBuilder()
-        .addParam({
-          type: "address",
-          name: "recipient",
-          value: this.convertAccountIdToSolidityAddress(toAddress),
-        })
-        .addParam({
-          type: "uint256",
-          name: "amount",
-          value: amount,
-        }),
-      appConfig.constants.METAMASK_GAS_LIMIT_TRANSFER_FT,
-    );
+    const transferTokenTransaction = new TransferTransaction()
+      .addTokenTransfer(tokenId, this.accountId(), -amount)
+      .addTokenTransfer(tokenId, toAddress.toString(), amount);
 
-    return hash;
+    const frozenTx = this.freezeTx(transferTokenTransaction);
+    const txResult = await this.signAndExecuteTransaction(frozenTx);
+    return txResult ? txResult.transactionId : null;
   }
 
   async transferNonFungibleToken(
@@ -132,47 +141,26 @@ class WalletConnectWallet implements WalletInterface {
     tokenId: TokenId,
     serialNumber: number,
   ) {
-    const provider = getProvider();
-    if (!provider) return null;
-    const addresses = await provider.listAccounts();
-    const hash = await this.executeContractWriteFunction(
-      ContractId.fromString(tokenId.toString()),
-      [],
-      "transferFrom",
-      new ContractFunctionParameterBuilder()
-        .addParam({
-          type: "address",
-          name: "from",
-          value: addresses[0],
-        })
-        .addParam({
-          type: "address",
-          name: "to",
-          value: this.convertAccountIdToSolidityAddress(toAddress),
-        })
-        .addParam({
-          type: "uint256",
-          name: "nftId",
-          value: serialNumber,
-        }),
-      appConfig.constants.METAMASK_GAS_LIMIT_TRANSFER_NFT,
+    const transferTokenTransaction = new TransferTransaction().addNftTransfer(
+      tokenId,
+      serialNumber,
+      this.accountId(),
+      toAddress,
     );
 
-    return hash;
+    const frozenTx = this.freezeTx(transferTokenTransaction);
+    const txResult = await this.signAndExecuteTransaction(frozenTx);
+    return txResult ? txResult.transactionId : null;
   }
 
   async associateToken(tokenId: TokenId) {
-    // send the transaction
-    // convert tokenId to contract id
-    const hash = await this.executeContractWriteFunction(
-      ContractId.fromString(tokenId.toString()),
-      [],
-      "associate",
-      new ContractFunctionParameterBuilder(),
-      appConfig.constants.METAMASK_GAS_LIMIT_ASSOCIATE,
-    );
+    const associateTokenTransaction = new TokenAssociateTransaction()
+      .setAccountId(this.accountId())
+      .setTokenIds([tokenId]);
 
-    return hash;
+    const frozenTx = this.freezeTx(associateTokenTransaction);
+    const txResult = await this.signAndExecuteTransaction(frozenTx);
+    return txResult ? txResult.transactionId : null;
   }
 
   // Purpose: build contract execute transaction and send to hashconnect for signing and execution
@@ -184,126 +172,111 @@ class WalletConnectWallet implements WalletInterface {
     functionParameters: ContractFunctionParameterBuilder,
     gasLimit: number | undefined,
   ) {
-    const provider = getProvider();
-    if (!provider) return null;
-    const signer = await provider.getSigner();
+    return null;
+    // const provider = getProvider();
+    // if (!provider) return null;
+    // const signer = await provider.getSigner();
 
-    let gasLimitFinal = gasLimit;
-    if (!gasLimitFinal) {
-      const res = await estimateGas(
-        signer.address,
-        contractId,
-        abi,
-        functionName,
-        functionParameters.buildEthersParams(),
-      );
-      if (res.result) {
-        gasLimitFinal = parseInt(res.result, 16);
-      } else {
-        throw res._status?.messages?.[0]?.detail;
-      }
-    }
+    // let gasLimitFinal = gasLimit;
+    // if (!gasLimitFinal) {
+    //   const res = await estimateGas(
+    //     signer.address,
+    //     contractId,
+    //     abi,
+    //     functionName,
+    //     functionParameters.buildEthersParams(),
+    //   );
+    //   if (res.result) {
+    //     gasLimitFinal = parseInt(res.result, 16);
+    //   } else {
+    //     throw res._status?.messages?.[0]?.detail;
+    //   }
+    // }
 
-    // create contract instance for the contract id
-    // to call the function, use contract[functionName](...functionParameters, ethersOverrides)
-    const contract = new ethers.Contract(
-      `0x${contractId.toSolidityAddress()}`,
-      abi || [
-        // workaround for case when calling outside of wagmi-codegen | no abi present
-        `function ${functionName}(${functionParameters.buildAbiFunctionParams()})`,
-      ],
-      signer,
-    );
+    // // create contract instance for the contract id
+    // // to call the function, use contract[functionName](...functionParameters, ethersOverrides)
+    // const contract = new ethers.Contract(
+    //   `0x${contractId.toSolidityAddress()}`,
+    //   abi || [
+    //     // workaround for case when calling outside of wagmi-codegen | no abi present
+    //     `function ${functionName}(${functionParameters.buildAbiFunctionParams()})`,
+    //   ],
+    //   signer,
+    // );
 
-    try {
-      const txResult = await contract[functionName](
-        ...functionParameters.buildEthersParams(),
-        {
-          gasLimit: gasLimitFinal,
-        },
-      );
-      return txResult.hash;
-    } catch (error: any) {
-      console.warn(error.message ? error.message : error);
-      return null;
-    }
+    // try {
+    //   const txResult = await contract[functionName](
+    //     ...functionParameters.buildEthersParams(),
+    //     {
+    //       gasLimit: gasLimitFinal,
+    //     },
+    //   );
+    //   return txResult.hash;
+    // } catch (error: any) {
+    //   console.warn(error.message ? error.message : error);
+    //   return null;
+    // }
   }
 
-  disconnect(functionOverride?: Function) {
-    if (functionOverride) {
-      functionOverride();
-    } else {
-      alert("Please disconnect using the Metamask extension.");
-    }
+  // Purpose: build contract execute transaction and send to wallet for signing and execution
+  // Returns: Promise<TransactionId | null>
+  async executeContractFunction(
+    contractId: ContractId,
+    functionName: string,
+    functionParameters: ContractFunctionParameterBuilder,
+    gasLimit: number,
+  ) {
+    // const tx = new ContractExecuteTransaction()
+    //   .setContractId(contractId)
+    //   .setGas(gasLimit)
+    //   .setFunction(functionName, functionParameters.buildHAPIParams());
+
+    // const frozenTx = this.freezeTx(tx);
+    // const txResult = await this.signAndExecuteTransaction(frozenTx);
+
+    // // in order to read the contract call results, you will need to query the contract call's results form a mirror node using the transaction id
+    // // after getting the contract call results, use ethers and abi.decode to decode the call_result
+    // return txResult ? txResult.transactionId : null;
+    return null;
   }
 
-  async deployContract(deployParams: any[], abi: any) {
-    const provider = getProvider();
-    if (!provider) return null;
-
-    const signer = await provider.getSigner();
-
-    const identityCA = new ethers.ContractFactory(
-      abi.abi,
-      abi.bytecode,
-      signer,
-    );
-
-    const identity = await identityCA.deploy(...deployParams);
-
-    await identity.waitForDeployment();
-
-    const resultAddress = await identity.getAddress();
-
-    return resultAddress;
+  disconnect() {
+    dappConnector.disconnectAll().then(() => {
+      refreshEvent.emit("sync");
+    });
   }
 }
+export const walletConnectWallet = new WalletConnectWallet();
 
-export const walletconnectWallet = new WalletConnectWallet();
-
-//
+// this component will sync the walletconnect state with the context
 export const WalletConnectClient = () => {
+  // use the HashpackContext to keep track of the hashpack account and connection
   const { setWalletConnectAccountAddress, setIsAvailable } =
     useContext(WalletConnectContext);
 
-  const { walletProvider } = useWeb3ModalProvider();
-
-  useEffect(() => {
-    // set the account address if already connected
-    try {
-      if (!walletProvider) {
-        return;
-      }
-
-      const provider = new ethers.BrowserProvider(walletProvider);
-
-      provider.send("eth_requestAccounts", []).then((accounts) => {});
+  // sync the walletconnect state with the context
+  const syncWithWalletConnectContext = useCallback(() => {
+    const accountId = dappConnector.signers[0]?.getAccountId()?.toString();
+    if (accountId) {
+      setWalletConnectAccountAddress(accountId);
       setIsAvailable(true);
-      provider.listAccounts().then((signers) => {
-        if (signers.length !== 0) {
-          setWalletConnectAccountAddress(signers[0].address);
-        } else {
-          setWalletConnectAccountAddress("");
-        }
-      });
-
-      // listen for account changes and update the account address
-      window.ethereum.on("accountsChanged", (accounts: string[]) => {
-        if (accounts.length !== 0) {
-          setWalletConnectAccountAddress(accounts[0]);
-        } else {
-          setWalletConnectAccountAddress("");
-        }
-      });
-
-      // cleanup by removing listeners
-      return () => {
-        window.ethereum.removeAllListeners("accountsChanged");
-      };
-    } catch (_: any) {
+    } else {
+      setWalletConnectAccountAddress("");
       setIsAvailable(false);
     }
-  }, [setWalletConnectAccountAddress, setIsAvailable, walletProvider]);
+  }, [setWalletConnectAccountAddress, setIsAvailable]);
 
+  useEffect(() => {
+    // Sync after walletconnect finishes initializing
+    refreshEvent.addListener("sync", syncWithWalletConnectContext);
+
+    initializeWalletConnect().then(() => {
+      syncWithWalletConnectContext();
+    });
+
+    return () => {
+      refreshEvent.removeListener("sync", syncWithWalletConnectContext);
+    };
+  }, [syncWithWalletConnectContext]);
   return null;
 };
