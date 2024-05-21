@@ -188,6 +188,7 @@ class WalletConnectWallet implements WalletInterface {
     if (!provider) return null;
     const signer = await provider.getSigner();
 
+    //    let gasLimitFinal = 1000000;
     let gasLimitFinal = gasLimit;
     if (!gasLimitFinal) {
       const res = await estimateGas(

@@ -23,6 +23,8 @@ type Contracts = Array<{
   url: string;
 }>;
 
+const ignore = env.SYNC_CONTRACTS_IGNORE.split(";");
+
 const contracts: Contracts = [
   {
     name: "ERC20",
@@ -33,11 +35,12 @@ const contracts: Contracts = [
 
 for (const key in rawJson) {
   for (const contractName in rawJson[key]) {
-    contracts.push({
-      name: contractName,
-      address: rawJson[key][contractName],
-      url: `${env.SYNC_CONTRACTS_ABI_PATH}/${contractName}.json`,
-    });
+    !ignore.includes(contractName) &&
+      contracts.push({
+        name: contractName,
+        address: rawJson[key][contractName],
+        url: `${env.SYNC_CONTRACTS_ABI_PATH}/${contractName}.json`,
+      });
   }
 }
 
