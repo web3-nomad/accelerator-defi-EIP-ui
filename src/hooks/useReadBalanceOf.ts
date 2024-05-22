@@ -5,7 +5,7 @@ import { readTokenBalanceOf } from "@/services/contracts/wagmiGenActions";
 import { EvmAddress } from "@/types/types";
 
 export function useReadBalanceOf(tokenAddress: EvmAddress) {
-  const { accountId } = useWalletInterface();
+  const { accountEvm } = useWalletInterface();
 
   return useQuery({
     queryKey: [QueryKeys.ReadBalanceOf, tokenAddress],
@@ -13,7 +13,7 @@ export function useReadBalanceOf(tokenAddress: EvmAddress) {
     enabled: !!tokenAddress,
     queryFn: () =>
       readTokenBalanceOf(
-        { args: [accountId as EvmAddress] },
+        { args: [accountEvm as EvmAddress] },
         tokenAddress.toString() as EvmAddress,
       ),
   });
