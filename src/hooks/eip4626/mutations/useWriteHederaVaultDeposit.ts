@@ -1,8 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import {
-  writeHederaVaultDeposit,
-  writeHederaVaultMint,
-} from "@/services/contracts/wagmiGenActions";
+import { writeHederaVaultDeposit } from "@/services/contracts/wagmiGenActions";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { WalletInterface } from "@/services/wallets/walletInterface";
 import { EvmAddress } from "@/types/types";

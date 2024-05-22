@@ -17,29 +17,59 @@ import { EvmAddress, VaultInfoProps } from "@/types/types";
 import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
 import { useWriteHederaVaultDeposit } from "@/hooks/eip4626/mutations/useWriteHederaVaultDeposit";
 import { useReadHederaVaultAsset } from "@/hooks/eip4626/useReadHederaVaultAsset";
+import { formatBalance } from "@/services/util/helpers";
+import { VAULT_TOKEN_PRECISION_VALUE } from "@/config/constants";
+import BigNumber from "bignumber.js";
+import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
 
 export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
   const {
     data: depositResult,
     mutateAsync: deposit,
     error: depositError,
-    isPending,
+    isPending: isDepositPending,
   } = useWriteHederaVaultDeposit();
+
+  const {
+    data: approveResult,
+    mutateAsync: approve,
+    error: approveError,
+    isPending: isApprovePending,
+  } = useWriteHederaVaultApprove();
+
+  const { data: vaultAssetAddress } = useReadHederaVaultAsset(vaultAddress);
 
   const form = useFormik({
     initialValues: {
       amount: 0,
     },
     onSubmit: ({ amount }) => {
-      const amountConverted = BigInt(amount);
-      deposit(amountConverted);
+      const amountConverted = BigInt(
+        BigNumber(amount).shiftedBy(VAULT_TOKEN_PRECISION_VALUE).toString(),
+      );
+
+      //@TODO show read allowance
+      //@TODO do not trigger allowance if it is enough?
+
+      approve(
+        {
+          tokenAmount: amountConverted,
+          tokenAddress: vaultAssetAddress as EvmAddress,
+          vaultAddress,
+        },
+        {
+          onSuccess: async () => {
+            deposit(amountConverted);
+          },
+        },
+      );
     },
   });
 
-  const { data: vaultAssetAddress } = useReadHederaVaultAsset(vaultAddress);
-
   const { data: vaultAssetUserBalance, error: vaultAssetUserBalanceError } =
     useReadBalanceOf(vaultAssetAddress as EvmAddress);
+
+  const balanceFormatted = formatBalance(vaultAssetUserBalance);
 
   return (
     <>
@@ -59,7 +89,7 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
               <NumberInputField />
             </NumberInput>
             <FormHelperText>
-              User balance of vault asset token: {`${vaultAssetUserBalance}`}
+              User balance of vault asset token: {balanceFormatted}
             </FormHelperText>
             {vaultAssetUserBalanceError && (
               <FormHelperText color={"red"}>
@@ -67,11 +97,30 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
               </FormHelperText>
             )}
           </FormControl>
-          <Button type="submit" isLoading={isPending}>
+          <Button
+            type="submit"
+            isLoading={isApprovePending || isDepositPending}
+          >
             Deposit
           </Button>
         </VStack>
       </form>
+
+      {approveResult && (
+        <Alert status="success">
+          <AlertIcon />
+          <AlertTitle>Approve success!</AlertTitle>
+          <AlertDescription>TxId: {approveResult}</AlertDescription>
+        </Alert>
+      )}
+      {approveError && (
+        <Alert status="error">
+          <AlertIcon />
+          <AlertTitle>Approve token error!</AlertTitle>
+          <AlertDescription>{approveError.toString()}</AlertDescription>
+        </Alert>
+      )}
+
       {depositResult && (
         <Alert status="success">
           <AlertIcon />

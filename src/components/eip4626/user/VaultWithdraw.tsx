@@ -15,8 +15,9 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useReadHederaVaultShare } from "@/hooks/eip4626/useReadHederaVaultShare";
-import { useReadHederaVaultBalanceOf } from "@/hooks/eip4626/useReadHederaVaultBalanceOf";
 import { useWriteHederaVaultWithdraw } from "@/hooks/eip4626/mutations/useWriteHederaVaultWithdraw";
+import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
+import { formatBalance } from "@/services/util/helpers";
 
 export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
   const {
@@ -38,8 +39,10 @@ export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
 
   const { data: vaultShareAddress } = useReadHederaVaultShare(vaultAddress);
 
-  const { data: vaultShareUserBalance, error: vaultAssetUserBalanceError } =
-    useReadHederaVaultBalanceOf(vaultAddress as EvmAddress);
+  const { data: shareUserBalance, error: shareUserBalanceError } =
+    useReadBalanceOf(vaultShareAddress as EvmAddress);
+
+  const balanceFormatted = formatBalance(shareUserBalance);
 
   return (
     <>
@@ -59,9 +62,9 @@ export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
               <NumberInputField />
             </NumberInput>
             <FormHelperText>
-              User balance of vault share token: {`${vaultShareUserBalance}`}
+              User balance of vault share token: {`${balanceFormatted}`}
             </FormHelperText>
-            {vaultAssetUserBalanceError && (
+            {shareUserBalanceError && (
               <FormHelperText color={"red"}>
                 Error fetching balance of vault share token: {vaultShareAddress}
               </FormHelperText>
