@@ -12,6 +12,7 @@ import { VaultInfo } from "@/components/eip4626/user/VaultInfo";
 import { EvmAddress } from "@/types/types";
 import { VaultDeposit } from "@/components/eip4626/user/VaultDeposit";
 import { Divider } from "@chakra-ui/react";
+import { VaultWithdraw } from "@/components/eip4626/user/VaultWithdraw";
 
 export default function User() {
   useEffect(() => {
@@ -42,6 +43,8 @@ export default function User() {
       <VaultInfo vaultAddress={vaultAddress} />
       <Divider my={10} />
       <VaultDeposit vaultAddress={vaultAddress} />
+      <Divider my={10} />
+      <VaultWithdraw vaultAddress={vaultAddress} />
     </>
   );
 }

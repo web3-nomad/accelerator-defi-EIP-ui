@@ -1,3 +1,5 @@
+import { useFormik } from "formik";
+import { EvmAddress, VaultInfoProps } from "@/types/types";
 import {
   Alert,
   AlertDescription,
@@ -12,19 +14,17 @@ import {
   NumberInputField,
   VStack,
 } from "@chakra-ui/react";
-import { useFormik } from "formik";
-import { EvmAddress, VaultInfoProps } from "@/types/types";
-import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
-import { useWriteHederaVaultDeposit } from "@/hooks/eip4626/mutations/useWriteHederaVaultDeposit";
-import { useReadHederaVaultAsset } from "@/hooks/eip4626/useReadHederaVaultAsset";
+import { useReadHederaVaultShare } from "@/hooks/eip4626/useReadHederaVaultShare";
+import { useReadHederaVaultBalanceOf } from "@/hooks/eip4626/useReadHederaVaultBalanceOf";
+import { useWriteHederaVaultWithdraw } from "@/hooks/eip4626/mutations/useWriteHederaVaultWithdraw";
 
-export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
+export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
   const {
-    data: depositResult,
-    mutateAsync: deposit,
+    data: withdrawResult,
+    mutateAsync: withdraw,
     error: depositError,
     isPending,
-  } = useWriteHederaVaultDeposit();
+  } = useWriteHederaVaultWithdraw();
 
   const form = useFormik({
     initialValues: {
@@ -32,23 +32,23 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
     },
     onSubmit: ({ amount }) => {
       const amountConverted = BigInt(amount);
-      deposit(amountConverted);
+      withdraw(amountConverted);
     },
   });
 
-  const { data: vaultAssetAddress } = useReadHederaVaultAsset(vaultAddress);
+  const { data: vaultShareAddress } = useReadHederaVaultShare(vaultAddress);
 
-  const { data: vaultAssetUserBalance, error: vaultAssetUserBalanceError } =
-    useReadBalanceOf(vaultAssetAddress as EvmAddress);
+  const { data: vaultShareUserBalance, error: vaultAssetUserBalanceError } =
+    useReadHederaVaultBalanceOf(vaultAddress as EvmAddress);
 
   return (
     <>
-      <Heading size={"sm"}>Deposit asset into vault</Heading>
+      <Heading size={"sm"}>Withdraw asset from vault</Heading>
 
       <form onSubmit={form.handleSubmit}>
         <VStack gap={2} alignItems="flex-start">
           <FormControl isRequired>
-            <FormLabel>Amount of asset to deploy</FormLabel>
+            <FormLabel>Amount of asset to withdraw</FormLabel>
             <NumberInput
               name="amount"
               variant="outline"
@@ -59,24 +59,24 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
               <NumberInputField />
             </NumberInput>
             <FormHelperText>
-              User balance of vault asset token: {`${vaultAssetUserBalance}`}
+              User balance of vault share token: {`${vaultShareUserBalance}`}
             </FormHelperText>
             {vaultAssetUserBalanceError && (
               <FormHelperText color={"red"}>
-                Error fetching balance of vault asset token: {vaultAssetAddress}
+                Error fetching balance of vault share token: {vaultShareAddress}
               </FormHelperText>
             )}
           </FormControl>
           <Button type="submit" isLoading={isPending}>
-            Deposit
+            Withdraw
           </Button>
         </VStack>
       </form>
-      {depositResult && (
+      {withdrawResult && (
         <Alert status="success">
           <AlertIcon />
-          <AlertTitle>Deposit success!</AlertTitle>
-          <AlertDescription>TxId: {depositResult}</AlertDescription>
+          <AlertTitle>Withdraw success!</AlertTitle>
+          <AlertDescription>TxId: {withdrawResult}</AlertDescription>
         </Alert>
       )}
       {depositError && (
