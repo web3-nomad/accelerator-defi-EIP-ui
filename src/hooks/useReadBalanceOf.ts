@@ -10,7 +10,11 @@ export function useReadBalanceOf(tokenAddress: EvmAddress) {
   return useQuery({
     queryKey: [QueryKeys.ReadBalanceOf, tokenAddress],
     retry: false,
+    enabled: !!tokenAddress,
     queryFn: () =>
-      readTokenBalanceOf({ args: [accountId as EvmAddress] }, tokenAddress),
+      readTokenBalanceOf(
+        { args: [accountId as EvmAddress] },
+        tokenAddress.toString() as EvmAddress,
+      ),
   });
 }
