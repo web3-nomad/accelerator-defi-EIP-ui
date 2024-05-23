@@ -8,10 +8,14 @@ export async function estimateGas(
   abi: readonly any[],
   functionName: string,
   args: any[],
+  value: bigint | undefined,
 ) {
   const contractInterface = new ethers.Interface(abi as []);
 
   const data = contractInterface.encodeFunctionData(functionName, args as []);
+
+  // Seems like mirror node uses 8 decimals value format & limited to Long value while ethers.js uses 18 decimals
+  let value8 = (value || BigInt(0)) / BigInt("10000000000");
 
   const response = await fetch(
     "https://testnet.mirrornode.hedera.com/api/v1/contracts/call",
@@ -29,7 +33,7 @@ export async function estimateGas(
         gas: 15000000,
         gasPrice: 1,
         to: `0x${contractId.toSolidityAddress()}`,
-        value: 0,
+        value: value8.toString(),
       }),
     },
   );

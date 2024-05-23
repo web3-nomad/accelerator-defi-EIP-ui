@@ -121,6 +121,7 @@ class WalletConnectWallet implements WalletInterface {
           name: "amount",
           value: amount,
         }),
+      BigInt(0),
       appConfig.constants.METAMASK_GAS_LIMIT_TRANSFER_FT,
     );
 
@@ -155,6 +156,7 @@ class WalletConnectWallet implements WalletInterface {
           name: "nftId",
           value: serialNumber,
         }),
+      BigInt(0),
       appConfig.constants.METAMASK_GAS_LIMIT_TRANSFER_NFT,
     );
 
@@ -169,6 +171,7 @@ class WalletConnectWallet implements WalletInterface {
       [],
       "associate",
       new ContractFunctionParameterBuilder(),
+      BigInt(0),
       appConfig.constants.METAMASK_GAS_LIMIT_ASSOCIATE,
     );
 
@@ -182,13 +185,14 @@ class WalletConnectWallet implements WalletInterface {
     abi: readonly any[],
     functionName: string,
     functionParameters: ContractFunctionParameterBuilder,
+    value: bigint | undefined,
     gasLimit: number | undefined,
   ) {
     const provider = getProvider();
     if (!provider) return null;
     const signer = await provider.getSigner();
 
-    //    let gasLimitFinal = 1000000;
+    //let gasLimitFinal = 1000000;
     let gasLimitFinal = gasLimit;
     if (!gasLimitFinal) {
       const res = await estimateGas(
@@ -197,6 +201,7 @@ class WalletConnectWallet implements WalletInterface {
         abi,
         functionName,
         functionParameters.buildEthersParams(),
+        value,
       );
       if (res.result) {
         gasLimitFinal = parseInt(res.result, 16);
@@ -221,6 +226,7 @@ class WalletConnectWallet implements WalletInterface {
         ...functionParameters.buildEthersParams(),
         {
           gasLimit: gasLimitFinal,
+          value,
         },
       );
       return txResult.hash;

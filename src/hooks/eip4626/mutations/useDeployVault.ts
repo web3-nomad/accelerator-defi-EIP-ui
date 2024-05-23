@@ -3,6 +3,9 @@ import { useMutation } from "@tanstack/react-query";
 import { writeVaultFactoryDeployVault } from "@/services/contracts/wagmiGenActions";
 import { WalletInterface } from "@/services/wallets/walletInterface";
 import { DeployVaultRequest } from "@/types/types";
+import { ethers } from "ethers";
+
+const DEPLOY_VALUE = "13";
 
 export function useDeployVault() {
   const { accountEvm, walletInterface } = useWalletInterface();
@@ -36,7 +39,10 @@ export function useDeployVault() {
 
       const deployResult = await writeVaultFactoryDeployVault(
         walletInterface as WalletInterface,
-        { args: [salt, vaultDetails, feeConfig] },
+        {
+          args: [salt, vaultDetails, feeConfig],
+          value: ethers.parseUnits(DEPLOY_VALUE, 18),
+        },
       );
 
       return deployResult;

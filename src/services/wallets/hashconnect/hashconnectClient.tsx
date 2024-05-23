@@ -142,6 +142,7 @@ class HashConnectWallet implements WalletInterface {
     abi: readonly any[],
     functionName: string,
     functionParameters: ContractFunctionParameterBuilder,
+    value: bigint | undefined,
     gasLimit: number | undefined,
   ) {
     const accountId = hashConnect.connectedAccountIds[0];
@@ -152,8 +153,8 @@ class HashConnectWallet implements WalletInterface {
     const evmAddress = await this.getEvmAccountAddress(
       AccountId.fromString(accountId.toString()),
     );
-    let gasLimitFinal = 1000000;
-    //    let gasLimitFinal = gasLimit;
+    //let gasLimitFinal = 1000000;
+    let gasLimitFinal = gasLimit;
     if (!gasLimitFinal) {
       const res = await estimateGas(
         evmAddress,
@@ -161,6 +162,7 @@ class HashConnectWallet implements WalletInterface {
         abi,
         functionName,
         functionParameters.buildEthersParams(),
+        value,
       );
       if (res.result) {
         gasLimitFinal = parseInt(res.result, 16);

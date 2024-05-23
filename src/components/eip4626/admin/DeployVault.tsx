@@ -30,10 +30,10 @@ export default function DeployToken({ onClose = () => {} }) {
 
   const form = useFormik({
     initialValues: {
-      stakingTokenAddress: "",
-      shareTokenName: "",
-      shareTokenSymbol: "",
-      rewardTokenAddress: "",
+      stakingTokenAddress: "0x0000000000000000000000000000000000423251",
+      shareTokenName: "TST",
+      shareTokenSymbol: "TST",
+      rewardTokenAddress: "0x0000000000000000000000000000000000423255",
       feePercentage: "1000",
     },
     onSubmit: ({
