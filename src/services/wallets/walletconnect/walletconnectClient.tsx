@@ -206,7 +206,8 @@ class WalletConnectWallet implements WalletInterface {
       if (res.result) {
         gasLimitFinal = parseInt(res.result, 16);
       } else {
-        throw res._status?.messages?.[0]?.detail;
+        const error = res._status?.messages?.[0];
+        throw error?.detail || error?.data;
       }
     }
 

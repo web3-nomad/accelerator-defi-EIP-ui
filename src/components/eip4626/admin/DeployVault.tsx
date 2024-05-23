@@ -30,11 +30,11 @@ export default function DeployToken({ onClose = () => {} }) {
 
   const form = useFormik({
     initialValues: {
-      stakingTokenAddress: "0x0000000000000000000000000000000000423251",
-      shareTokenName: "TST",
-      shareTokenSymbol: "TST",
-      rewardTokenAddress: "0x0000000000000000000000000000000000423255",
-      feePercentage: "1000",
+      stakingTokenAddress: "",
+      shareTokenName: "",
+      shareTokenSymbol: "",
+      rewardTokenAddress: "",
+      feePercentage: "",
     },
     onSubmit: ({
       stakingTokenAddress,
@@ -94,7 +94,7 @@ export default function DeployToken({ onClose = () => {} }) {
           />
         </FormControl>
         <FormControl isRequired>
-          <FormLabel>Fee percentage</FormLabel>
+          <FormLabel>Fee percentage (*100, example: 10% = 1000)</FormLabel>
           <Input
             name="feePercentage"
             variant="outline"
