@@ -1,4 +1,7 @@
 import { AccountId, TransactionId } from "@hashgraph/sdk";
+import { isNil } from "lodash";
+import { VAULT_TOKEN_PRECISION_VALUE } from "@/config/constants";
+import BigNumber from "bignumber.js";
 
 export function convertAccountIdToSolidityAddress(
   accountId: AccountId,
@@ -21,4 +24,10 @@ export function formatRawTxId(txIdRaw: string) {
   const b = a[1].split(".");
   const res = `${a[0]}-${b[0]}-${b[1]}`;
   return res;
+}
+
+export function formatBalance(initialValue: any) {
+  return !isNil(initialValue)
+    ? BigNumber(initialValue).shiftedBy(-VAULT_TOKEN_PRECISION_VALUE).toNumber()
+    : 0;
 }

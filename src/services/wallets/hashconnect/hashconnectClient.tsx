@@ -152,8 +152,8 @@ class HashConnectWallet implements WalletInterface {
     const evmAddress = await this.getEvmAccountAddress(
       AccountId.fromString(accountId.toString()),
     );
-
-    let gasLimitFinal = gasLimit;
+    let gasLimitFinal = 1000000;
+    //    let gasLimitFinal = gasLimit;
     if (!gasLimitFinal) {
       const res = await estimateGas(
         evmAddress,

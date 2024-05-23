@@ -30,6 +30,7 @@ export default function TokenInfo({
 }: {
   tokenSelected: TokenNameItem | null;
 }) {
+  //@TODO switch to accountEvm and keep only needed data to show
   const { accountId, walletName, walletInterface } = useWalletInterface();
   const [isFrozen, setIsFrozen] = useState("");
   const [balance, setBalance] = useState("");

@@ -5,23 +5,18 @@ import { WalletInterface } from "@/services/wallets/walletInterface";
 import { CreateIdentityRequest } from "@/types/types";
 
 export function useCreateIdentityFactory() {
-  const { accountId, walletInterface } = useWalletInterface();
+  const { walletInterface } = useWalletInterface();
 
   return useMutation({
-    mutationFn: async ({ address }: CreateIdentityRequest) => {
-      const result = await writeIdentityGatewayDeployIdentityForWallet(
+    mutationFn: ({ address }: CreateIdentityRequest) =>
+      writeIdentityGatewayDeployIdentityForWallet(
         walletInterface as WalletInterface,
         {
           args: [address],
         },
-      );
-
-      console.log("L25 useCreateIdentityFactory result ===", result);
-
-      return result;
-    },
+      ),
     onSuccess: (data, variables, context) => {
-      console.log("L10 useCreateIdentity onSuccess data ===", data);
+      console.log("useCreateIdentityFactory onSuccess", data);
     },
   });
 }

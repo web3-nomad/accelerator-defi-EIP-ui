@@ -31,3 +31,9 @@ export type TransferTokenFromRequest = {
   toAddress: `0x${string}`;
   amount: bigint;
 };
+
+export type EvmAddress = `0x${string}`;
+
+export type VaultInfoProps = {
+  vaultAddress: EvmAddress;
+};

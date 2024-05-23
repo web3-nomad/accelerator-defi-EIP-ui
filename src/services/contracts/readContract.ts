@@ -44,6 +44,19 @@ export async function readContract<
     parameters.functionName,
     parameters.args as [],
   );
+
+  // // create contract instance for the contract id
+  // // to call the function, use contract[functionName](...functionParameters, ethersOverrides)
+  // const contract = new ethers.Contract(
+  //   parameters.address,
+  //   parameters.abi as [],
+  //   null,
+  // );
+
+  // const res = await contract[parameters.functionName]();
+  // console.log('res', res);
+  // return res;
+
   const response = await fetch(
     "https://testnet.mirrornode.hedera.com/api/v1/contracts/call",
     {

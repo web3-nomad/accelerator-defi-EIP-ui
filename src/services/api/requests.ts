@@ -52,7 +52,5 @@ export async function getContractCallResultsByTxId(
     `/api/v1/contracts/results/${transactionId}`,
   );
 
-  console.log("L55 transaction ===", transaction);
-
   return transaction;
 }

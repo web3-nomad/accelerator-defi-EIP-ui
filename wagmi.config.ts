@@ -23,32 +23,24 @@ type Contracts = Array<{
   url: string;
 }>;
 
+const ignore = env.SYNC_CONTRACTS_IGNORE.split(";");
+
 const contracts: Contracts = [
   {
-    name: "MeaningOfLife",
-    address: "0x8546fc43a9F2dC6A10a2d3155f653F30B18eD56d",
-    url: `https://raw.githubusercontent.com/web3-nomad/accelerator-defi-EIP/main/data/abis/MeaningOfLife.json`,
-  },
-  {
     name: "ERC20",
-    address: "0x0000000000000000000000000000000000387719",
-    url: `https://raw.githubusercontent.com/Swiss-Digital-Assets-Institute/token-wrapper/main/artifacts/contracts/ERC20.sol/ERC20.json`,
+    address: "0x0000000000000000000000000000000000387719", // Dummy address, will be overriden on every call
+    url: `https://raw.githubusercontent.com/web3-nomad/accelerator-defi-EIP/main/data/abis/ERC20.json`,
   },
-  //@TODO move to 296.json and find the way to get bytecode, as wagmi generates only ABIs
-  // {
-  //   name: "IdentityProxy",
-  //   address: "0x0000000000000000000000000000000000000000",
-  //   url: "https://raw.githubusercontent.com/web3-nomad/accelerator-defi-EIP/main/data/abis/IdentityProxy.json",
-  // },
 ];
 
 for (const key in rawJson) {
   for (const contractName in rawJson[key]) {
-    contracts.push({
-      name: contractName,
-      address: rawJson[key][contractName],
-      url: `${env.SYNC_CONTRACTS_ABI_PATH}/${contractName}.json`,
-    });
+    !ignore.includes(contractName) &&
+      contracts.push({
+        name: contractName,
+        address: rawJson[key][contractName],
+        url: `${env.SYNC_CONTRACTS_ABI_PATH}/${contractName}.json`,
+      });
   }
 }
 
