@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { writeTokenTransferFrom } from "@/services/contracts/wagmiGenActions";
+import { writeTokenTransfer } from "@/services/contracts/wagmiGenActions";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { WalletInterface } from "@/services/wallets/walletInterface";
 import { TransferTokenFromRequest } from "@/types/types";
@@ -12,13 +12,12 @@ export function useTransferToken() {
   return useMutation({
     mutationFn: ({
       tokenAddress,
-      fromAddress,
       toAddress,
       amount,
     }: TransferTokenFromRequest) => {
-      return writeTokenTransferFrom(
+      return writeTokenTransfer(
         walletInterface as WalletInterface,
-        { args: [fromAddress, toAddress, amount] },
+        { args: [toAddress, amount] },
         tokenAddress,
       );
     },

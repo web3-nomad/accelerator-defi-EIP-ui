@@ -8,21 +8,9 @@ export function useWriteHederaVaultWithdraw() {
   const { walletInterface, accountEvm } = useWalletInterface();
 
   return useMutation({
-    mutationFn: async (tokenAmount: bigint) => {
-      const withdrawalResult = await writeHederaVaultWithdraw(
-        walletInterface as WalletInterface,
-        {
-          args: [
-            tokenAmount,
-            accountEvm as EvmAddress,
-            accountEvm as EvmAddress,
-          ],
-        },
-      );
-
-      console.log("L17 withdrawalResult ===", withdrawalResult);
-
-      return withdrawalResult;
-    },
+    mutationFn: (tokenAmount: bigint) =>
+      writeHederaVaultWithdraw(walletInterface as WalletInterface, {
+        args: [tokenAmount, accountEvm as EvmAddress, accountEvm as EvmAddress],
+      }),
   });
 }

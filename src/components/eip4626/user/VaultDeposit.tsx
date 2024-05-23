@@ -21,8 +21,17 @@ import { formatBalance } from "@/services/util/helpers";
 import { VAULT_TOKEN_PRECISION_VALUE } from "@/config/constants";
 import BigNumber from "bignumber.js";
 import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
+import { QueryKeys } from "@/hooks/types";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
+  const queryClient = useQueryClient();
+  const { data: vaultAssetAddress } = useReadHederaVaultAsset(vaultAddress);
+  const { data: vaultAssetUserBalance, error: vaultAssetUserBalanceError } =
+    useReadBalanceOf(vaultAssetAddress as EvmAddress);
+
+  const balanceFormatted = formatBalance(vaultAssetUserBalance);
+
   const {
     data: depositResult,
     mutateAsync: deposit,
@@ -36,8 +45,6 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
     error: approveError,
     isPending: isApprovePending,
   } = useWriteHederaVaultApprove();
-
-  const { data: vaultAssetAddress } = useReadHederaVaultAsset(vaultAddress);
 
   const form = useFormik({
     initialValues: {
@@ -59,17 +66,16 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
         },
         {
           onSuccess: async () => {
-            deposit(amountConverted);
+            await deposit(amountConverted);
+
+            queryClient.invalidateQueries({
+              queryKey: [QueryKeys.ReadBalanceOf],
+            });
           },
         },
       );
     },
   });
-
-  const { data: vaultAssetUserBalance, error: vaultAssetUserBalanceError } =
-    useReadBalanceOf(vaultAssetAddress as EvmAddress);
-
-  const balanceFormatted = formatBalance(vaultAssetUserBalance);
 
   return (
     <>
@@ -95,6 +101,11 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
               <FormHelperText color={"red"}>
                 Error fetching balance of vault asset token: {vaultAssetAddress}
               </FormHelperText>
+            )}
+            {vaultAssetUserBalanceError && (
+              <FormHelperText
+                color={"red"}
+              >{`${vaultAssetUserBalanceError}`}</FormHelperText>
             )}
           </FormControl>
           <Button

@@ -18,8 +18,19 @@ import { useReadHederaVaultShare } from "@/hooks/eip4626/useReadHederaVaultShare
 import { useWriteHederaVaultWithdraw } from "@/hooks/eip4626/mutations/useWriteHederaVaultWithdraw";
 import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
 import { formatBalance } from "@/services/util/helpers";
+import BigNumber from "bignumber.js";
+import { VAULT_TOKEN_PRECISION_VALUE } from "@/config/constants";
+import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
+import { QueryKeys } from "@/hooks/types";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
+  const queryClient = useQueryClient();
+  const { data: vaultShareAddress } = useReadHederaVaultShare(vaultAddress);
+  const { data: shareUserBalance, error: shareUserBalanceError } =
+    useReadBalanceOf(vaultShareAddress as EvmAddress);
+  const balanceFormatted = formatBalance(shareUserBalance);
+
   const {
     data: withdrawResult,
     mutateAsync: withdraw,
@@ -27,22 +38,44 @@ export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
     isPending,
   } = useWriteHederaVaultWithdraw();
 
+  const {
+    data: approveResult,
+    mutateAsync: approve,
+    error: approveError,
+    isPending: isApprovePending,
+  } = useWriteHederaVaultApprove();
+
   const form = useFormik({
     initialValues: {
       amount: 0,
     },
     onSubmit: ({ amount }) => {
-      const amountConverted = BigInt(amount);
-      withdraw(amountConverted);
+      //@TODO use token precision from vault info
+      const amountConverted = BigInt(
+        BigNumber(amount).shiftedBy(VAULT_TOKEN_PRECISION_VALUE).toString(),
+      );
+
+      //@TODO show read allowance
+      //@TODO do not trigger allowance if it is enough?
+
+      approve(
+        {
+          tokenAmount: amountConverted,
+          tokenAddress: vaultShareAddress as EvmAddress,
+          vaultAddress,
+        },
+        {
+          onSuccess: async () => {
+            await withdraw(amountConverted);
+
+            queryClient.invalidateQueries({
+              queryKey: [QueryKeys.ReadBalanceOf],
+            });
+          },
+        },
+      );
     },
   });
-
-  const { data: vaultShareAddress } = useReadHederaVaultShare(vaultAddress);
-
-  const { data: shareUserBalance, error: shareUserBalanceError } =
-    useReadBalanceOf(vaultShareAddress as EvmAddress);
-
-  const balanceFormatted = formatBalance(shareUserBalance);
 
   return (
     <>
@@ -68,6 +101,11 @@ export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
               <FormHelperText color={"red"}>
                 Error fetching balance of vault share token: {vaultShareAddress}
               </FormHelperText>
+            )}
+            {shareUserBalanceError && (
+              <FormHelperText
+                color={"red"}
+              >{`${shareUserBalanceError}`}</FormHelperText>
             )}
           </FormControl>
           <Button type="submit" isLoading={isPending}>

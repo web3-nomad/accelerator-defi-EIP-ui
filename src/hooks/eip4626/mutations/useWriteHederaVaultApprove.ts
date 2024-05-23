@@ -14,22 +14,13 @@ export function useWriteHederaVaultApprove() {
   const { walletInterface, accountEvm } = useWalletInterface();
 
   return useMutation({
-    mutationFn: async ({
-      tokenAmount,
-      tokenAddress,
-      vaultAddress,
-    }: ApproveProps) => {
-      const approveResult = await writeHederaVaultApprove(
+    mutationFn: ({ tokenAmount, tokenAddress, vaultAddress }: ApproveProps) =>
+      writeHederaVaultApprove(
         walletInterface as WalletInterface,
         {
           args: [vaultAddress, tokenAmount],
         },
         tokenAddress.toString() as EvmAddress,
-      );
-
-      console.log("L17 approveResult ===", approveResult);
-
-      return approveResult;
-    },
+      ),
   });
 }
