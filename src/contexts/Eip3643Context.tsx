@@ -1,4 +1,4 @@
-import { LogDescription, Log } from "ethers";
+import { LogDescription } from "ethers";
 import { createContext, ReactNode, useState } from "react";
 
 type defaultContextType = {
