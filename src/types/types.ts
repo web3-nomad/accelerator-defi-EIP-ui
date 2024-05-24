@@ -46,3 +46,9 @@ export type DeployVaultRequest = {
   rewardTokenAddress: `0x${string}`;
   feePercentage: number;
 };
+
+export type VaultNameItem = {
+  address: `0x${string}`;
+  shareTokenName: string;
+  shareTokenSymbol: string;
+};
