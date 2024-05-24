@@ -142,6 +142,7 @@ class HashConnectWallet implements WalletInterface {
     abi: readonly any[],
     functionName: string,
     functionParameters: ContractFunctionParameterBuilder,
+    value: bigint | undefined,
     gasLimit: number | undefined,
   ) {
     const accountId = hashConnect.connectedAccountIds[0];
@@ -152,8 +153,8 @@ class HashConnectWallet implements WalletInterface {
     const evmAddress = await this.getEvmAccountAddress(
       AccountId.fromString(accountId.toString()),
     );
-    let gasLimitFinal = 1000000;
-    //    let gasLimitFinal = gasLimit;
+    //let gasLimitFinal = 1000000;
+    let gasLimitFinal = gasLimit;
     if (!gasLimitFinal) {
       const res = await estimateGas(
         evmAddress,
@@ -161,11 +162,13 @@ class HashConnectWallet implements WalletInterface {
         abi,
         functionName,
         functionParameters.buildEthersParams(),
+        value,
       );
       if (res.result) {
         gasLimitFinal = parseInt(res.result, 16);
       } else {
-        throw res._status?.messages?.[0]?.detail;
+        const error = res._status?.messages?.[0];
+        throw error?.detail || error?.data;
       }
     }
 
@@ -180,7 +183,9 @@ class HashConnectWallet implements WalletInterface {
       .setGas(gasLimitFinal)
       .setFunctionParameters(
         new Uint8Array(Buffer.from(data.substring(2), "hex")),
-      );
+      )
+      // Payable amount is set in regular numbers; we do not assume using floats here for now
+      .setPayableAmount((value || BigInt(0)) / BigInt(1000000000000000000));
 
     const txFrozen = await tx.freezeWithSigner(hashConnectSigner as any);
     await txFrozen.executeWithSigner(hashConnectSigner as any);

@@ -166,6 +166,7 @@ class BladeWallet implements WalletInterface {
     abi: readonly any[],
     functionName: string,
     functionParameters: ContractFunctionParameterBuilder,
+    value: bigint | undefined,
     gasLimit: number | undefined,
   ) {
     const bladeSigner = bladeConnector.getSigners()[0];
@@ -184,11 +185,13 @@ class BladeWallet implements WalletInterface {
         abi,
         functionName,
         functionParameters.buildEthersParams(),
+        value,
       );
       if (res.result) {
         gasLimitFinal = parseInt(res.result, 16);
       } else {
-        throw res._status?.messages?.[0]?.detail;
+        const error = res._status?.messages?.[0];
+        throw error?.detail || error?.data;
       }
     }
 
@@ -203,7 +206,8 @@ class BladeWallet implements WalletInterface {
       .setGas(gasLimitFinal)
       .setFunctionParameters(
         new Uint8Array(Buffer.from(data.substring(2), "hex")),
-      );
+      )
+      .setPayableAmount((value || BigInt(0)) / BigInt("1000000000000000000"));
 
     const txFrozen = await tx.freezeWithSigner(bladeSigner as any);
     await txFrozen.executeWithSigner(bladeSigner as any);

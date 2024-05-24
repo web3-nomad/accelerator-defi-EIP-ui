@@ -61,7 +61,7 @@ export async function writeContract<
         parameters.abi,
         parameters.functionName as string,
         functionParameters,
-        0,
+        parameters.value,
       )
       .then((txId: any) => resolve(txId))
       .catch((e: any) => {

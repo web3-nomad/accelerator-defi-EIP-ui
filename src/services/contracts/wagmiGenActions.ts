@@ -6079,20 +6079,7 @@ export const trustedIssuersRegistryConfig = {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const vaultFactoryAbi = [
-  {
-    type: "constructor",
-    inputs: [{ name: "deployer", internalType: "address", type: "address" }],
-    stateMutability: "nonpayable",
-  },
-  { type: "error", inputs: [], name: "AccessControlBadConfirmation" },
-  {
-    type: "error",
-    inputs: [
-      { name: "account", internalType: "address", type: "address" },
-      { name: "neededRole", internalType: "bytes32", type: "bytes32" },
-    ],
-    name: "AccessControlUnauthorizedAccount",
-  },
+  { type: "constructor", inputs: [], stateMutability: "nonpayable" },
   {
     type: "error",
     inputs: [{ name: "owner", internalType: "address", type: "address" }],
@@ -6126,66 +6113,6 @@ export const vaultFactoryAbi = [
     type: "event",
     anonymous: false,
     inputs: [
-      { name: "role", internalType: "bytes32", type: "bytes32", indexed: true },
-      {
-        name: "previousAdminRole",
-        internalType: "bytes32",
-        type: "bytes32",
-        indexed: true,
-      },
-      {
-        name: "newAdminRole",
-        internalType: "bytes32",
-        type: "bytes32",
-        indexed: true,
-      },
-    ],
-    name: "RoleAdminChanged",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      { name: "role", internalType: "bytes32", type: "bytes32", indexed: true },
-      {
-        name: "account",
-        internalType: "address",
-        type: "address",
-        indexed: true,
-      },
-      {
-        name: "sender",
-        internalType: "address",
-        type: "address",
-        indexed: true,
-      },
-    ],
-    name: "RoleGranted",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
-      { name: "role", internalType: "bytes32", type: "bytes32", indexed: true },
-      {
-        name: "account",
-        internalType: "address",
-        type: "address",
-        indexed: true,
-      },
-      {
-        name: "sender",
-        internalType: "address",
-        type: "address",
-        indexed: true,
-      },
-    ],
-    name: "RoleRevoked",
-  },
-  {
-    type: "event",
-    anonymous: false,
-    inputs: [
       {
         name: "vault",
         internalType: "address",
@@ -6201,20 +6128,6 @@ export const vaultFactoryAbi = [
       },
     ],
     name: "VaultDeployed",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "DEFAULT_ADMIN_ROLE",
-    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [],
-    name: "DEPLOYER_ROLE",
-    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
-    stateMutability: "view",
   },
   {
     type: "function",
@@ -6264,33 +6177,6 @@ export const vaultFactoryAbi = [
   },
   {
     type: "function",
-    inputs: [{ name: "role", internalType: "bytes32", type: "bytes32" }],
-    name: "getRoleAdmin",
-    outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "role", internalType: "bytes32", type: "bytes32" },
-      { name: "account", internalType: "address", type: "address" },
-    ],
-    name: "grantRole",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "role", internalType: "bytes32", type: "bytes32" },
-      { name: "account", internalType: "address", type: "address" },
-    ],
-    name: "hasRole",
-    outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     inputs: [{ name: "vault", internalType: "address", type: "address" }],
     name: "isVaultAvailable",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
@@ -6307,26 +6193,6 @@ export const vaultFactoryAbi = [
     type: "function",
     inputs: [],
     name: "renounceOwnership",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "role", internalType: "bytes32", type: "bytes32" },
-      { name: "callerConfirmation", internalType: "address", type: "address" },
-    ],
-    name: "renounceRole",
-    outputs: [],
-    stateMutability: "nonpayable",
-  },
-  {
-    type: "function",
-    inputs: [
-      { name: "role", internalType: "bytes32", type: "bytes32" },
-      { name: "account", internalType: "address", type: "address" },
-    ],
-    name: "revokeRole",
     outputs: [],
     stateMutability: "nonpayable",
   },
@@ -6354,7 +6220,7 @@ export const vaultFactoryAbi = [
 ] as const;
 
 export const vaultFactoryAddress =
-  "0x88f598B617BF4cB1430488EF43a6777cfb589904" as const;
+  "0xd58b64b0CEa4eB82D0427524Bc56927410E3120a" as const;
 
 export const vaultFactoryConfig = {
   address: vaultFactoryAddress,
@@ -13184,25 +13050,6 @@ export const readVaultFactory = /*#__PURE__*/ createReadContract({
 });
 
 /**
- * Wraps __{@link readContract}__ with `abi` set to __{@link vaultFactoryAbi}__ and `functionName` set to `"DEFAULT_ADMIN_ROLE"`
- */
-export const readVaultFactoryDefaultAdminRole =
-  /*#__PURE__*/ createReadContract({
-    abi: vaultFactoryAbi,
-    address: vaultFactoryAddress,
-    functionName: "DEFAULT_ADMIN_ROLE",
-  });
-
-/**
- * Wraps __{@link readContract}__ with `abi` set to __{@link vaultFactoryAbi}__ and `functionName` set to `"DEPLOYER_ROLE"`
- */
-export const readVaultFactoryDeployerRole = /*#__PURE__*/ createReadContract({
-  abi: vaultFactoryAbi,
-  address: vaultFactoryAddress,
-  functionName: "DEPLOYER_ROLE",
-});
-
-/**
  * Wraps __{@link readContract}__ with `abi` set to __{@link vaultFactoryAbi}__ and `functionName` set to `"availableVaults"`
  */
 export const readVaultFactoryAvailableVaults = /*#__PURE__*/ createReadContract(
@@ -13212,24 +13059,6 @@ export const readVaultFactoryAvailableVaults = /*#__PURE__*/ createReadContract(
     functionName: "availableVaults",
   },
 );
-
-/**
- * Wraps __{@link readContract}__ with `abi` set to __{@link vaultFactoryAbi}__ and `functionName` set to `"getRoleAdmin"`
- */
-export const readVaultFactoryGetRoleAdmin = /*#__PURE__*/ createReadContract({
-  abi: vaultFactoryAbi,
-  address: vaultFactoryAddress,
-  functionName: "getRoleAdmin",
-});
-
-/**
- * Wraps __{@link readContract}__ with `abi` set to __{@link vaultFactoryAbi}__ and `functionName` set to `"hasRole"`
- */
-export const readVaultFactoryHasRole = /*#__PURE__*/ createReadContract({
-  abi: vaultFactoryAbi,
-  address: vaultFactoryAddress,
-  functionName: "hasRole",
-});
 
 /**
  * Wraps __{@link readContract}__ with `abi` set to __{@link vaultFactoryAbi}__ and `functionName` set to `"isVaultAvailable"`
@@ -13287,15 +13116,6 @@ export const writeVaultFactoryDeployVault = /*#__PURE__*/ createWriteContract({
 });
 
 /**
- * Wraps __{@link writeContract}__ with `abi` set to __{@link vaultFactoryAbi}__ and `functionName` set to `"grantRole"`
- */
-export const writeVaultFactoryGrantRole = /*#__PURE__*/ createWriteContract({
-  abi: vaultFactoryAbi,
-  address: vaultFactoryAddress,
-  functionName: "grantRole",
-});
-
-/**
  * Wraps __{@link writeContract}__ with `abi` set to __{@link vaultFactoryAbi}__ and `functionName` set to `"renounceOwnership"`
  */
 export const writeVaultFactoryRenounceOwnership =
@@ -13304,24 +13124,6 @@ export const writeVaultFactoryRenounceOwnership =
     address: vaultFactoryAddress,
     functionName: "renounceOwnership",
   });
-
-/**
- * Wraps __{@link writeContract}__ with `abi` set to __{@link vaultFactoryAbi}__ and `functionName` set to `"renounceRole"`
- */
-export const writeVaultFactoryRenounceRole = /*#__PURE__*/ createWriteContract({
-  abi: vaultFactoryAbi,
-  address: vaultFactoryAddress,
-  functionName: "renounceRole",
-});
-
-/**
- * Wraps __{@link writeContract}__ with `abi` set to __{@link vaultFactoryAbi}__ and `functionName` set to `"revokeRole"`
- */
-export const writeVaultFactoryRevokeRole = /*#__PURE__*/ createWriteContract({
-  abi: vaultFactoryAbi,
-  address: vaultFactoryAddress,
-  functionName: "revokeRole",
-});
 
 /**
  * Wraps __{@link writeContract}__ with `abi` set to __{@link vaultFactoryAbi}__ and `functionName` set to `"transferOwnership"`
@@ -13352,16 +13154,6 @@ export const simulateVaultFactoryDeployVault =
   });
 
 /**
- * Wraps __{@link simulateContract}__ with `abi` set to __{@link vaultFactoryAbi}__ and `functionName` set to `"grantRole"`
- */
-export const simulateVaultFactoryGrantRole =
-  /*#__PURE__*/ createSimulateContract({
-    abi: vaultFactoryAbi,
-    address: vaultFactoryAddress,
-    functionName: "grantRole",
-  });
-
-/**
  * Wraps __{@link simulateContract}__ with `abi` set to __{@link vaultFactoryAbi}__ and `functionName` set to `"renounceOwnership"`
  */
 export const simulateVaultFactoryRenounceOwnership =
@@ -13369,26 +13161,6 @@ export const simulateVaultFactoryRenounceOwnership =
     abi: vaultFactoryAbi,
     address: vaultFactoryAddress,
     functionName: "renounceOwnership",
-  });
-
-/**
- * Wraps __{@link simulateContract}__ with `abi` set to __{@link vaultFactoryAbi}__ and `functionName` set to `"renounceRole"`
- */
-export const simulateVaultFactoryRenounceRole =
-  /*#__PURE__*/ createSimulateContract({
-    abi: vaultFactoryAbi,
-    address: vaultFactoryAddress,
-    functionName: "renounceRole",
-  });
-
-/**
- * Wraps __{@link simulateContract}__ with `abi` set to __{@link vaultFactoryAbi}__ and `functionName` set to `"revokeRole"`
- */
-export const simulateVaultFactoryRevokeRole =
-  /*#__PURE__*/ createSimulateContract({
-    abi: vaultFactoryAbi,
-    address: vaultFactoryAddress,
-    functionName: "revokeRole",
   });
 
 /**
@@ -13417,36 +13189,6 @@ export const watchVaultFactoryOwnershipTransferredEvent =
     abi: vaultFactoryAbi,
     address: vaultFactoryAddress,
     eventName: "OwnershipTransferred",
-  });
-
-/**
- * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link vaultFactoryAbi}__ and `eventName` set to `"RoleAdminChanged"`
- */
-export const watchVaultFactoryRoleAdminChangedEvent =
-  /*#__PURE__*/ createWatchContractEvent({
-    abi: vaultFactoryAbi,
-    address: vaultFactoryAddress,
-    eventName: "RoleAdminChanged",
-  });
-
-/**
- * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link vaultFactoryAbi}__ and `eventName` set to `"RoleGranted"`
- */
-export const watchVaultFactoryRoleGrantedEvent =
-  /*#__PURE__*/ createWatchContractEvent({
-    abi: vaultFactoryAbi,
-    address: vaultFactoryAddress,
-    eventName: "RoleGranted",
-  });
-
-/**
- * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link vaultFactoryAbi}__ and `eventName` set to `"RoleRevoked"`
- */
-export const watchVaultFactoryRoleRevokedEvent =
-  /*#__PURE__*/ createWatchContractEvent({
-    abi: vaultFactoryAbi,
-    address: vaultFactoryAddress,
-    eventName: "RoleRevoked",
   });
 
 /**

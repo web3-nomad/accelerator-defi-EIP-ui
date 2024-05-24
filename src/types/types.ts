@@ -37,3 +37,11 @@ export type EvmAddress = `0x${string}`;
 export type VaultInfoProps = {
   vaultAddress: EvmAddress;
 };
+
+export type DeployVaultRequest = {
+  stakingTokenAddress: `0x${string}`;
+  shareTokenName: string;
+  shareTokenSymbol: string;
+  rewardTokenAddress: `0x${string}`;
+  feePercentage: number;
+};
