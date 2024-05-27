@@ -99,7 +99,7 @@ export default function RegisterIdentity({
         </FormHelperText>
       </FormControl>
       <Divider my={10} />
-      <Heading size={"md"}>Registered identities addresses</Heading>
+      <Heading size={"md"}>Wallet addresses with registered identities</Heading>
       <OrderedList>
         {registryAgents.map((item) => (
           <ListItem key={item}>{item}</ListItem>

@@ -28,7 +28,6 @@ export type TokenNameItem = {
 
 export type TransferTokenFromRequest = {
   tokenAddress: `0x${string}`;
-  fromAddress: `0x${string}`;
   toAddress: `0x${string}`;
   amount: bigint;
 };

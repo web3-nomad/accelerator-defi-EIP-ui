@@ -8,15 +8,9 @@ export function useWriteHederaVaultDeposit() {
   const { walletInterface, accountEvm } = useWalletInterface();
 
   return useMutation({
-    mutationFn: async (tokenAmount: bigint) => {
-      const depositResult = await writeHederaVaultDeposit(
-        walletInterface as WalletInterface,
-        { args: [tokenAmount, accountEvm as EvmAddress] },
-      );
-
-      console.log("L17 depositResult ===", depositResult);
-
-      return depositResult;
-    },
+    mutationFn: async (tokenAmount: bigint) =>
+      writeHederaVaultDeposit(walletInterface as WalletInterface, {
+        args: [tokenAmount, accountEvm as EvmAddress],
+      }),
   });
 }

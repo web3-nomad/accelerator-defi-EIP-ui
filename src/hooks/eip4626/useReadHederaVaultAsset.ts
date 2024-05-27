@@ -6,6 +6,6 @@ import { EvmAddress } from "@/types/types";
 export function useReadHederaVaultAsset(vaultAddress: EvmAddress) {
   return useQuery({
     queryKey: [QueryKeysEIP4626.ReadHederaVaultAsset, vaultAddress],
-    queryFn: (context) => readHederaVaultAsset({}, vaultAddress),
+    queryFn: () => readHederaVaultAsset({}, vaultAddress),
   });
 }
