@@ -3,9 +3,12 @@ import { useContext, useEffect, useState } from "react";
 
 import DeployVault from "@/components/eip4626/admin/DeployVault";
 import { Eip4626Context } from "@/contexts/Eip4626Context";
-import { VaultNameItem } from "../../types/types";
+import { VaultNameItem } from "@/types/types";
+import { readHederaVaultOwner } from "@/services/contracts/wagmiGenActions";
+import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 
 export default function Admin() {
+  const { accountEvm } = useWalletInterface();
   const [isDeploy, setIsDeploy] = useState(false);
   const [ownVaults, setOwnVaults] = useState([] as Array<VaultNameItem>);
   const [vaultSelected, setVaultSelected] = useState(
@@ -15,18 +18,20 @@ export default function Admin() {
 
   useEffect(() => {
     (deployedVaults as any).map((item: any) => {
-      console.log("vault event args", item["args"]);
       const vaultAddress = item["args"]?.[0];
       vaultAddress &&
-        setOwnVaults((prev) => {
-          return [
-            ...prev.filter((itemSub) => itemSub.address !== vaultAddress),
-            {
-              address: vaultAddress,
-              shareTokenName: item["args"]?.[1],
-              shareTokenSymbol: item["args"]?.[1],
-            },
-          ];
+        readHederaVaultOwner({}, vaultAddress).then((res) => {
+          res[0].toString().toLowerCase() === accountEvm?.toLowerCase() &&
+            setOwnVaults((prev) => {
+              return [
+                ...prev.filter((itemSub) => itemSub.address !== vaultAddress),
+                {
+                  address: vaultAddress,
+                  shareTokenName: item["args"]?.[1],
+                  shareTokenSymbol: item["args"]?.[2],
+                },
+              ];
+            });
         });
     });
   }, [deployedVaults]);
