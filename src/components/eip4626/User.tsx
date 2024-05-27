@@ -1,51 +1,46 @@
-import { useEffect, useState } from "react";
-import {
-  hederaVaultAddress,
-  readHederaVaultAsset,
-  readHederaVaultAssetTotalSupply,
-  readHederaVaultBalanceOf,
-  readHederaVaultDecimals,
-  readHederaVaultMaxMint,
-  readHederaVaultOwner,
-} from "@/services/contracts/wagmiGenActions";
+import { hederaVaultAddress } from "@/services/contracts/wagmiGenActions";
 import { VaultInfo } from "@/components/eip4626/user/VaultInfo";
-import { EvmAddress } from "@/types/types";
 import { VaultDeposit } from "@/components/eip4626/user/VaultDeposit";
-import { Divider } from "@chakra-ui/react";
+import {
+  Divider,
+  FormControl,
+  FormLabel,
+  Input,
+  VStack,
+} from "@chakra-ui/react";
 import { VaultWithdraw } from "@/components/eip4626/user/VaultWithdraw";
 import DeployedVaultsList from "@/components/eip4626/user/DeployedVaultsList";
+import { useFormik } from "formik";
 
 export default function User() {
-  useEffect(() => {
-    readHederaVaultAsset({}).then((res) => {
-      console.log("vault asset", res.toString());
-    });
-
-    readHederaVaultAssetTotalSupply({}).then((res) => {
-      console.log("vault total supply", res.toString());
-    });
-
-    readHederaVaultDecimals({}).then((res) => {
-      console.log("vault decimals", res.toString());
-    });
-
-    readHederaVaultOwner({}).then((res) => {
-      console.log("vault owner", res.toString());
-    });
-  }, []);
-
-  //@TODO add vault switching functionality or show as the list
-  const [vaultAddress, setVaultAddress] = useState(
-    hederaVaultAddress as EvmAddress,
-  );
+  const form = useFormik({
+    initialValues: {
+      vaultAddress: hederaVaultAddress,
+    },
+    onSubmit: () => {},
+  });
 
   return (
     <>
-      <VaultInfo vaultAddress={vaultAddress} />
+      <form onSubmit={form.handleSubmit}>
+        <VStack gap={2} alignItems="flex-start">
+          <FormControl>
+            <FormLabel>Vault address</FormLabel>
+            <Input
+              name="vaultAddress"
+              variant="outline"
+              value={form.values.vaultAddress}
+              onChange={form.handleChange}
+            />
+          </FormControl>
+        </VStack>
+      </form>
       <Divider my={10} />
-      <VaultDeposit vaultAddress={vaultAddress} />
+      <VaultInfo vaultAddress={form.values.vaultAddress} />
       <Divider my={10} />
-      <VaultWithdraw vaultAddress={vaultAddress} />
+      <VaultDeposit vaultAddress={form.values.vaultAddress} />
+      <Divider my={10} />
+      <VaultWithdraw vaultAddress={form.values.vaultAddress} />
       <Divider my={10} />
       <DeployedVaultsList />
     </>
