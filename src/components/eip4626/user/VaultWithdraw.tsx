@@ -10,6 +10,7 @@ import {
   FormHelperText,
   FormLabel,
   Heading,
+  HStack,
   NumberInput,
   NumberInputField,
   VStack,
@@ -35,7 +36,7 @@ export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
     data: withdrawResult,
     mutateAsync: withdraw,
     error: depositError,
-    isPending,
+    isPending: isWithdrawPending,
   } = useWriteHederaVaultWithdraw();
 
   const {
@@ -49,7 +50,7 @@ export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
     initialValues: {
       amount: 0,
     },
-    onSubmit: ({ amount }) => {
+    onSubmit: async ({ amount }) => {
       //@TODO use token precision from vault info
       const amountConverted = BigInt(
         BigNumber(amount).shiftedBy(VAULT_TOKEN_PRECISION_VALUE).toString(),
@@ -58,24 +59,25 @@ export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
       //@TODO show read allowance
       //@TODO do not trigger allowance if it is enough?
 
-      approve(
-        {
-          tokenAmount: amountConverted,
-          tokenAddress: vaultShareAddress as EvmAddress,
-          vaultAddress,
-        },
-        {
-          onSuccess: async () => {
-            await withdraw(amountConverted);
+      await withdraw(amountConverted);
 
-            queryClient.invalidateQueries({
-              queryKey: [QueryKeys.ReadBalanceOf],
-            });
-          },
-        },
-      );
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeys.ReadBalanceOf],
+      });
     },
   });
+
+  const approveToken = (amount: number) => {
+    const amountConverted = BigInt(
+      BigNumber(amount).shiftedBy(VAULT_TOKEN_PRECISION_VALUE).toString(),
+    );
+
+    approve({
+      tokenAmount: amountConverted,
+      tokenAddress: vaultShareAddress as EvmAddress,
+      vaultAddress,
+    });
+  };
 
   return (
     <>
@@ -108,11 +110,35 @@ export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
               >{`${shareUserBalanceError}`}</FormHelperText>
             )}
           </FormControl>
-          <Button type="submit" isLoading={isPending}>
-            Withdraw
-          </Button>
+          <HStack>
+            <Button
+              onClick={() => approveToken(form.values.amount)}
+              isLoading={isApprovePending}
+            >
+              Approve
+            </Button>
+            <Button type="submit" isLoading={isWithdrawPending}>
+              Withdraw
+            </Button>
+          </HStack>
         </VStack>
       </form>
+
+      {approveResult && (
+        <Alert status="success">
+          <AlertIcon />
+          <AlertTitle>Approve success!</AlertTitle>
+          <AlertDescription>TxId: {approveResult}</AlertDescription>
+        </Alert>
+      )}
+      {approveError && (
+        <Alert status="error">
+          <AlertIcon />
+          <AlertTitle>Approve token error!</AlertTitle>
+          <AlertDescription>{approveError.toString()}</AlertDescription>
+        </Alert>
+      )}
+
       {withdrawResult && (
         <Alert status="success">
           <AlertIcon />

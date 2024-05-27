@@ -38,6 +38,10 @@ export type VaultInfoProps = {
   vaultAddress: EvmAddress;
 };
 
+export type AssociateTokenProps = {
+  tokenAddress: EvmAddress;
+};
+
 export type DeployVaultRequest = {
   stakingTokenAddress: `0x${string}`;
   shareTokenName: string;

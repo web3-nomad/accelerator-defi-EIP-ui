@@ -11,6 +11,7 @@ import {
 import { VaultWithdraw } from "@/components/eip4626/user/VaultWithdraw";
 import DeployedVaultsList from "@/components/eip4626/user/DeployedVaultsList";
 import { useFormik } from "formik";
+import { VaultAssociate } from "@/components/eip4626/user/VaultAssociate";
 
 export default function User() {
   const form = useFormik({
@@ -37,6 +38,8 @@ export default function User() {
       </form>
       <Divider my={10} />
       <VaultInfo vaultAddress={form.values.vaultAddress} />
+      <Divider my={10} />
+      <VaultAssociate vaultAddress={form.values.vaultAddress} />
       <Divider my={10} />
       <VaultDeposit vaultAddress={form.values.vaultAddress} />
       <Divider my={10} />

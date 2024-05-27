@@ -215,10 +215,12 @@ class WalletConnectWallet implements WalletInterface {
     // to call the function, use contract[functionName](...functionParameters, ethersOverrides)
     const contract = new ethers.Contract(
       `0x${contractId.toSolidityAddress()}`,
-      abi || [
-        // workaround for case when calling outside of wagmi-codegen | no abi present
-        `function ${functionName}(${functionParameters.buildAbiFunctionParams()})`,
-      ],
+      abi?.length
+        ? abi
+        : [
+            // workaround for case when calling outside of wagmi-codegen | no abi present
+            `function ${functionName}(${functionParameters.buildAbiFunctionParams()})`,
+          ],
       signer,
     );
 

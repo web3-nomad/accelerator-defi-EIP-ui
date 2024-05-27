@@ -8,6 +8,7 @@ import {
   FormHelperText,
   FormLabel,
   Heading,
+  HStack,
   NumberInput,
   NumberInputField,
   VStack,
@@ -50,7 +51,7 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
     initialValues: {
       amount: 0,
     },
-    onSubmit: ({ amount }) => {
+    onSubmit: async ({ amount }) => {
       const amountConverted = BigInt(
         BigNumber(amount).shiftedBy(VAULT_TOKEN_PRECISION_VALUE).toString(),
       );
@@ -58,24 +59,25 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
       //@TODO show read allowance
       //@TODO do not trigger allowance if it is enough?
 
-      approve(
-        {
-          tokenAmount: amountConverted,
-          tokenAddress: vaultAssetAddress as EvmAddress,
-          vaultAddress,
-        },
-        {
-          onSuccess: async () => {
-            await deposit(amountConverted);
+      await deposit(amountConverted);
 
-            queryClient.invalidateQueries({
-              queryKey: [QueryKeys.ReadBalanceOf],
-            });
-          },
-        },
-      );
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeys.ReadBalanceOf],
+      });
     },
   });
+
+  const approveToken = (amount: number) => {
+    const amountConverted = BigInt(
+      BigNumber(amount).shiftedBy(VAULT_TOKEN_PRECISION_VALUE).toString(),
+    );
+
+    approve({
+      tokenAmount: amountConverted,
+      tokenAddress: vaultAssetAddress as EvmAddress,
+      vaultAddress,
+    });
+  };
 
   return (
     <>
@@ -108,12 +110,17 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
               >{`${vaultAssetUserBalanceError}`}</FormHelperText>
             )}
           </FormControl>
-          <Button
-            type="submit"
-            isLoading={isApprovePending || isDepositPending}
-          >
-            Deposit
-          </Button>
+          <HStack>
+            <Button
+              onClick={() => approveToken(form.values.amount)}
+              isLoading={isApprovePending}
+            >
+              Approve
+            </Button>
+            <Button type="submit" isLoading={isDepositPending}>
+              Deposit
+            </Button>
+          </HStack>
         </VStack>
       </form>
 

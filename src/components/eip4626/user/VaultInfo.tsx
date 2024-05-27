@@ -13,14 +13,14 @@ export function VaultInfo({ vaultAddress }: VaultInfoProps) {
     useReadHederaVaultTotalAssets(vaultAddress);
   const { data: userAssetsInVault } = useReadHederaVaultAssetsOf(vaultAddress);
   // const { data: rewardAsset } = useReadHederaVaultRewardTokens(vaultAddress);
-  const { data: vaultShare } = useReadHederaVaultShare(vaultAddress);
+  const { data: vaultShareAddress } = useReadHederaVaultShare(vaultAddress);
 
   return (
     <>
       <Text>Current selected vault: {vaultAddress}</Text>
       <Text>Vault asset address: {vaultAssetAddress}</Text>
       {/*<Text>Vault reward asset address: {rewardAsset}</Text>*/}
-      <Text>Vault share asset address: {vaultShare}</Text>
+      <Text>Vault share asset address: {vaultShareAddress}</Text>
       <Text>
         Vault total assets amount:{" "}
         {formatBalance(vaultAssetTotalAssets?.toString())}
