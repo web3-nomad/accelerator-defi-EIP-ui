@@ -59,7 +59,10 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
       //@TODO show read allowance
       //@TODO do not trigger allowance if it is enough?
 
-      await deposit(amountConverted);
+      await deposit({
+        vaultAddress: vaultAddress,
+        tokenAmount: amountConverted,
+      });
 
       queryClient.invalidateQueries({
         queryKey: [QueryKeys.ReadBalanceOf],

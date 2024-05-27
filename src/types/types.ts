@@ -62,3 +62,8 @@ export type VaultNameItem = {
   shareTokenName: string;
   shareTokenSymbol: string;
 };
+
+export type VaultDepositRequest = {
+  vaultAddress: `0x${string}`;
+  tokenAmount: bigint;
+};
