@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import { useDeployVault } from "@/hooks/eip4626/mutations/useDeployVault";
+import { useUpdateFeeConfig } from "@/hooks/eip4626/mutations/useUpdateFeeConfig";
 import {
   Button,
   Input,
@@ -8,45 +8,49 @@ import {
   Heading,
   FormLabel,
   FormControl,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
   Alert,
   AlertIcon,
   AlertTitle,
   AlertDescription,
-  FormHelperText,
 } from "@chakra-ui/react";
+import { readHederaVaultFeeConfig } from "../../../services/contracts/wagmiGenActions";
+import { useEffect, useState } from "react";
 
-export default function DeployToken({ onClose = () => {} }) {
+export default function UpdateFeeConfig({
+  vaultSelected,
+}: {
+  vaultSelected: any | null;
+}) {
   const {
     error,
     isPending,
-    data: deployResult,
-    mutateAsync: deployVault,
-  } = useDeployVault();
+    data,
+    mutateAsync: updateFeeConfig,
+  } = useUpdateFeeConfig();
+
+  const [receiver, setReceiver] = useState("");
+  const [rewardTokenAddress, setRewardTokenAddress] = useState("");
+  const [feePercentage, setFeePercentage] = useState("");
+
+  useEffect(() => {
+    readHederaVaultFeeConfig({}, vaultSelected.address).then((res) => {
+      setReceiver(res[0]);
+      setRewardTokenAddress(res[1]);
+      setFeePercentage(res[2].toString());
+    });
+  }, [vaultSelected, setRewardTokenAddress, setFeePercentage, setReceiver]);
 
   const form = useFormik({
+    enableReinitialize: true,
     initialValues: {
-      stakingTokenAddress: "",
-      shareTokenName: "",
-      shareTokenSymbol: "",
-      rewardTokenAddress: "",
-      feePercentage: "",
-    },
-    onSubmit: ({
-      stakingTokenAddress,
-      shareTokenName,
-      shareTokenSymbol,
+      receiver,
       rewardTokenAddress,
       feePercentage,
-    }) => {
-      deployVault({
-        stakingTokenAddress: stakingTokenAddress as `0x${string}`,
-        shareTokenName,
-        shareTokenSymbol,
+    },
+    onSubmit: ({ receiver, rewardTokenAddress, feePercentage }) => {
+      updateFeeConfig({
+        vaultAddress: vaultSelected.address as `0x${string}`,
+        receiver: receiver as `0x${string}`,
         rewardTokenAddress: rewardTokenAddress as `0x${string}`,
         feePercentage: parseInt(feePercentage),
       });
@@ -57,6 +61,15 @@ export default function DeployToken({ onClose = () => {} }) {
     <form onSubmit={form.handleSubmit}>
       <VStack gap={2} alignItems="flex-start">
         <Heading size={"md"}>Update fee config</Heading>
+        <FormControl isRequired>
+          <FormLabel>Receiver</FormLabel>
+          <Input
+            name="receiver"
+            variant="outline"
+            value={form.values.receiver}
+            onChange={form.handleChange}
+          />
+        </FormControl>
         <FormControl isRequired>
           <FormLabel>Reward token address</FormLabel>
           <Input
@@ -75,44 +88,25 @@ export default function DeployToken({ onClose = () => {} }) {
             onChange={form.handleChange}
           />
         </FormControl>
-        {!deployResult && (
-          <Stack spacing={4} direction="row" align="center">
-            <Button type="submit" isLoading={isPending}>
-              Deploy
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => {
-                onClose();
-              }}
-              isLoading={isPending}
-            >
-              Cancel
-            </Button>
-          </Stack>
-        )}
+        <Stack spacing={4} direction="row" align="center">
+          <Button type="submit" isLoading={isPending}>
+            Update
+          </Button>
+        </Stack>
         {error && (
           <Alert status="error">
             <AlertIcon />
-            <AlertTitle>Deploy error!</AlertTitle>
+            <AlertTitle>Update error!</AlertTitle>
             <AlertDescription>{error.toString()}</AlertDescription>
           </Alert>
         )}
-        {deployResult && (
+        {data && (
           <>
             <Alert status="success">
               <AlertIcon />
-              <AlertTitle>Deploy success!</AlertTitle>
-              <AlertDescription>TxId: {deployResult}</AlertDescription>
+              <AlertTitle>Update success!</AlertTitle>
+              <AlertDescription>TxId: {data}</AlertDescription>
             </Alert>
-            <Button
-              onClick={() => {
-                onClose();
-              }}
-              isLoading={isPending}
-            >
-              Close
-            </Button>
           </>
         )}
       </VStack>

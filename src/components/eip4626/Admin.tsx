@@ -1,7 +1,8 @@
-import { Button, Select, Stack, Text } from "@chakra-ui/react";
+import { Button, Divider, Select, Stack, Text } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 
 import DeployVault from "@/components/eip4626/admin/DeployVault";
+import UpdateFeeConfig from "@/components/eip4626/admin/UpdateFeeConfig";
 import { Eip4626Context } from "@/contexts/Eip4626Context";
 import { VaultNameItem } from "@/types/types";
 import { readHederaVaultOwner } from "@/services/contracts/wagmiGenActions";
@@ -68,6 +69,12 @@ export default function Admin() {
       )}
       {isDeploy && !vaultSelected && (
         <DeployVault onClose={() => setIsDeploy(false)} />
+      )}
+      {vaultSelected && (
+        <>
+          <Divider my={10} />
+          <UpdateFeeConfig vaultSelected={vaultSelected}></UpdateFeeConfig>
+        </>
       )}
     </>
   );
