@@ -11,7 +11,7 @@ type ApproveProps = {
 };
 
 export function useWriteHederaVaultApprove() {
-  const { walletInterface, accountEvm } = useWalletInterface();
+  const { walletInterface } = useWalletInterface();
 
   return useMutation({
     mutationFn: ({ tokenAmount, tokenAddress, vaultAddress }: ApproveProps) =>

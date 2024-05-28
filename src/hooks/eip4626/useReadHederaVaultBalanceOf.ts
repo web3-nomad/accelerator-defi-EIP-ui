@@ -22,7 +22,7 @@ export function useReadHederaVaultBalanceOf(vaultAddress: EvmAddress) {
     queryFn: () => {
       return readHederaVaultBalanceOf(
         { args: [accountId as EvmAddress] },
-        vaultAddress as EvmAddress,
+        vaultAddress,
       );
     },
   });

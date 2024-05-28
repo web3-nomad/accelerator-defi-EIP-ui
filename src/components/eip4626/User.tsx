@@ -12,11 +12,13 @@ import { VaultWithdraw } from "@/components/eip4626/user/VaultWithdraw";
 import DeployedVaultsList from "@/components/eip4626/user/DeployedVaultsList";
 import { useFormik } from "formik";
 import { VaultAssociate } from "@/components/eip4626/user/VaultAssociate";
+import { VaultClaimAllReward } from "@/components/eip4626/user/VaultClaimAllReward";
+import { EvmAddress } from "@/types/types";
 
 export default function User() {
   const form = useFormik({
     initialValues: {
-      vaultAddress: hederaVaultAddress,
+      vaultAddress: "" as EvmAddress,
     },
     onSubmit: () => {},
   });
@@ -26,7 +28,7 @@ export default function User() {
       <form onSubmit={form.handleSubmit}>
         <VStack gap={2} alignItems="flex-start">
           <FormControl>
-            <FormLabel>Vault address</FormLabel>
+            <FormLabel>Please insert vault address</FormLabel>
             <Input
               name="vaultAddress"
               variant="outline"
@@ -37,14 +39,21 @@ export default function User() {
         </VStack>
       </form>
       <Divider my={10} />
-      <VaultInfo vaultAddress={form.values.vaultAddress} />
-      <Divider my={10} />
-      <VaultAssociate vaultAddress={form.values.vaultAddress} />
-      <Divider my={10} />
-      <VaultDeposit vaultAddress={form.values.vaultAddress} />
-      <Divider my={10} />
-      <VaultWithdraw vaultAddress={form.values.vaultAddress} />
-      <Divider my={10} />
+      {form.values.vaultAddress && (
+        <>
+          <VaultInfo vaultAddress={form.values.vaultAddress} />
+          <Divider my={10} />
+          <VaultAssociate vaultAddress={form.values.vaultAddress} />
+          <Divider my={10} />
+          <VaultDeposit vaultAddress={form.values.vaultAddress} />
+          <Divider my={10} />
+          <VaultWithdraw vaultAddress={form.values.vaultAddress} />
+          <Divider my={10} />
+          <VaultClaimAllReward vaultAddress={form.values.vaultAddress} />
+          <Divider my={10} />
+        </>
+      )}
+
       <DeployedVaultsList />
     </>
   );
