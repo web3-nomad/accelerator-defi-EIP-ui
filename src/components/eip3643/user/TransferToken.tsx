@@ -17,10 +17,14 @@ import { useFormik } from "formik";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { useTransferToken } from "@/hooks/mutations/useTransferToken";
 import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
-import { TransferTokenFromRequest } from "@/types/types";
+import { TokenNameItem, TransferTokenFromRequest } from "@/types/types";
 
-export default function TransferToken() {
-  const { accountId, walletName, walletInterface } = useWalletInterface();
+export default function TransferToken({
+  tokenSelected,
+}: {
+  tokenSelected: TokenNameItem | null;
+}) {
+  const { accountEvm } = useWalletInterface();
 
   const {
     error,
@@ -31,15 +35,14 @@ export default function TransferToken() {
 
   const form = useFormik({
     initialValues: {
-      tokenAddress: "",
       toAddress: "",
       amount: 0,
     },
-    onSubmit: ({ tokenAddress, toAddress, amount }) => {
+    onSubmit: ({ toAddress, amount }) => {
       const amountConverted = BigInt(amount);
 
       transferToken({
-        tokenAddress,
+        tokenAddress: tokenSelected?.address,
         toAddress,
         amount: amountConverted,
       } as TransferTokenFromRequest);
@@ -47,7 +50,7 @@ export default function TransferToken() {
   });
 
   const { data: tokenBalance, error: tokenBalanceError } = useReadBalanceOf(
-    form.values.tokenAddress as `0x${string}`,
+    tokenSelected?.address as `0x${string}`,
   );
 
   return (
@@ -56,19 +59,12 @@ export default function TransferToken() {
       <form onSubmit={form.handleSubmit}>
         <VStack gap={2} alignItems="flex-start">
           <FormControl isRequired>
-            <FormLabel>Specify deployed token address</FormLabel>
-            <Input
-              name="tokenAddress"
-              variant="outline"
-              value={form.values.tokenAddress}
-              onChange={form.handleChange}
-            />
             <FormHelperText>
               Balance of token: {`${tokenBalance}`}
             </FormHelperText>
             {tokenBalanceError && (
               <FormHelperText color={"red"}>
-                Error fetching balance of token: {form.values.tokenAddress}
+                Error fetching balance of token: {tokenSelected?.address}
               </FormHelperText>
             )}
           </FormControl>
@@ -83,7 +79,7 @@ export default function TransferToken() {
             />
 
             <FormHelperText>
-              <b>Connected wallet address:</b> {accountId || "Not connected"}
+              <b>Connected wallet address:</b> {accountEvm || "Not connected"}
             </FormHelperText>
           </FormControl>
 

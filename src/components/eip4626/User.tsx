@@ -1,60 +1,53 @@
-import { hederaVaultAddress } from "@/services/contracts/wagmiGenActions";
-import { VaultInfo } from "@/components/eip4626/user/VaultInfo";
-import { VaultDeposit } from "@/components/eip4626/user/VaultDeposit";
-import {
-  Divider,
-  FormControl,
-  FormLabel,
-  Input,
-  VStack,
-} from "@chakra-ui/react";
+import { useState, useContext } from "react";
+import { Divider, Select, Stack } from "@chakra-ui/react";
 import { VaultWithdraw } from "@/components/eip4626/user/VaultWithdraw";
-import DeployedVaultsList from "@/components/eip4626/user/DeployedVaultsList";
-import { useFormik } from "formik";
 import { VaultAssociate } from "@/components/eip4626/user/VaultAssociate";
 import { VaultClaimAllReward } from "@/components/eip4626/user/VaultClaimAllReward";
-import { EvmAddress } from "@/types/types";
+import { VaultInfo } from "@/components/eip4626/user/VaultInfo";
+import { VaultDeposit } from "@/components/eip4626/user/VaultDeposit";
+import { Eip4626Context } from "@/contexts/Eip4626Context";
 
 export default function User() {
-  const form = useFormik({
-    initialValues: {
-      vaultAddress: "" as EvmAddress,
-    },
-    onSubmit: () => {},
-  });
+  const [vaultSelected, setVaultSelected] = useState("" as `0x${string}`);
+
+  const { deployedVaults } = useContext(Eip4626Context);
 
   return (
     <>
-      <form onSubmit={form.handleSubmit}>
-        <VStack gap={2} alignItems="flex-start">
-          <FormControl>
-            <FormLabel>Please insert vault address</FormLabel>
-            <Input
-              name="vaultAddress"
-              variant="outline"
-              value={form.values.vaultAddress}
-              onChange={form.handleChange}
-            />
-          </FormControl>
-        </VStack>
-      </form>
-      <Divider my={10} />
-      {form.values.vaultAddress && (
+      <Stack spacing={4} align="center">
+        <Select
+          placeholder="Select vault for operation"
+          onChange={(item) => {
+            const vaultItem = deployedVaults.find(
+              (itemSub) => itemSub?.["args"]?.[0] === item.target.value,
+            );
+            setVaultSelected(vaultItem?.["args"]?.[0]);
+          }}
+          variant="outline"
+        >
+          {deployedVaults.map((item) => (
+            <option key={item?.["args"]?.[0]} value={item?.["args"]?.[0]}>
+              {item?.["args"]?.[1]} ({item?.["args"]?.[2]}) [
+              {item?.["args"]?.[0]}]
+            </option>
+          ))}
+        </Select>
+      </Stack>
+      {vaultSelected && (
         <>
-          <VaultInfo vaultAddress={form.values.vaultAddress} />
           <Divider my={10} />
-          <VaultAssociate vaultAddress={form.values.vaultAddress} />
+          <VaultInfo vaultAddress={vaultSelected} />
           <Divider my={10} />
-          <VaultDeposit vaultAddress={form.values.vaultAddress} />
+          <VaultAssociate vaultAddress={vaultSelected} />
           <Divider my={10} />
-          <VaultWithdraw vaultAddress={form.values.vaultAddress} />
+          <VaultDeposit vaultAddress={vaultSelected} />
           <Divider my={10} />
-          <VaultClaimAllReward vaultAddress={form.values.vaultAddress} />
+          <VaultWithdraw vaultAddress={vaultSelected} />
+          <Divider my={10} />
+          <VaultClaimAllReward vaultAddress={vaultSelected} />
           <Divider my={10} />
         </>
       )}
-
-      <DeployedVaultsList />
     </>
   );
 }
