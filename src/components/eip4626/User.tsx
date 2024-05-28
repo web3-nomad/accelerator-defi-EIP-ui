@@ -6,6 +6,7 @@ import { VaultClaimAllReward } from "@/components/eip4626/user/VaultClaimAllRewa
 import { VaultInfo } from "@/components/eip4626/user/VaultInfo";
 import { VaultDeposit } from "@/components/eip4626/user/VaultDeposit";
 import { Eip4626Context } from "@/contexts/Eip4626Context";
+import { VaultAddReward } from "@/components/eip4626/user/VaultAddReward";
 
 export default function User() {
   const [vaultSelected, setVaultSelected] = useState("" as `0x${string}`);
@@ -45,6 +46,8 @@ export default function User() {
           <VaultWithdraw vaultAddress={vaultSelected} />
           <Divider my={10} />
           <VaultClaimAllReward vaultAddress={vaultSelected} />
+          <Divider my={10} />
+          <VaultAddReward vaultAddress={vaultSelected} />
           <Divider my={10} />
         </>
       )}
