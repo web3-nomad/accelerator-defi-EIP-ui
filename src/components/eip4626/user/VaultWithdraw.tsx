@@ -59,7 +59,10 @@ export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
       //@TODO show read allowance
       //@TODO do not trigger allowance if it is enough?
 
-      await withdraw(amountConverted);
+      await withdraw({
+        vaultAddress: vaultAddress,
+        tokenAmount: amountConverted,
+      });
 
       queryClient.invalidateQueries({
         queryKey: [QueryKeys.ReadBalanceOf],
