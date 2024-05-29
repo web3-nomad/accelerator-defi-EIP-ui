@@ -27,19 +27,18 @@ export default function Admin() {
     (deployedTokens as any).map((item: any) => {
       const tokenAddress = item["args"]?.[0];
       tokenAddress &&
-        Promise.all([
-          readTokenName({}, tokenAddress),
-          readTokenOwner({}, tokenAddress),
-        ]).then((res) => {
-          res[1][0].toString().toLowerCase() === accountEvm?.toLowerCase() &&
-            setOwnTokens((prev) => {
-              return [
-                ...prev.filter((itemSub) => itemSub.address !== tokenAddress),
-                {
-                  address: tokenAddress,
-                  name: res[0],
-                },
-              ];
+        readTokenOwner({}, tokenAddress).then((resOwner) => {
+          resOwner[0].toString().toLowerCase() === accountEvm?.toLowerCase() &&
+            readTokenName({}, tokenAddress).then((resName) => {
+              setOwnTokens((prev) => {
+                return [
+                  ...prev.filter((itemSub) => itemSub.address !== tokenAddress),
+                  {
+                    address: tokenAddress,
+                    name: resName[0],
+                  },
+                ];
+              });
             });
         });
     });
