@@ -18,13 +18,13 @@ export function VaultClaimAllReward({ vaultAddress }: VaultInfoProps) {
     isPending: isClaimPending,
   } = useWriteHederaVaultClaimAllReward();
 
-  const { data: rewards } = useReadHederaVaultCalculateReward(vaultAddress);
+  // const { data: rewards } = useReadHederaVaultCalculateReward(vaultAddress);
 
   //@TODO show pending rewards
 
   return (
     <>
-      <Heading size={"sm"}>Pending vault rewards: {String(rewards)}</Heading>
+      {/*<Heading size={"sm"}>Pending vault rewards: {String(rewards)}</Heading>*/}
       <Button
         onClick={() => claim({ vaultAddress })}
         isLoading={isClaimPending}
