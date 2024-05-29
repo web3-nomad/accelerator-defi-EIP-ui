@@ -1,72 +1,34 @@
-import {
-  Heading,
-  Text,
-  Divider,
-  Button,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
-} from "@chakra-ui/react";
+import { Text, Divider } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import {
-  readTokenAllowance,
   readTokenBalanceOf,
   readTokenIdentityRegistry,
-  readTokenIsAgent,
   readTokenIsFrozen,
-  readTokenOwner,
-  writeTokenMint,
 } from "@/services/contracts/wagmiGenActions";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
-
-type TokenNameItem = {
-  address: `0x${string}`;
-  name: string;
-};
+import { TokenNameItem } from "@/types/types";
 
 export default function TokenInfo({
   tokenSelected,
 }: {
   tokenSelected: TokenNameItem | null;
 }) {
-  //@TODO switch to accountEvm and keep only needed data to show
-  const { accountId, walletName, walletInterface } = useWalletInterface();
+  const { accountEvm } = useWalletInterface();
   const [isFrozen, setIsFrozen] = useState("");
   const [balance, setBalance] = useState("");
   const [registry, setRegistry] = useState("");
-  // const [mintError, setMintError] = useState("");
-
-  // const onMint = () => {
-  //   console.log("onMint");
-  //   if (!walletInterface) return null;
-  //   const value = BigInt(10);
-  //   setMintError("");
-  //   writeTokenMint(
-  //     walletInterface,
-  //     { args: [accountId as `0x${string}`, value] } as any,
-  //     tokenSelected?.address,
-  //   )
-  //     .then((txid) => {
-  //       console.log(txid);
-  //     })
-  //     .catch((res) => {
-  //       setMintError(res);
-  //     });
-  // };
 
   useEffect(() => {
-    //    setMintError("");
     if (tokenSelected) {
       setBalance("pending...");
       readTokenBalanceOf(
-        { args: [accountId as `0x${string}`] },
+        { args: [accountEvm as `0x${string}`] },
         tokenSelected.address,
       ).then((res) => setBalance(res.toString()));
 
       setIsFrozen("pending...");
       readTokenIsFrozen(
-        { args: [accountId as `0x${string}`] },
+        { args: [accountEvm as `0x${string}`] },
         tokenSelected.address,
       ).then((res) => setIsFrozen("" + res));
 
@@ -75,7 +37,7 @@ export default function TokenInfo({
         (res) => setRegistry(res),
       );
     }
-  }, [tokenSelected, accountId]);
+  }, [tokenSelected, accountEvm]);
 
   return (
     <>
@@ -92,18 +54,6 @@ export default function TokenInfo({
           <Text>
             <b>Identity registry address:</b> {registry}
           </Text>
-          {/* 
-          <Button onClick={onMint} isDisabled={isAgent !== "true"}>
-            Mint 10 {isAgent !== "true" && "[not an agent]"}
-          </Button>
-
-          {mintError && (
-            <Alert status="error">
-              <AlertIcon />
-              <AlertTitle>Mint error!</AlertTitle>
-              <AlertDescription>{mintError}</AlertDescription>
-            </Alert>
-          )} */}
         </>
       )}
     </>
