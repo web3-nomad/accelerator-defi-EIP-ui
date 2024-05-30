@@ -6220,7 +6220,7 @@ export const vaultFactoryAbi = [
 ] as const;
 
 export const vaultFactoryAddress =
-  "0xd58b64b0CEa4eB82D0427524Bc56927410E3120a" as const;
+  "0x51FC8B7482cA71c4475671192596Bf85C67F582f" as const;
 
 export const vaultFactoryConfig = {
   address: vaultFactoryAddress,
