@@ -18,12 +18,13 @@ import { EvmAddress, VaultInfoProps } from "@/types/types";
 import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
 import { useWriteHederaVaultDeposit } from "@/hooks/eip4626/mutations/useWriteHederaVaultDeposit";
 import { useReadHederaVaultAsset } from "@/hooks/eip4626/useReadHederaVaultAsset";
-import { formatBalance } from "@/services/util/helpers";
+import { formatFromBigintToNumber } from "@/services/util/helpers";
 import { VAULT_TOKEN_PRECISION_VALUE } from "@/config/constants";
 import BigNumber from "bignumber.js";
 import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
 import { QueryKeys } from "@/hooks/types";
 import { useQueryClient } from "@tanstack/react-query";
+import { useReadHederaVaultPreviewDeposit } from "@/hooks/eip4626/useReadHederaVaultPreviewDeposit";
 
 export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
   const queryClient = useQueryClient();
@@ -31,7 +32,7 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
   const { data: vaultAssetUserBalance, error: vaultAssetUserBalanceError } =
     useReadBalanceOf(vaultAssetAddress as EvmAddress);
 
-  const balanceFormatted = formatBalance(vaultAssetUserBalance);
+  const balanceFormatted = formatFromBigintToNumber(vaultAssetUserBalance);
 
   const {
     data: depositResult,
@@ -82,6 +83,15 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
     });
   };
 
+  const { data: previewDepositData } = useReadHederaVaultPreviewDeposit(
+    vaultAddress,
+    form.values.amount,
+  );
+
+  const previewDepositDataFormatted = formatFromBigintToNumber(
+    previewDepositData?.toString(),
+  );
+
   return (
     <>
       <Heading size={"sm"}>Deposit asset into vault</Heading>
@@ -100,7 +110,11 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
               <NumberInputField />
             </NumberInput>
             <FormHelperText>
-              User balance of vault asset token: {balanceFormatted}
+              User balance of vault asset token amount: {balanceFormatted}
+            </FormHelperText>
+            <FormHelperText>
+              You will receive vault shares token amount:{" "}
+              {previewDepositDataFormatted}
             </FormHelperText>
             {vaultAssetUserBalanceError && (
               <FormHelperText color={"red"}>

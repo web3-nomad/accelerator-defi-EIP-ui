@@ -5,7 +5,8 @@ import { useReadHederaVaultTotalAssets } from "@/hooks/eip4626/useReadHederaVaul
 import { useReadHederaVaultAssetsOf } from "@/hooks/eip4626/useReadHederaVaultAssetsOf";
 import { useReadHederaVaultRewardTokens } from "@/hooks/eip4626/useReadHederaVaultRewardTokens";
 import { useReadHederaVaultShare } from "@/hooks/eip4626/useReadHederaVaultShare";
-import { formatBalance } from "@/services/util/helpers";
+import { formatFromBigintToNumber } from "@/services/util/helpers";
+import { useReadHederaVaultFeeConfig } from "@/hooks/eip4626/useReadHederaVaultFeeConfig";
 
 export function VaultInfo({ vaultAddress }: VaultInfoProps) {
   const { data: vaultAssetAddress } = useReadHederaVaultAsset(vaultAddress);
@@ -14,6 +15,22 @@ export function VaultInfo({ vaultAddress }: VaultInfoProps) {
   const { data: userAssetsInVault } = useReadHederaVaultAssetsOf(vaultAddress);
   // const { data: rewardAsset } = useReadHederaVaultRewardTokens(vaultAddress);
   const { data: vaultShareAddress } = useReadHederaVaultShare(vaultAddress);
+  const { data: vaultFeeConfig } = useReadHederaVaultFeeConfig(vaultAddress);
+
+  let vaultFeeReceiver;
+  let vaultFeeTokenAddress;
+  let vaultFeePercentage;
+  let vaultFeePercentageFormatted;
+
+  if (vaultFeeConfig) {
+    vaultFeeReceiver = vaultFeeConfig[0]?.toString();
+    vaultFeeTokenAddress = vaultFeeConfig[1]?.toString();
+    vaultFeePercentage = vaultFeeConfig[2]?.toString();
+  }
+
+  if (vaultFeePercentage) {
+    vaultFeePercentageFormatted = Number(vaultFeePercentage) / 100;
+  }
 
   return (
     <>
@@ -23,12 +40,18 @@ export function VaultInfo({ vaultAddress }: VaultInfoProps) {
       <Text>Vault share asset address: {vaultShareAddress}</Text>
       <Text>
         Vault total assets amount:{" "}
-        {formatBalance(vaultAssetTotalAssets?.toString())}
+        {formatFromBigintToNumber(vaultAssetTotalAssets?.toString())}
       </Text>
       <Text>
         Asset amount in vault available to redeem for current user based on # of
         shares present on user&apos;s balance: {userAssetsInVault?.toString()}
       </Text>
+      <Text>Vault fee receiver: {vaultFeeReceiver}</Text>
+      <Text>Vault fee token address: {vaultFeeTokenAddress}</Text>
+      <Text>Vault fee raw: {vaultFeePercentage}</Text>
+      <Text>Vault fee percentage: {vaultFeePercentageFormatted}%</Text>
+      <Text></Text>
+      <Text></Text>
     </>
   );
 }

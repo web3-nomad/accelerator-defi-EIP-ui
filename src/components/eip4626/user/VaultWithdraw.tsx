@@ -18,7 +18,7 @@ import {
 import { useReadHederaVaultShare } from "@/hooks/eip4626/useReadHederaVaultShare";
 import { useWriteHederaVaultWithdraw } from "@/hooks/eip4626/mutations/useWriteHederaVaultWithdraw";
 import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
-import { formatBalance } from "@/services/util/helpers";
+import { formatFromBigintToNumber } from "@/services/util/helpers";
 import BigNumber from "bignumber.js";
 import { VAULT_TOKEN_PRECISION_VALUE } from "@/config/constants";
 import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
@@ -30,7 +30,7 @@ export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
   const { data: vaultShareAddress } = useReadHederaVaultShare(vaultAddress);
   const { data: shareUserBalance, error: shareUserBalanceError } =
     useReadBalanceOf(vaultShareAddress as EvmAddress);
-  const balanceFormatted = formatBalance(shareUserBalance);
+  const balanceFormatted = formatFromBigintToNumber(shareUserBalance);
 
   const {
     data: withdrawResult,
