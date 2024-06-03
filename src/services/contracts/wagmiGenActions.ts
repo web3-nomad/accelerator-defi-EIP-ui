@@ -959,6 +959,13 @@ export const hederaVaultAbi = [
   },
   {
     type: "function",
+    inputs: [],
+    name: "getRewardTokens",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [{ name: "role", internalType: "bytes32", type: "bytes32" }],
     name: "getRoleAdmin",
     outputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
@@ -1246,7 +1253,7 @@ export const hederaVaultAbi = [
 ] as const;
 
 export const hederaVaultAddress =
-  "0xe95E635753a8A233cB736c5CB0dF181Bb865a90b" as const;
+  "0x00dd66412699E36c49b7C69A6C664bdCc5f22e80" as const;
 
 export const hederaVaultConfig = {
   address: hederaVaultAddress,
@@ -7056,6 +7063,15 @@ export const readHederaVaultFeeConfig = /*#__PURE__*/ createReadContract({
   abi: hederaVaultAbi,
   address: hederaVaultAddress,
   functionName: "feeConfig",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"getRewardTokens"`
+ */
+export const readHederaVaultGetRewardTokens = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "getRewardTokens",
 });
 
 /**

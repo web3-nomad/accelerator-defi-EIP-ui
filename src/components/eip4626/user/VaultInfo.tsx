@@ -3,7 +3,7 @@ import { VaultInfoProps } from "@/types/types";
 import { useReadHederaVaultAsset } from "@/hooks/eip4626/useReadHederaVaultAsset";
 import { useReadHederaVaultTotalAssets } from "@/hooks/eip4626/useReadHederaVaultTotalAssets";
 import { useReadHederaVaultAssetsOf } from "@/hooks/eip4626/useReadHederaVaultAssetsOf";
-import { useReadHederaVaultRewardTokens } from "@/hooks/eip4626/useReadHederaVaultRewardTokens";
+import { useReadHederaVaultGetRewardTokens } from "@/hooks/eip4626/useReadHederaVaultGetRewardTokens";
 import { useReadHederaVaultShare } from "@/hooks/eip4626/useReadHederaVaultShare";
 import { formatBalance } from "@/services/util/helpers";
 import { useReadHederaVaultFeeConfig } from "@/hooks/eip4626/useReadHederaVaultFeeConfig";
@@ -13,7 +13,7 @@ export function VaultInfo({ vaultAddress }: VaultInfoProps) {
   const { data: vaultAssetTotalAssets } =
     useReadHederaVaultTotalAssets(vaultAddress);
   const { data: userAssetsInVault } = useReadHederaVaultAssetsOf(vaultAddress);
-  // const { data: rewardAsset } = useReadHederaVaultRewardTokens(vaultAddress);
+  const { data: rewardAsset } = useReadHederaVaultGetRewardTokens(vaultAddress);
   const { data: vaultShareAddress } = useReadHederaVaultShare(vaultAddress);
   const { data: vaultFeeConfig } = useReadHederaVaultFeeConfig(vaultAddress);
 
@@ -36,10 +36,10 @@ export function VaultInfo({ vaultAddress }: VaultInfoProps) {
     <>
       <Text>Current selected vault: {vaultAddress}</Text>
       <Text>Vault asset address: {vaultAssetAddress}</Text>
-      {/*<Text>Vault reward asset address: {rewardAsset}</Text>*/}
+      <Text>Vault reward asset address: {rewardAsset}</Text>
       <Text>Vault share asset address: {vaultShareAddress}</Text>
       <Text>
-        Vault total assets amount:{" "}
+        Vault total assets deposited amount:{" "}
         {formatBalance(vaultAssetTotalAssets?.toString())}
       </Text>
       <Text>
