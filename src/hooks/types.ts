@@ -11,7 +11,7 @@ export enum QueryKeysEIP4626 {
   ReadHederaVaultAsset = "readHederaVaultAsset",
   ReadHederaVaultAssetTotalSupply = "readHederaVaultAssetTotalSupply",
   ReadHederaVaultAssetsOf = "ReadHederaVaultAssetsOf",
-  ReadHederaVaultRewardTokens = "ReadHederaVaultRewardTokens",
+  ReadHederaVaultGetRewardTokens = "ReadHederaVaultGetRewardTokens",
   ReadHederaVaultShare = "ReadHederaVaultShare",
   ReadHederaVaultBalanceOf = "ReadHederaVaultBalanceOf",
 }
