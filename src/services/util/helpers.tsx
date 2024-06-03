@@ -26,7 +26,7 @@ export function formatRawTxId(txIdRaw: string) {
   return res;
 }
 
-export function formatFromBigintToNumber(
+export function formatBalance(
   initialValue: any,
   precision = VAULT_TOKEN_PRECISION_VALUE,
 ) {

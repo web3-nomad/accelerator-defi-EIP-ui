@@ -5,7 +5,7 @@ import { useReadHederaVaultTotalAssets } from "@/hooks/eip4626/useReadHederaVaul
 import { useReadHederaVaultAssetsOf } from "@/hooks/eip4626/useReadHederaVaultAssetsOf";
 import { useReadHederaVaultRewardTokens } from "@/hooks/eip4626/useReadHederaVaultRewardTokens";
 import { useReadHederaVaultShare } from "@/hooks/eip4626/useReadHederaVaultShare";
-import { formatFromBigintToNumber } from "@/services/util/helpers";
+import { formatBalance } from "@/services/util/helpers";
 import { useReadHederaVaultFeeConfig } from "@/hooks/eip4626/useReadHederaVaultFeeConfig";
 
 export function VaultInfo({ vaultAddress }: VaultInfoProps) {
@@ -40,7 +40,7 @@ export function VaultInfo({ vaultAddress }: VaultInfoProps) {
       <Text>Vault share asset address: {vaultShareAddress}</Text>
       <Text>
         Vault total assets amount:{" "}
-        {formatFromBigintToNumber(vaultAssetTotalAssets?.toString())}
+        {formatBalance(vaultAssetTotalAssets?.toString())}
       </Text>
       <Text>
         Asset amount in vault available to redeem for current user based on # of

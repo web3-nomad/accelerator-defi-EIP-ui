@@ -18,7 +18,7 @@ import { EvmAddress, VaultInfoProps } from "@/types/types";
 import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
 import { useWriteHederaVaultDeposit } from "@/hooks/eip4626/mutations/useWriteHederaVaultDeposit";
 import { useReadHederaVaultAsset } from "@/hooks/eip4626/useReadHederaVaultAsset";
-import { formatFromBigintToNumber } from "@/services/util/helpers";
+import { formatBalance } from "@/services/util/helpers";
 import { VAULT_TOKEN_PRECISION_VALUE } from "@/config/constants";
 import BigNumber from "bignumber.js";
 import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
@@ -32,7 +32,7 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
   const { data: vaultAssetUserBalance, error: vaultAssetUserBalanceError } =
     useReadBalanceOf(vaultAssetAddress as EvmAddress);
 
-  const balanceFormatted = formatFromBigintToNumber(vaultAssetUserBalance);
+  const balanceFormatted = formatBalance(vaultAssetUserBalance);
 
   const {
     data: depositResult,
@@ -88,7 +88,7 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
     form.values.amount,
   );
 
-  const previewDepositDataFormatted = formatFromBigintToNumber(
+  const previewDepositDataFormatted = formatBalance(
     previewDepositData?.toString(),
   );
 
