@@ -10,6 +10,7 @@ import {
 } from "@/services/contracts/wagmiGenActions";
 import { WatchContractEventReturnType } from "viem";
 import NoWalletConnected from "@/components/NoWalletConnected";
+import NFT from "@/components/eip3643/NFT";
 
 export default function EIP3643() {
   const { accountId } = useWalletInterface();
@@ -47,6 +48,7 @@ export default function EIP3643() {
         <TabList>
           <Tab>User Area</Tab>
           <Tab>Admin Area</Tab>
+          <Tab>Manage demo NFT</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
@@ -54,6 +56,9 @@ export default function EIP3643() {
           </TabPanel>
           <TabPanel>
             <Admin />
+          </TabPanel>
+          <TabPanel>
+            <NFT />
           </TabPanel>
         </TabPanels>
       </Tabs>
