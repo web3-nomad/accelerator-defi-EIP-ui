@@ -26,8 +26,18 @@ export function formatRawTxId(txIdRaw: string) {
   return res;
 }
 
-export function formatBalance(initialValue: any) {
+export function formatBalance(
+  initialValue: any,
+  precision = VAULT_TOKEN_PRECISION_VALUE,
+) {
   return !isNil(initialValue)
-    ? BigNumber(initialValue).shiftedBy(-VAULT_TOKEN_PRECISION_VALUE).toNumber()
+    ? BigNumber(initialValue).shiftedBy(-precision).toNumber()
     : 0;
+}
+
+export function formatNumberToBigint(
+  amount: number,
+  precision = VAULT_TOKEN_PRECISION_VALUE,
+) {
+  return BigInt(BigNumber(amount).shiftedBy(precision).toString());
 }

@@ -24,6 +24,7 @@ import BigNumber from "bignumber.js";
 import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
 import { QueryKeys } from "@/hooks/types";
 import { useQueryClient } from "@tanstack/react-query";
+import { useReadHederaVaultPreviewDeposit } from "@/hooks/eip4626/useReadHederaVaultPreviewDeposit";
 
 export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
   const queryClient = useQueryClient();
@@ -82,6 +83,15 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
     });
   };
 
+  const { data: previewDepositData } = useReadHederaVaultPreviewDeposit(
+    vaultAddress,
+    form.values.amount,
+  );
+
+  const previewDepositDataFormatted = formatBalance(
+    previewDepositData?.toString(),
+  );
+
   return (
     <>
       <Heading size={"sm"}>Deposit asset into vault</Heading>
@@ -100,7 +110,11 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
               <NumberInputField />
             </NumberInput>
             <FormHelperText>
-              User balance of vault asset token: {balanceFormatted}
+              User balance of vault asset token amount: {balanceFormatted}
+            </FormHelperText>
+            <FormHelperText>
+              You will receive vault shares token amount:{" "}
+              {previewDepositDataFormatted}
             </FormHelperText>
             {vaultAssetUserBalanceError && (
               <FormHelperText color={"red"}>
