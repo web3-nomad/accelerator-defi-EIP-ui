@@ -519,6 +519,305 @@ export const erc20Address =
 export const erc20Config = { address: erc20Address, abi: erc20Abi } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// HederaNFT
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const hederaNftAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "initialOwner", internalType: "address", type: "address" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "sender", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      { name: "owner", internalType: "address", type: "address" },
+    ],
+    name: "ERC721IncorrectOwner",
+  },
+  {
+    type: "error",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "ERC721InsufficientApproval",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "approver", internalType: "address", type: "address" }],
+    name: "ERC721InvalidApprover",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "operator", internalType: "address", type: "address" }],
+    name: "ERC721InvalidOperator",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "owner", internalType: "address", type: "address" }],
+    name: "ERC721InvalidOwner",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "receiver", internalType: "address", type: "address" }],
+    name: "ERC721InvalidReceiver",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "sender", internalType: "address", type: "address" }],
+    name: "ERC721InvalidSender",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
+    name: "ERC721NonexistentToken",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "owner", internalType: "address", type: "address" }],
+    name: "OwnableInvalidOwner",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "account", internalType: "address", type: "address" }],
+    name: "OwnableUnauthorizedAccount",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "owner",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "approved",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "tokenId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: true,
+      },
+    ],
+    name: "Approval",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "owner",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "operator",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      { name: "approved", internalType: "bool", type: "bool", indexed: false },
+    ],
+    name: "ApprovalForAll",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "previousOwner",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "newOwner",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "OwnershipTransferred",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      { name: "from", internalType: "address", type: "address", indexed: true },
+      { name: "to", internalType: "address", type: "address", indexed: true },
+      {
+        name: "tokenId",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: true,
+      },
+    ],
+    name: "Transfer",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "to", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "approve",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "owner", internalType: "address", type: "address" }],
+    name: "balanceOf",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
+    name: "getApproved",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "owner", internalType: "address", type: "address" },
+      { name: "operator", internalType: "address", type: "address" },
+    ],
+    name: "isApprovedForAll",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "name",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "owner",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
+    name: "ownerOf",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "renounceOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "to", internalType: "address", type: "address" }],
+    name: "safeMint",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "from", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "safeTransferFrom",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "from", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+      { name: "data", internalType: "bytes", type: "bytes" },
+    ],
+    name: "safeTransferFrom",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "operator", internalType: "address", type: "address" },
+      { name: "approved", internalType: "bool", type: "bool" },
+    ],
+    name: "setApprovalForAll",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "interfaceId", internalType: "bytes4", type: "bytes4" }],
+    name: "supportsInterface",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "symbol",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "tokenId", internalType: "uint256", type: "uint256" }],
+    name: "tokenURI",
+    outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "from", internalType: "address", type: "address" },
+      { name: "to", internalType: "address", type: "address" },
+      { name: "tokenId", internalType: "uint256", type: "uint256" },
+    ],
+    name: "transferFrom",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "newOwner", internalType: "address", type: "address" }],
+    name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
+export const hederaNftAddress =
+  "0xCeabeC99782c70840A8C11eE931473Ec6407678B" as const;
+
+export const hederaNftConfig = {
+  address: hederaNftAddress,
+  abi: hederaNftAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // HederaVault
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -955,6 +1254,13 @@ export const hederaVaultAbi = [
       { name: "token", internalType: "address", type: "address" },
       { name: "feePercentage", internalType: "uint256", type: "uint256" },
     ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "getRewardTokens",
+    outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
     stateMutability: "view",
   },
   {
@@ -6928,6 +7234,295 @@ export const watchErc20TransferEvent = /*#__PURE__*/ createWatchContractEvent({
 });
 
 /**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaNftAbi}__
+ */
+export const readHederaNft = /*#__PURE__*/ createReadContract({
+  abi: hederaNftAbi,
+  address: hederaNftAddress,
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"balanceOf"`
+ */
+export const readHederaNftBalanceOf = /*#__PURE__*/ createReadContract({
+  abi: hederaNftAbi,
+  address: hederaNftAddress,
+  functionName: "balanceOf",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"getApproved"`
+ */
+export const readHederaNftGetApproved = /*#__PURE__*/ createReadContract({
+  abi: hederaNftAbi,
+  address: hederaNftAddress,
+  functionName: "getApproved",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"isApprovedForAll"`
+ */
+export const readHederaNftIsApprovedForAll = /*#__PURE__*/ createReadContract({
+  abi: hederaNftAbi,
+  address: hederaNftAddress,
+  functionName: "isApprovedForAll",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"name"`
+ */
+export const readHederaNftName = /*#__PURE__*/ createReadContract({
+  abi: hederaNftAbi,
+  address: hederaNftAddress,
+  functionName: "name",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"owner"`
+ */
+export const readHederaNftOwner = /*#__PURE__*/ createReadContract({
+  abi: hederaNftAbi,
+  address: hederaNftAddress,
+  functionName: "owner",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"ownerOf"`
+ */
+export const readHederaNftOwnerOf = /*#__PURE__*/ createReadContract({
+  abi: hederaNftAbi,
+  address: hederaNftAddress,
+  functionName: "ownerOf",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"supportsInterface"`
+ */
+export const readHederaNftSupportsInterface = /*#__PURE__*/ createReadContract({
+  abi: hederaNftAbi,
+  address: hederaNftAddress,
+  functionName: "supportsInterface",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"symbol"`
+ */
+export const readHederaNftSymbol = /*#__PURE__*/ createReadContract({
+  abi: hederaNftAbi,
+  address: hederaNftAddress,
+  functionName: "symbol",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"tokenURI"`
+ */
+export const readHederaNftTokenUri = /*#__PURE__*/ createReadContract({
+  abi: hederaNftAbi,
+  address: hederaNftAddress,
+  functionName: "tokenURI",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaNftAbi}__
+ */
+export const writeHederaNft = /*#__PURE__*/ createWriteContract({
+  abi: hederaNftAbi,
+  address: hederaNftAddress,
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"approve"`
+ */
+export const writeHederaNftApprove = /*#__PURE__*/ createWriteContract({
+  abi: hederaNftAbi,
+  address: hederaNftAddress,
+  functionName: "approve",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const writeHederaNftRenounceOwnership =
+  /*#__PURE__*/ createWriteContract({
+    abi: hederaNftAbi,
+    address: hederaNftAddress,
+    functionName: "renounceOwnership",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"safeMint"`
+ */
+export const writeHederaNftSafeMint = /*#__PURE__*/ createWriteContract({
+  abi: hederaNftAbi,
+  address: hederaNftAddress,
+  functionName: "safeMint",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"safeTransferFrom"`
+ */
+export const writeHederaNftSafeTransferFrom = /*#__PURE__*/ createWriteContract(
+  {
+    abi: hederaNftAbi,
+    address: hederaNftAddress,
+    functionName: "safeTransferFrom",
+  },
+);
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"setApprovalForAll"`
+ */
+export const writeHederaNftSetApprovalForAll =
+  /*#__PURE__*/ createWriteContract({
+    abi: hederaNftAbi,
+    address: hederaNftAddress,
+    functionName: "setApprovalForAll",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"transferFrom"`
+ */
+export const writeHederaNftTransferFrom = /*#__PURE__*/ createWriteContract({
+  abi: hederaNftAbi,
+  address: hederaNftAddress,
+  functionName: "transferFrom",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const writeHederaNftTransferOwnership =
+  /*#__PURE__*/ createWriteContract({
+    abi: hederaNftAbi,
+    address: hederaNftAddress,
+    functionName: "transferOwnership",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaNftAbi}__
+ */
+export const simulateHederaNft = /*#__PURE__*/ createSimulateContract({
+  abi: hederaNftAbi,
+  address: hederaNftAddress,
+});
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"approve"`
+ */
+export const simulateHederaNftApprove = /*#__PURE__*/ createSimulateContract({
+  abi: hederaNftAbi,
+  address: hederaNftAddress,
+  functionName: "approve",
+});
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"renounceOwnership"`
+ */
+export const simulateHederaNftRenounceOwnership =
+  /*#__PURE__*/ createSimulateContract({
+    abi: hederaNftAbi,
+    address: hederaNftAddress,
+    functionName: "renounceOwnership",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"safeMint"`
+ */
+export const simulateHederaNftSafeMint = /*#__PURE__*/ createSimulateContract({
+  abi: hederaNftAbi,
+  address: hederaNftAddress,
+  functionName: "safeMint",
+});
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"safeTransferFrom"`
+ */
+export const simulateHederaNftSafeTransferFrom =
+  /*#__PURE__*/ createSimulateContract({
+    abi: hederaNftAbi,
+    address: hederaNftAddress,
+    functionName: "safeTransferFrom",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"setApprovalForAll"`
+ */
+export const simulateHederaNftSetApprovalForAll =
+  /*#__PURE__*/ createSimulateContract({
+    abi: hederaNftAbi,
+    address: hederaNftAddress,
+    functionName: "setApprovalForAll",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"transferFrom"`
+ */
+export const simulateHederaNftTransferFrom =
+  /*#__PURE__*/ createSimulateContract({
+    abi: hederaNftAbi,
+    address: hederaNftAddress,
+    functionName: "transferFrom",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaNftAbi}__ and `functionName` set to `"transferOwnership"`
+ */
+export const simulateHederaNftTransferOwnership =
+  /*#__PURE__*/ createSimulateContract({
+    abi: hederaNftAbi,
+    address: hederaNftAddress,
+    functionName: "transferOwnership",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link hederaNftAbi}__
+ */
+export const watchHederaNftEvent = /*#__PURE__*/ createWatchContractEvent({
+  abi: hederaNftAbi,
+  address: hederaNftAddress,
+});
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link hederaNftAbi}__ and `eventName` set to `"Approval"`
+ */
+export const watchHederaNftApprovalEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: hederaNftAbi,
+    address: hederaNftAddress,
+    eventName: "Approval",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link hederaNftAbi}__ and `eventName` set to `"ApprovalForAll"`
+ */
+export const watchHederaNftApprovalForAllEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: hederaNftAbi,
+    address: hederaNftAddress,
+    eventName: "ApprovalForAll",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link hederaNftAbi}__ and `eventName` set to `"OwnershipTransferred"`
+ */
+export const watchHederaNftOwnershipTransferredEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: hederaNftAbi,
+    address: hederaNftAddress,
+    eventName: "OwnershipTransferred",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link hederaNftAbi}__ and `eventName` set to `"Transfer"`
+ */
+export const watchHederaNftTransferEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: hederaNftAbi,
+    address: hederaNftAddress,
+    eventName: "Transfer",
+  });
+
+/**
  * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__
  */
 export const readHederaVault = /*#__PURE__*/ createReadContract({
@@ -7056,6 +7651,15 @@ export const readHederaVaultFeeConfig = /*#__PURE__*/ createReadContract({
   abi: hederaVaultAbi,
   address: hederaVaultAddress,
   functionName: "feeConfig",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"getRewardTokens"`
+ */
+export const readHederaVaultGetRewardTokens = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "getRewardTokens",
 });
 
 /**

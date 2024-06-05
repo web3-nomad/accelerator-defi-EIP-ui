@@ -17,6 +17,7 @@ import { TokenNameItem } from "@/types/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { QueryKeys } from "@/hooks/types";
 import {
+  hederaNftAddress,
   readModularComplianceGetModules,
   readTokenCompliance,
   readTokenName,
@@ -33,7 +34,6 @@ export default function Compliance({
 }: {
   tokenSelected: TokenNameItem | null;
 }) {
-  // const [modulesAdded, setModulesAdded] = useState([] as any[]);
   const queryClient = useQueryClient();
 
   const { data: modularComplianceAddress } = useQuery({
@@ -88,37 +88,6 @@ export default function Compliance({
     },
   });
 
-  // useEffect(() => {
-  //   setModulesAdded([]);
-  // }, [tokenSelected]);
-
-  // useEffect(() => {
-  //   const unsub: WatchContractEventReturnType =
-  //     watchModularComplianceModuleAddedEvent(
-  //       {
-  //         onLogs: (data) => {
-  //           console.log(
-  //             "L50 watchModularComplianceModuleAddedEvent data ===",
-  //             data,
-  //           );
-  //
-  //           (data as any).map((item: any) => {
-  //             const addedModuleAddress = item["args"]?.[0];
-  //             addedModuleAddress &&
-  //               setModulesAdded((prev: any) => {
-  //                 return [...prev, addedModuleAddress];
-  //               });
-  //           });
-  //         },
-  //       },
-  //       complianceModuleAddress,
-  //     );
-  //
-  //   return () => {
-  //     unsub();
-  //   };
-  // }, [complianceModuleAddress, tokenSelected]);
-
   return (
     <>
       <Heading size={"md"}>Compliance</Heading>
@@ -145,6 +114,15 @@ export default function Compliance({
               value={form.values.nftAddress}
               onChange={form.handleChange}
             />
+            <FormHelperText>
+              <Button
+                onClick={() => {
+                  form.setFieldValue("nftAddress", hederaNftAddress);
+                }}
+              >
+                Use demo NFT
+              </Button>
+            </FormHelperText>
             <FormHelperText>
               If entered, it will be required for the token operators to have an
               NFT of the provided address. If empty, compliance functionality

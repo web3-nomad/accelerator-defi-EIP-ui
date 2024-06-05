@@ -19,6 +19,7 @@ import {
   AlertDescription,
   FormHelperText,
 } from "@chakra-ui/react";
+import { hederaNftAddress } from "@/services/contracts/wagmiGenActions";
 
 export default function DeployToken({ onClose = () => {} }) {
   const {
@@ -29,6 +30,7 @@ export default function DeployToken({ onClose = () => {} }) {
   } = useDeployToken();
 
   const form = useFormik({
+    enableReinitialize: true,
     initialValues: {
       name: "",
       symbol: "",
@@ -92,6 +94,15 @@ export default function DeployToken({ onClose = () => {} }) {
             value={form.values.nftAddress}
             onChange={form.handleChange}
           />
+          <FormHelperText>
+            <Button
+              onClick={() => {
+                form.setFieldValue("nftAddress", hederaNftAddress);
+              }}
+            >
+              Use demo NFT
+            </Button>
+          </FormHelperText>
           <FormHelperText>
             If entered, it will be required for the token operators to have an
             NFT of the provided address. If empty, compliance functionality will
