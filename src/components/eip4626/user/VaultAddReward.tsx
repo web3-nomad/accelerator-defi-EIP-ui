@@ -14,6 +14,7 @@ import {
   NumberInput,
   NumberInputField,
   VStack,
+  Text,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
 import BigNumber from "bignumber.js";
@@ -87,7 +88,12 @@ export function VaultAddReward({ vaultAddress }: VaultInfoProps) {
 
   return (
     <>
+      <Heading size={"md"}>Step 3 (optional)</Heading>
       <Heading size={"sm"}>Add reward to vault</Heading>
+      <Text>
+        Note: vault needs to have rewards added before users can start
+        depositing
+      </Text>
 
       <form onSubmit={form.handleSubmit}>
         <VStack gap={2} alignItems="flex-start">

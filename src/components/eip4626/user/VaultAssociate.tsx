@@ -13,6 +13,7 @@ export function VaultAssociate({ vaultAddress }: VaultInfoProps) {
 
   return (
     <>
+      <Heading size={"md"}>Step 1</Heading>
       <Heading size={"sm"}>Associate vault asset token</Heading>
       <Heading size={"sm"}>EVM {vaultAssetAddress}</Heading>{" "}
       <Heading size={"sm"}>
@@ -21,6 +22,7 @@ export function VaultAssociate({ vaultAddress }: VaultInfoProps) {
       </Heading>
       <AssociateToken tokenAddress={vaultAssetAddress} />
       <Divider my={10} />
+      <Heading size={"md"}>Step 2</Heading>
       <Heading size={"sm"}>Associate vault share token</Heading>
       <Heading size={"sm"}>EVM {vaultShareAddress}</Heading>{" "}
       <Heading size={"sm"}>

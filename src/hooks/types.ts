@@ -10,11 +10,12 @@ export enum QueryKeys {
 export enum QueryKeysEIP4626 {
   ReadHederaVaultAsset = "readHederaVaultAsset",
   ReadHederaVaultAssetTotalSupply = "readHederaVaultAssetTotalSupply",
-  ReadHederaVaultAssetsOf = "ReadHederaVaultAssetsOf",
   ReadHederaVaultGetRewardTokens = "ReadHederaVaultGetRewardTokens",
   ReadHederaVaultShare = "ReadHederaVaultShare",
   ReadHederaVaultBalanceOf = "ReadHederaVaultBalanceOf",
   ReadHederaVaultCalculateReward = "readHederaVaultCalculateReward",
   ReadHederaVaultPreviewDeposit = "readHederaVaultPreviewDeposit",
   ReadHederaVaultFeeConfig = "readHederaVaultFeeConfig",
+  ReadHederaVaultPreviewRedeem = "readHederaVaultPreviewRedeem",
+  ReadHederaVaultPreviewWithdraw = "readHederaVaultPreviewWithdraw",
 }

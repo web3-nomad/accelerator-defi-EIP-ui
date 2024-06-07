@@ -24,6 +24,7 @@ import { VAULT_TOKEN_PRECISION_VALUE } from "@/config/constants";
 import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
 import { QueryKeys } from "@/hooks/types";
 import { useQueryClient } from "@tanstack/react-query";
+import { useReadHederaVaultPreviewWithdraw } from "@/hooks/eip4626/useReadHederaVaultPreviewWithdraw";
 
 export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
   const queryClient = useQueryClient();
@@ -35,7 +36,7 @@ export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
   const {
     data: withdrawResult,
     mutateAsync: withdraw,
-    error: depositError,
+    error: withdrawError,
     isPending: isWithdrawPending,
   } = useWriteHederaVaultWithdraw();
 
@@ -82,6 +83,11 @@ export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
     });
   };
 
+  const { data: previewWithdrawData } = useReadHederaVaultPreviewWithdraw(
+    vaultAddress,
+    form.values.amount,
+  );
+
   return (
     <>
       <Heading size={"sm"}>Withdraw asset from vault</Heading>
@@ -102,6 +108,12 @@ export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
             <FormHelperText>
               User balance of vault share token: {`${balanceFormatted}`}
             </FormHelperText>
+
+            <FormHelperText>
+              Amount of vault share token will be burned:{" "}
+              {previewWithdrawData?.toString()}
+            </FormHelperText>
+
             {shareUserBalanceError && (
               <FormHelperText color={"red"}>
                 Error fetching balance of vault share token: {vaultShareAddress}
@@ -149,11 +161,11 @@ export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
           <AlertDescription>TxId: {withdrawResult}</AlertDescription>
         </Alert>
       )}
-      {depositError && (
+      {withdrawError && (
         <Alert status="error">
           <AlertIcon />
-          <AlertTitle>Deposit token error!</AlertTitle>
-          <AlertDescription>{depositError.toString()}</AlertDescription>
+          <AlertTitle>Withdraw token error!</AlertTitle>
+          <AlertDescription>{withdrawError.toString()}</AlertDescription>
         </Alert>
       )}
     </>

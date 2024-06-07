@@ -99,7 +99,7 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
       <form onSubmit={form.handleSubmit}>
         <VStack gap={2} alignItems="flex-start">
           <FormControl isRequired>
-            <FormLabel>Amount of asset to deploy</FormLabel>
+            <FormLabel>Amount of asset to deposit</FormLabel>
             <NumberInput
               name="amount"
               variant="outline"

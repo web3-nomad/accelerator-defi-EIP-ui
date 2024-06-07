@@ -35,14 +35,14 @@ export function VaultClaimAllReward({ vaultAddress }: VaultInfoProps) {
       {claimResult && (
         <Alert status="success">
           <AlertIcon />
-          <AlertTitle>Claim success!</AlertTitle>
+          <AlertTitle>Claim rewards success!</AlertTitle>
           <AlertDescription>TxId: {claimResult}</AlertDescription>
         </Alert>
       )}
       {claimError && (
         <Alert status="error">
           <AlertIcon />
-          <AlertTitle>Approve token error!</AlertTitle>
+          <AlertTitle>Claim rewards error!</AlertTitle>
           <AlertDescription>{claimError.toString()}</AlertDescription>
         </Alert>
       )}
