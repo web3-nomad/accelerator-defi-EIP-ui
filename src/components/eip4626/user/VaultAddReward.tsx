@@ -88,11 +88,9 @@ export function VaultAddReward({ vaultAddress }: VaultInfoProps) {
 
   return (
     <>
-      <Heading size={"md"}>Step 3 (optional)</Heading>
       <Heading size={"sm"}>Add reward to vault</Heading>
       <Text>
-        Note: vault needs to have rewards added before users can start
-        depositing
+        Note: vault needs to have deposits added before you can add the rewards
       </Text>
 
       <form onSubmit={form.handleSubmit}>

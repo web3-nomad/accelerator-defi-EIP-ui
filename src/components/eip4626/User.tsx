@@ -41,13 +41,13 @@ export default function User() {
           <Divider my={10} />
           <VaultAssociate vaultAddress={vaultSelected} />
           <Divider my={10} />
-          <VaultAddReward vaultAddress={vaultSelected} />
-          <Divider my={10} />
           <VaultDeposit vaultAddress={vaultSelected} />
           <Divider my={10} />
           <VaultWithdraw vaultAddress={vaultSelected} />
           <Divider my={10} />
           <VaultClaimAllReward vaultAddress={vaultSelected} />
+          <Divider my={10} />
+          <VaultAddReward vaultAddress={vaultSelected} />
           <Divider my={10} />
         </>
       )}
