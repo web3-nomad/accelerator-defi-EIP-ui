@@ -10,6 +10,7 @@ interface SidebarOptionProps {
   color?: string;
   isDisabled?: boolean;
   isHidden?: boolean;
+  isActive?: boolean;
 }
 
 const SidebarOption = ({
@@ -20,8 +21,8 @@ const SidebarOption = ({
   color,
   isDisabled = false,
   isHidden = false,
+  isActive = false,
 }: SidebarOptionProps) => {
-  const isActive = false;
   const navigate = useNavigate();
   const handleNavigate = () => {
     navigate(route);

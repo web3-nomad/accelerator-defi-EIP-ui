@@ -42,24 +42,22 @@ const Layout = () => {
                 <Sidebar />
                 <Box p={10} width={"100%"}>
                   <Routes>
-                    <Route path="/">
-                      <Route
-                        path="eip3643"
-                        element={
-                          <Eip3643ContextProvider>
-                            <EIP3643 />
-                          </Eip3643ContextProvider>
-                        }
-                      />
-                      <Route
-                        path="eip4626"
-                        element={
-                          <Eip4626ContextProvider>
-                            <EIP4626 />
-                          </Eip4626ContextProvider>
-                        }
-                      />
-                    </Route>
+                    <Route
+                      path="eip3643"
+                      element={
+                        <Eip3643ContextProvider>
+                          <EIP3643 />
+                        </Eip3643ContextProvider>
+                      }
+                    />
+                    <Route
+                      path="eip4626"
+                      element={
+                        <Eip4626ContextProvider>
+                          <EIP4626 />
+                        </Eip4626ContextProvider>
+                      }
+                    />
                     <Route
                       path="*"
                       element={<Navigate to="/eip3643" replace />}
