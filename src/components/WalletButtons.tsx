@@ -14,6 +14,7 @@ const WalletButtons = () => {
   const bladeCtx = useContext(BladeContext);
   const walletconnectCtx = useContext(WalletConnectContext);
 
+  //@TODO reload app/data upon user switch in MM
   const { accountId, walletName, walletInterface } = useWalletInterface();
   const { open } = useWeb3Modal();
   const { disconnect } = useDisconnect();

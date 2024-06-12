@@ -90,7 +90,7 @@ export function VaultAddReward({ vaultAddress }: VaultInfoProps) {
     <>
       <Heading size={"sm"}>Add reward to vault</Heading>
       <Text>
-        Note: vault needs to have deposits added before you can add the rewards
+        Note: vault needs to have assets deposited before adding the rewards
       </Text>
 
       <form onSubmit={form.handleSubmit}>
@@ -117,6 +117,10 @@ export function VaultAddReward({ vaultAddress }: VaultInfoProps) {
             </NumberInput>
             <FormHelperText>
               User balance of reward asset token: {balanceFormatted}
+            </FormHelperText>
+            <FormHelperText>
+              User balance of reward asset token RAW:{" "}
+              {rewardTokenUserBalance?.toString()}
             </FormHelperText>
             {rewardTokenUserBalanceError && (
               <FormHelperText color={"red"}>

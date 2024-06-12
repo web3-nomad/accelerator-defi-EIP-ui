@@ -860,12 +860,6 @@ export const hederaVaultAbi = [
     ],
     name: "AccessControlUnauthorizedAccount",
   },
-  {
-    type: "error",
-    inputs: [{ name: "account", internalType: "address", type: "address" }],
-    name: "AddressInsufficientBalance",
-  },
-  { type: "error", inputs: [], name: "FailedInnerCall" },
   { type: "error", inputs: [], name: "MaxRewardTokensAmount" },
   {
     type: "error",
@@ -1272,6 +1266,15 @@ export const hederaVaultAbi = [
   },
   {
     type: "function",
+    inputs: [{ name: "_user", internalType: "address", type: "address" }],
+    name: "getUserRewards",
+    outputs: [
+      { name: "rewards", internalType: "uint256[]", type: "uint256[]" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [
       { name: "role", internalType: "bytes32", type: "bytes32" },
       { name: "account", internalType: "address", type: "address" },
@@ -1552,7 +1555,7 @@ export const hederaVaultAbi = [
 ] as const;
 
 export const hederaVaultAddress =
-  "0x00dd66412699E36c49b7C69A6C664bdCc5f22e80" as const;
+  "0xe95E635753a8A233cB736c5CB0dF181Bb865a90b" as const;
 
 export const hederaVaultConfig = {
   address: hederaVaultAddress,
@@ -6526,7 +6529,7 @@ export const vaultFactoryAbi = [
 ] as const;
 
 export const vaultFactoryAddress =
-  "0x51FC8B7482cA71c4475671192596Bf85C67F582f" as const;
+  "0x376AFd1bc4df43c7Ab7B4Ead41da2067093077D9" as const;
 
 export const vaultFactoryConfig = {
   address: vaultFactoryAddress,
@@ -7669,6 +7672,15 @@ export const readHederaVaultGetRoleAdmin = /*#__PURE__*/ createReadContract({
   abi: hederaVaultAbi,
   address: hederaVaultAddress,
   functionName: "getRoleAdmin",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"getUserRewards"`
+ */
+export const readHederaVaultGetUserRewards = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "getUserRewards",
 });
 
 /**
