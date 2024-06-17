@@ -1205,13 +1205,6 @@ export const hederaVaultAbi = [
   },
   {
     type: "function",
-    inputs: [{ name: "_id", internalType: "uint256", type: "uint256" }],
-    name: "calculateReward",
-    outputs: [{ name: "reward", internalType: "uint256", type: "uint256" }],
-    stateMutability: "view",
-  },
-  {
-    type: "function",
     inputs: [
       { name: "_startPosition", internalType: "uint256", type: "uint256" },
     ],
@@ -1252,6 +1245,13 @@ export const hederaVaultAbi = [
   },
   {
     type: "function",
+    inputs: [{ name: "_user", internalType: "address", type: "address" }],
+    name: "getAllRewards",
+    outputs: [{ name: "", internalType: "uint256[]", type: "uint256[]" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
     inputs: [],
     name: "getRewardTokens",
     outputs: [{ name: "", internalType: "address[]", type: "address[]" }],
@@ -1266,10 +1266,13 @@ export const hederaVaultAbi = [
   },
   {
     type: "function",
-    inputs: [{ name: "_user", internalType: "address", type: "address" }],
-    name: "getUserRewards",
+    inputs: [
+      { name: "_user", internalType: "address", type: "address" },
+      { name: "_rewardToken", internalType: "address", type: "address" },
+    ],
+    name: "getUserReward",
     outputs: [
-      { name: "rewards", internalType: "uint256[]", type: "uint256[]" },
+      { name: "unclaimedAmount", internalType: "uint256", type: "uint256" },
     ],
     stateMutability: "view",
   },
@@ -1537,6 +1540,7 @@ export const hederaVaultAbi = [
     name: "userContribution",
     outputs: [
       { name: "sharesAmount", internalType: "uint256", type: "uint256" },
+      { name: "lastLockedTime", internalType: "uint256", type: "uint256" },
       { name: "exist", internalType: "bool", type: "bool" },
     ],
     stateMutability: "view",
@@ -6529,7 +6533,7 @@ export const vaultFactoryAbi = [
 ] as const;
 
 export const vaultFactoryAddress =
-  "0x376AFd1bc4df43c7Ab7B4Ead41da2067093077D9" as const;
+  "0xa221354a965bC0d82da65DEee2f41bBCA5420b73" as const;
 
 export const vaultFactoryConfig = {
   address: vaultFactoryAddress,
@@ -7630,15 +7634,6 @@ export const readHederaVaultBalanceOf = /*#__PURE__*/ createReadContract({
 });
 
 /**
- * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"calculateReward"`
- */
-export const readHederaVaultCalculateReward = /*#__PURE__*/ createReadContract({
-  abi: hederaVaultAbi,
-  address: hederaVaultAddress,
-  functionName: "calculateReward",
-});
-
-/**
  * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"decimals"`
  */
 export const readHederaVaultDecimals = /*#__PURE__*/ createReadContract({
@@ -7654,6 +7649,15 @@ export const readHederaVaultFeeConfig = /*#__PURE__*/ createReadContract({
   abi: hederaVaultAbi,
   address: hederaVaultAddress,
   functionName: "feeConfig",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"getAllRewards"`
+ */
+export const readHederaVaultGetAllRewards = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "getAllRewards",
 });
 
 /**
@@ -7675,12 +7679,12 @@ export const readHederaVaultGetRoleAdmin = /*#__PURE__*/ createReadContract({
 });
 
 /**
- * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"getUserRewards"`
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"getUserReward"`
  */
-export const readHederaVaultGetUserRewards = /*#__PURE__*/ createReadContract({
+export const readHederaVaultGetUserReward = /*#__PURE__*/ createReadContract({
   abi: hederaVaultAbi,
   address: hederaVaultAddress,
-  functionName: "getUserRewards",
+  functionName: "getUserReward",
 });
 
 /**

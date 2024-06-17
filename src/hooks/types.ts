@@ -13,11 +13,11 @@ export enum QueryKeysEIP4626 {
   ReadHederaVaultGetRewardTokens = "ReadHederaVaultGetRewardTokens",
   ReadHederaVaultShare = "ReadHederaVaultShare",
   ReadHederaVaultBalanceOf = "ReadHederaVaultBalanceOf",
-  ReadHederaVaultCalculateReward = "readHederaVaultCalculateReward",
+  ReadHederaVaultGetAllRewards = "readHederaVaultGetAllRewards",
   ReadHederaVaultPreviewDeposit = "readHederaVaultPreviewDeposit",
   ReadHederaVaultFeeConfig = "readHederaVaultFeeConfig",
   ReadHederaVaultPreviewRedeem = "readHederaVaultPreviewRedeem",
   ReadHederaVaultPreviewWithdraw = "readHederaVaultPreviewWithdraw",
-  ReadHederaVaultGetUserRewards = "readHederaVaultGetUserRewards",
+  ReadHederaVaultGetUserReward = "readHederaVaultGetUserReward",
   ReadHederaVaultUserContribution = "readHederaVaultUserContribution",
 }

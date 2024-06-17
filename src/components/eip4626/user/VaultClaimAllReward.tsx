@@ -9,8 +9,8 @@ import {
 } from "@chakra-ui/react";
 import { useWriteHederaVaultClaimAllReward } from "@/hooks/eip4626/mutations/useWriteHederaVaultClaimAllReward";
 import { VaultInfoProps } from "@/types/types";
-import { useReadHederaVaultCalculateReward } from "@/hooks/eip4626/useReadHederaVaultCalculateReward";
-import { useReadHederaVaultGetUserRewards } from "@/hooks/eip4626/useReadHederaVaultGetUserRewards";
+import { useReadHederaVaultGetAllRewards } from "@/hooks/eip4626/useReadHederaVaultGetAllRewards";
+import { useReadHederaVaultGetUserReward } from "@/hooks/eip4626/useReadHederaVaultGetUserReward";
 import { useReadHederaVaultUserContribution } from "@/hooks/eip4626/useReadHederaVaultUserContribution";
 
 export function VaultClaimAllReward({ vaultAddress }: VaultInfoProps) {
@@ -21,9 +21,11 @@ export function VaultClaimAllReward({ vaultAddress }: VaultInfoProps) {
     isPending: isClaimPending,
   } = useWriteHederaVaultClaimAllReward();
 
-  // const { data: rewards } = useReadHederaVaultCalculateReward(vaultAddress);
+  // const { data: rewardsAll } = useReadHederaVaultGetAllRewards(vaultAddress);
+  // console.log("L26 rewards useReadHederaVaultGetAllRewards  ===", rewardsAll);
 
-  const { data: rewards } = useReadHederaVaultGetUserRewards(vaultAddress);
+  const { data: rewards } = useReadHederaVaultGetUserReward(vaultAddress);
+  console.log("L28 rewards GetUserReward ===", rewards);
 
   const { data: userContribution } =
     useReadHederaVaultUserContribution(vaultAddress);
@@ -33,9 +35,10 @@ export function VaultClaimAllReward({ vaultAddress }: VaultInfoProps) {
 
   return (
     <>
-      <Heading size={"sm"}>Pending vault rewards: {String(rewards)}</Heading>
-      {rewards &&
-        rewards.map((reward) => <Text key={reward}>{reward?.toString()}</Text>)}
+      {/*<Heading size={"sm"}>Pending vault rewards: {String(rewards)}</Heading>*/}
+      {/*<Text>{rewards?.toString()}</Text>*/}
+      {/*{rewards &&*/}
+      {/*  rewards.map((reward) => <Text key={reward}>{reward?.toString()}</Text>)}*/}
       <Button
         onClick={() => claim({ vaultAddress })}
         isLoading={isClaimPending}
