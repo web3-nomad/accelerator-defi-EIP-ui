@@ -519,6 +519,57 @@ export const erc20Address =
 export const erc20Config = { address: erc20Address, abi: erc20Abi } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// HTSTokenFactory
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const htsTokenFactoryAbi = [
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "token",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "deployer",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "TokenDeployed",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "name", internalType: "string", type: "string" },
+      { name: "symbol", internalType: "string", type: "string" },
+    ],
+    name: "deployToken",
+    outputs: [{ name: "token", internalType: "address", type: "address" }],
+    stateMutability: "payable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "", internalType: "bytes32", type: "bytes32" }],
+    name: "tokenDeployed",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+] as const;
+
+export const htsTokenFactoryAddress =
+  "0x7ae9b7b41A17F586B12226B3a50bF98Ecf641B5b" as const;
+
+export const htsTokenFactoryConfig = {
+  address: htsTokenFactoryAddress,
+  abi: htsTokenFactoryAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // HederaNFT
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -7239,6 +7290,77 @@ export const watchErc20TransferEvent = /*#__PURE__*/ createWatchContractEvent({
   address: erc20Address,
   eventName: "Transfer",
 });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link htsTokenFactoryAbi}__
+ */
+export const readHtsTokenFactory = /*#__PURE__*/ createReadContract({
+  abi: htsTokenFactoryAbi,
+  address: htsTokenFactoryAddress,
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link htsTokenFactoryAbi}__ and `functionName` set to `"tokenDeployed"`
+ */
+export const readHtsTokenFactoryTokenDeployed =
+  /*#__PURE__*/ createReadContract({
+    abi: htsTokenFactoryAbi,
+    address: htsTokenFactoryAddress,
+    functionName: "tokenDeployed",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link htsTokenFactoryAbi}__
+ */
+export const writeHtsTokenFactory = /*#__PURE__*/ createWriteContract({
+  abi: htsTokenFactoryAbi,
+  address: htsTokenFactoryAddress,
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link htsTokenFactoryAbi}__ and `functionName` set to `"deployToken"`
+ */
+export const writeHtsTokenFactoryDeployToken =
+  /*#__PURE__*/ createWriteContract({
+    abi: htsTokenFactoryAbi,
+    address: htsTokenFactoryAddress,
+    functionName: "deployToken",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link htsTokenFactoryAbi}__
+ */
+export const simulateHtsTokenFactory = /*#__PURE__*/ createSimulateContract({
+  abi: htsTokenFactoryAbi,
+  address: htsTokenFactoryAddress,
+});
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link htsTokenFactoryAbi}__ and `functionName` set to `"deployToken"`
+ */
+export const simulateHtsTokenFactoryDeployToken =
+  /*#__PURE__*/ createSimulateContract({
+    abi: htsTokenFactoryAbi,
+    address: htsTokenFactoryAddress,
+    functionName: "deployToken",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link htsTokenFactoryAbi}__
+ */
+export const watchHtsTokenFactoryEvent = /*#__PURE__*/ createWatchContractEvent(
+  { abi: htsTokenFactoryAbi, address: htsTokenFactoryAddress },
+);
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link htsTokenFactoryAbi}__ and `eventName` set to `"TokenDeployed"`
+ */
+export const watchHtsTokenFactoryTokenDeployedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: htsTokenFactoryAbi,
+    address: htsTokenFactoryAddress,
+    eventName: "TokenDeployed",
+  });
 
 /**
  * Wraps __{@link readContract}__ with `abi` set to __{@link hederaNftAbi}__
