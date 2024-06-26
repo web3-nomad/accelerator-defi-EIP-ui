@@ -18,9 +18,7 @@ import { EvmAddress, VaultInfoProps } from "@/types/types";
 import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
 import { useWriteHederaVaultDeposit } from "@/hooks/eip4626/mutations/useWriteHederaVaultDeposit";
 import { useReadHederaVaultAsset } from "@/hooks/eip4626/useReadHederaVaultAsset";
-import { formatBalance } from "@/services/util/helpers";
-import { VAULT_TOKEN_PRECISION_VALUE } from "@/config/constants";
-import BigNumber from "bignumber.js";
+import { formatBalance, formatNumberToBigint } from "@/services/util/helpers";
 import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
 import { useQueryClient } from "@tanstack/react-query";
 import { useReadHederaVaultPreviewDeposit } from "@/hooks/eip4626/useReadHederaVaultPreviewDeposit";
@@ -52,9 +50,7 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
       amount: 0,
     },
     onSubmit: async ({ amount }) => {
-      const amountConverted = BigInt(
-        BigNumber(amount).shiftedBy(VAULT_TOKEN_PRECISION_VALUE).toString(),
-      );
+      const amountConverted = formatNumberToBigint(amount);
 
       //@TODO show read allowance
       //@TODO do not trigger allowance if it is enough?
@@ -69,9 +65,7 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
   });
 
   const approveToken = (amount: number) => {
-    const amountConverted = BigInt(
-      BigNumber(amount).shiftedBy(VAULT_TOKEN_PRECISION_VALUE).toString(),
-    );
+    const amountConverted = formatNumberToBigint(amount);
 
     approve({
       tokenAmount: amountConverted,

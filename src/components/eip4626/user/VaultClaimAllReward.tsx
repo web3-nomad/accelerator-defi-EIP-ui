@@ -10,8 +10,12 @@ import {
 import { useWriteHederaVaultClaimAllReward } from "@/hooks/eip4626/mutations/useWriteHederaVaultClaimAllReward";
 import { VaultInfoProps } from "@/types/types";
 import { useReadHederaVaultGetUserReward } from "@/hooks/eip4626/useReadHederaVaultGetUserReward";
+import { formatBalance } from "@/services/util/helpers";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function VaultClaimAllReward({ vaultAddress }: VaultInfoProps) {
+  const queryClient = useQueryClient();
+
   const {
     data: claimResult,
     mutateAsync: claim,
@@ -21,17 +25,22 @@ export function VaultClaimAllReward({ vaultAddress }: VaultInfoProps) {
 
   const userRewards = useReadHederaVaultGetUserReward(vaultAddress);
 
+  const claimCall = async () => {
+    await claim({ vaultAddress });
+
+    queryClient.invalidateQueries();
+  };
+
   return (
     <>
       <Heading size={"sm"}>Your pending vault rewards:</Heading>
       {userRewards &&
         userRewards.map((rewardQueryResult, index) => (
-          <Text key={index}>{rewardQueryResult.data?.toString()}</Text>
+          <Text key={index}>
+            {formatBalance(rewardQueryResult.data?.toString())}
+          </Text>
         ))}
-      <Button
-        onClick={() => claim({ vaultAddress })}
-        isLoading={isClaimPending}
-      >
+      <Button onClick={() => claimCall()} isLoading={isClaimPending}>
         Claim All Rewards
       </Button>
 

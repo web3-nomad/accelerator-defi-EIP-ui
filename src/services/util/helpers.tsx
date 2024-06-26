@@ -1,4 +1,4 @@
-import { AccountId, TransactionId } from "@hashgraph/sdk";
+import { AccountId } from "@hashgraph/sdk";
 import { isNil } from "lodash";
 import { VAULT_TOKEN_PRECISION_VALUE } from "@/config/constants";
 import BigNumber from "bignumber.js";
@@ -31,7 +31,9 @@ export function formatBalance(
   precision = VAULT_TOKEN_PRECISION_VALUE,
 ) {
   return !isNil(initialValue)
-    ? BigNumber(initialValue).shiftedBy(-precision).toNumber()
+    ? BigNumber(initialValue)
+        .shiftedBy(-precision)
+        .toFixed(VAULT_TOKEN_PRECISION_VALUE)
     : 0;
 }
 

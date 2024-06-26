@@ -17,13 +17,11 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
-import BigNumber from "bignumber.js";
-import { VAULT_TOKEN_PRECISION_VALUE } from "@/config/constants";
 import { useQueryClient } from "@tanstack/react-query";
 import { EvmAddress, VaultInfoProps } from "@/types/types";
 import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
 import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
-import { formatBalance } from "@/services/util/helpers";
+import { formatBalance, formatNumberToBigint } from "@/services/util/helpers";
 
 export function VaultAddReward({ vaultAddress }: VaultInfoProps) {
   const queryClient = useQueryClient();
@@ -43,9 +41,7 @@ export function VaultAddReward({ vaultAddress }: VaultInfoProps) {
   } = useWriteHederaVaultApprove();
 
   const approveToken = (amount: number, vaultRewardAddress: string) => {
-    const amountConverted = BigInt(
-      BigNumber(amount).shiftedBy(VAULT_TOKEN_PRECISION_VALUE).toString(),
-    );
+    const amountConverted = formatNumberToBigint(amount);
 
     approve({
       tokenAmount: amountConverted,
@@ -60,10 +56,7 @@ export function VaultAddReward({ vaultAddress }: VaultInfoProps) {
       amount: 0,
     },
     onSubmit: async ({ amount, rewardTokenAddress }) => {
-      //@TODO how to deal with regular erc20 precision? can we fetch decimals from the token CA itself?
-      const amountConverted = BigInt(
-        BigNumber(amount).shiftedBy(VAULT_TOKEN_PRECISION_VALUE).toString(),
-      );
+      const amountConverted = formatNumberToBigint(amount);
 
       //@TODO show read allowance
       //@TODO do not trigger allowance if it is enough?
