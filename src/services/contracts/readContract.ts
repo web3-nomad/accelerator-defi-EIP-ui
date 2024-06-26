@@ -40,6 +40,8 @@ export async function readContract<
   parameters: ReadContractParameters<abi, functionName, args>,
 ): Promise<ReadContractReturnType<abi, functionName, args>> {
   const contractInterface = new ethers.Interface(parameters.abi as []);
+
+  //@TODO throw an error properly when no data can be encoded
   const data = contractInterface.encodeFunctionData(
     parameters.functionName,
     parameters.args as [],
