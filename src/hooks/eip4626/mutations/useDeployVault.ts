@@ -5,7 +5,8 @@ import { WalletInterface } from "@/services/wallets/walletInterface";
 import { DeployVaultRequest } from "@/types/types";
 import { ethers } from "ethers";
 
-const DEPLOY_VALUE = "13";
+//increase the value in case of "0x" estimation error
+const DEPLOY_VALUE = "14";
 
 export function useDeployVault() {
   const { accountEvm, walletInterface } = useWalletInterface();
@@ -17,6 +18,7 @@ export function useDeployVault() {
       shareTokenSymbol,
       rewardTokenAddress,
       feePercentage,
+      feeReceiverAddress,
     }: DeployVaultRequest) => {
       const currentDeployerAddress = accountEvm as `0x${string}`;
 
@@ -32,7 +34,7 @@ export function useDeployVault() {
       };
 
       const feeConfig = {
-        receiver: currentDeployerAddress,
+        receiver: feeReceiverAddress,
         token: rewardTokenAddress,
         feePercentage: BigInt(feePercentage),
       };

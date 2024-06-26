@@ -43,11 +43,12 @@ export type AssociateTokenProps = {
 };
 
 export type DeployVaultRequest = {
-  stakingTokenAddress: `0x${string}`;
+  stakingTokenAddress: EvmAddress;
   shareTokenName: string;
   shareTokenSymbol: string;
-  rewardTokenAddress: `0x${string}`;
+  rewardTokenAddress: EvmAddress;
   feePercentage: number;
+  feeReceiverAddress: EvmAddress;
 };
 
 export type UpdateFeeConfigRequest = {
