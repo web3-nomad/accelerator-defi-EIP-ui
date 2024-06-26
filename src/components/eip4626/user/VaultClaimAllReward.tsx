@@ -9,9 +9,7 @@ import {
 } from "@chakra-ui/react";
 import { useWriteHederaVaultClaimAllReward } from "@/hooks/eip4626/mutations/useWriteHederaVaultClaimAllReward";
 import { VaultInfoProps } from "@/types/types";
-import { useReadHederaVaultGetAllRewards } from "@/hooks/eip4626/useReadHederaVaultGetAllRewards";
 import { useReadHederaVaultGetUserReward } from "@/hooks/eip4626/useReadHederaVaultGetUserReward";
-import { useReadHederaVaultUserContribution } from "@/hooks/eip4626/useReadHederaVaultUserContribution";
 
 export function VaultClaimAllReward({ vaultAddress }: VaultInfoProps) {
   const {
@@ -21,24 +19,15 @@ export function VaultClaimAllReward({ vaultAddress }: VaultInfoProps) {
     isPending: isClaimPending,
   } = useWriteHederaVaultClaimAllReward();
 
-  // const { data: rewardsAll } = useReadHederaVaultGetAllRewards(vaultAddress);
-  // console.log("L26 rewards useReadHederaVaultGetAllRewards  ===", rewardsAll);
-
-  const { data: rewards } = useReadHederaVaultGetUserReward(vaultAddress);
-  console.log("L28 rewards GetUserReward ===", rewards);
-
-  const { data: userContribution } =
-    useReadHederaVaultUserContribution(vaultAddress);
-  console.log("L30 userContribution ===", userContribution);
-
-  //@TODO show pending rewards
+  const userRewards = useReadHederaVaultGetUserReward(vaultAddress);
 
   return (
     <>
-      {/*<Heading size={"sm"}>Pending vault rewards: {String(rewards)}</Heading>*/}
-      {/*<Text>{rewards?.toString()}</Text>*/}
-      {/*{rewards &&*/}
-      {/*  rewards.map((reward) => <Text key={reward}>{reward?.toString()}</Text>)}*/}
+      <Heading size={"sm"}>Your pending vault rewards:</Heading>
+      {userRewards &&
+        userRewards.map((rewardQueryResult, index) => (
+          <Text key={index}>{rewardQueryResult.data?.toString()}</Text>
+        ))}
       <Button
         onClick={() => claim({ vaultAddress })}
         isLoading={isClaimPending}
