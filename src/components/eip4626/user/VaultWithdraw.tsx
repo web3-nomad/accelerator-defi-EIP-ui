@@ -25,6 +25,7 @@ import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHe
 import { QueryKeys } from "@/hooks/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { useReadHederaVaultPreviewWithdraw } from "@/hooks/eip4626/useReadHederaVaultPreviewWithdraw";
+import { useReadHederaVaultUserContribution } from "@/hooks/eip4626/useReadHederaVaultUserContribution";
 
 export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
   const queryClient = useQueryClient();
@@ -88,6 +89,9 @@ export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
     form.values.amount,
   );
 
+  const { data: userContribution } =
+    useReadHederaVaultUserContribution(vaultAddress);
+
   return (
     <>
       <Heading size={"sm"}>Withdraw asset from vault</Heading>
@@ -105,6 +109,11 @@ export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
             >
               <NumberInputField />
             </NumberInput>
+
+            <FormHelperText>
+              User asset token contribution to the vault:{" "}
+              {userContribution ? `${formatBalance(userContribution[0])}` : 0}
+            </FormHelperText>
             <FormHelperText>
               User balance of vault share token: {`${balanceFormatted}`}
             </FormHelperText>
