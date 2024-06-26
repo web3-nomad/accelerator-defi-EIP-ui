@@ -115,10 +115,6 @@ export function VaultAddReward({ vaultAddress }: VaultInfoProps) {
             <FormHelperText>
               User balance of reward asset token: {balanceFormatted}
             </FormHelperText>
-            <FormHelperText>
-              User balance of reward asset token RAW:{" "}
-              {rewardTokenUserBalance?.toString()}
-            </FormHelperText>
             {rewardTokenUserBalanceError && (
               <FormHelperText color={"red"}>
                 Error fetching balance of vault reward token:{" "}
