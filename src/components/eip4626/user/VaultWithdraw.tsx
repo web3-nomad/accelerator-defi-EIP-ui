@@ -18,11 +18,8 @@ import {
 import { useReadHederaVaultShare } from "@/hooks/eip4626/useReadHederaVaultShare";
 import { useWriteHederaVaultWithdraw } from "@/hooks/eip4626/mutations/useWriteHederaVaultWithdraw";
 import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
-import { formatBalance } from "@/services/util/helpers";
-import BigNumber from "bignumber.js";
-import { VAULT_TOKEN_PRECISION_VALUE } from "@/config/constants";
+import { formatBalance, formatNumberToBigint } from "@/services/util/helpers";
 import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
-import { QueryKeys } from "@/hooks/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { useReadHederaVaultPreviewWithdraw } from "@/hooks/eip4626/useReadHederaVaultPreviewWithdraw";
 import { useReadHederaVaultUserContribution } from "@/hooks/eip4626/useReadHederaVaultUserContribution";
@@ -53,10 +50,7 @@ export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
       amount: 0,
     },
     onSubmit: async ({ amount }) => {
-      //@TODO use token precision from vault info
-      const amountConverted = BigInt(
-        BigNumber(amount).shiftedBy(VAULT_TOKEN_PRECISION_VALUE).toString(),
-      );
+      const amountConverted = formatNumberToBigint(amount);
 
       //@TODO show read allowance
       //@TODO do not trigger allowance if it is enough?
@@ -66,16 +60,12 @@ export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
         tokenAmount: amountConverted,
       });
 
-      queryClient.invalidateQueries({
-        queryKey: [QueryKeys.ReadBalanceOf],
-      });
+      queryClient.invalidateQueries();
     },
   });
 
   const approveToken = (amount: number) => {
-    const amountConverted = BigInt(
-      BigNumber(amount).shiftedBy(VAULT_TOKEN_PRECISION_VALUE).toString(),
-    );
+    const amountConverted = formatNumberToBigint(amount);
 
     approve({
       tokenAmount: amountConverted,
