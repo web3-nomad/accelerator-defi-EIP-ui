@@ -19,6 +19,7 @@ import {
   AlertDescription,
   FormHelperText,
 } from "@chakra-ui/react";
+import { EvmAddress } from "@/types/types";
 
 export default function DeployToken({ onClose = () => {} }) {
   const {
@@ -35,6 +36,7 @@ export default function DeployToken({ onClose = () => {} }) {
       shareTokenSymbol: "",
       rewardTokenAddress: "",
       feePercentage: "",
+      feeReceiverAddress: "",
     },
     onSubmit: ({
       stakingTokenAddress,
@@ -42,13 +44,15 @@ export default function DeployToken({ onClose = () => {} }) {
       shareTokenSymbol,
       rewardTokenAddress,
       feePercentage,
+      feeReceiverAddress,
     }) => {
       deployVault({
-        stakingTokenAddress: stakingTokenAddress as `0x${string}`,
+        stakingTokenAddress: stakingTokenAddress as EvmAddress,
         shareTokenName,
         shareTokenSymbol,
-        rewardTokenAddress: rewardTokenAddress as `0x${string}`,
+        rewardTokenAddress: rewardTokenAddress as EvmAddress,
         feePercentage: parseInt(feePercentage),
+        feeReceiverAddress: feeReceiverAddress as EvmAddress,
       });
     },
   });
@@ -90,6 +94,15 @@ export default function DeployToken({ onClose = () => {} }) {
             name="rewardTokenAddress"
             variant="outline"
             value={form.values.rewardTokenAddress}
+            onChange={form.handleChange}
+          />
+        </FormControl>
+        <FormControl isRequired>
+          <FormLabel>Fee receiver address</FormLabel>
+          <Input
+            name="feeReceiverAddress"
+            variant="outline"
+            value={form.values.feeReceiverAddress}
             onChange={form.handleChange}
           />
         </FormControl>

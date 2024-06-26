@@ -1,5 +1,6 @@
 import { Divider, Flex, HStack } from "@chakra-ui/react";
 import SidebarOption from "./SidebarOption";
+import { useLocation } from "react-router-dom";
 
 interface optionsProps {
   icon: string;
@@ -25,6 +26,8 @@ const routes: optionsProps[] = [
 ];
 
 const Sidebar = () => {
+  const location = useLocation();
+
   return (
     <HStack alignItems={"flex-start"}>
       <Flex
@@ -37,7 +40,13 @@ const Sidebar = () => {
       >
         <Flex flexDirection="column" alignItems="center" gap={3}>
           {routes.map((route) => {
-            return <SidebarOption key={route.title} {...route} />;
+            return (
+              <SidebarOption
+                key={route.title}
+                {...route}
+                isActive={route.route === location.pathname}
+              />
+            );
           })}
         </Flex>
       </Flex>

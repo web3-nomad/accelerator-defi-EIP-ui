@@ -22,7 +22,6 @@ import { formatBalance } from "@/services/util/helpers";
 import { VAULT_TOKEN_PRECISION_VALUE } from "@/config/constants";
 import BigNumber from "bignumber.js";
 import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
-import { QueryKeys } from "@/hooks/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { useReadHederaVaultPreviewDeposit } from "@/hooks/eip4626/useReadHederaVaultPreviewDeposit";
 
@@ -65,9 +64,7 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
         tokenAmount: amountConverted,
       });
 
-      queryClient.invalidateQueries({
-        queryKey: [QueryKeys.ReadBalanceOf],
-      });
+      queryClient.invalidateQueries();
     },
   });
 
@@ -99,7 +96,7 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
       <form onSubmit={form.handleSubmit}>
         <VStack gap={2} alignItems="flex-start">
           <FormControl isRequired>
-            <FormLabel>Amount of asset to deploy</FormLabel>
+            <FormLabel>Amount of asset to deposit</FormLabel>
             <NumberInput
               name="amount"
               variant="outline"

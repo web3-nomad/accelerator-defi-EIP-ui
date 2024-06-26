@@ -14,11 +14,11 @@ import {
   NumberInput,
   NumberInputField,
   VStack,
+  Text,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
 import BigNumber from "bignumber.js";
 import { VAULT_TOKEN_PRECISION_VALUE } from "@/config/constants";
-import { QueryKeys } from "@/hooks/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { EvmAddress, VaultInfoProps } from "@/types/types";
 import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
@@ -74,9 +74,7 @@ export function VaultAddReward({ vaultAddress }: VaultInfoProps) {
         tokenAddress: rewardTokenAddress as EvmAddress,
       });
 
-      queryClient.invalidateQueries({
-        queryKey: [QueryKeys.ReadBalanceOf],
-      });
+      queryClient.invalidateQueries();
     },
   });
 
@@ -88,6 +86,9 @@ export function VaultAddReward({ vaultAddress }: VaultInfoProps) {
   return (
     <>
       <Heading size={"sm"}>Add reward to vault</Heading>
+      <Text>
+        Note: vault needs to have assets deposited before adding the rewards
+      </Text>
 
       <form onSubmit={form.handleSubmit}>
         <VStack gap={2} alignItems="flex-start">
@@ -160,7 +161,7 @@ export function VaultAddReward({ vaultAddress }: VaultInfoProps) {
       {addRewardResult && (
         <Alert status="success">
           <AlertIcon />
-          <AlertTitle>Deposit success!</AlertTitle>
+          <AlertTitle>Add reward success!</AlertTitle>
           <AlertDescription>TxId: {addRewardResult}</AlertDescription>
         </Alert>
       )}

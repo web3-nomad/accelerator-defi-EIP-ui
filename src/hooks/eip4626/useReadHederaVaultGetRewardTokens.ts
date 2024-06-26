@@ -7,5 +7,6 @@ export function useReadHederaVaultGetRewardTokens(vaultAddress: EvmAddress) {
   return useQuery({
     queryKey: [QueryKeysEIP4626.ReadHederaVaultGetRewardTokens, vaultAddress],
     queryFn: () => readHederaVaultGetRewardTokens({}, vaultAddress),
+    initialData: [],
   });
 }

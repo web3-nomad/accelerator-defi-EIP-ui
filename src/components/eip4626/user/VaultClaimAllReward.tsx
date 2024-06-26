@@ -5,10 +5,11 @@ import {
   AlertTitle,
   Button,
   Heading,
+  Text,
 } from "@chakra-ui/react";
 import { useWriteHederaVaultClaimAllReward } from "@/hooks/eip4626/mutations/useWriteHederaVaultClaimAllReward";
 import { VaultInfoProps } from "@/types/types";
-import { useReadHederaVaultCalculateReward } from "@/hooks/eip4626/useReadHederaVaultCalculateReward";
+import { useReadHederaVaultGetUserReward } from "@/hooks/eip4626/useReadHederaVaultGetUserReward";
 
 export function VaultClaimAllReward({ vaultAddress }: VaultInfoProps) {
   const {
@@ -18,13 +19,15 @@ export function VaultClaimAllReward({ vaultAddress }: VaultInfoProps) {
     isPending: isClaimPending,
   } = useWriteHederaVaultClaimAllReward();
 
-  // const { data: rewards } = useReadHederaVaultCalculateReward(vaultAddress);
-
-  //@TODO show pending rewards
+  const userRewards = useReadHederaVaultGetUserReward(vaultAddress);
 
   return (
     <>
-      {/*<Heading size={"sm"}>Pending vault rewards: {String(rewards)}</Heading>*/}
+      <Heading size={"sm"}>Your pending vault rewards:</Heading>
+      {userRewards &&
+        userRewards.map((rewardQueryResult, index) => (
+          <Text key={index}>{rewardQueryResult.data?.toString()}</Text>
+        ))}
       <Button
         onClick={() => claim({ vaultAddress })}
         isLoading={isClaimPending}
@@ -35,14 +38,14 @@ export function VaultClaimAllReward({ vaultAddress }: VaultInfoProps) {
       {claimResult && (
         <Alert status="success">
           <AlertIcon />
-          <AlertTitle>Claim success!</AlertTitle>
+          <AlertTitle>Claim rewards success!</AlertTitle>
           <AlertDescription>TxId: {claimResult}</AlertDescription>
         </Alert>
       )}
       {claimError && (
         <Alert status="error">
           <AlertIcon />
-          <AlertTitle>Approve token error!</AlertTitle>
+          <AlertTitle>Claim rewards error!</AlertTitle>
           <AlertDescription>{claimError.toString()}</AlertDescription>
         </Alert>
       )}
