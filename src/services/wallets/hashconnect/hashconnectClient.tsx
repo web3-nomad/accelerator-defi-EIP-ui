@@ -53,7 +53,13 @@ class HashConnectWallet implements WalletInterface {
       },
     );
     const responseJson = await response.json();
-    return responseJson.evm_address;
+    if (
+      responseJson?._status?.messages &&
+      responseJson?._status?.messages[0]?.message === "Not found"
+    ) {
+      return null;
+    }
+    return responseJson?._status || responseJson.evm_address;
   }
 
   async transferHBAR(toAddress: AccountId, amount: number) {

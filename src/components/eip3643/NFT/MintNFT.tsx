@@ -19,6 +19,7 @@ import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { readHederaNftBalanceOf } from "@/services/contracts/wagmiGenActions";
+import { useAccountId } from "@/hooks/useAccountId";
 
 export default function MintNFT() {
   const { accountEvm } = useWalletInterface();
@@ -43,6 +44,12 @@ export default function MintNFT() {
         }).then((res) => setBalance(res.toString()))
       : setBalance("Non valid address");
   }, [form.values.address, data]);
+
+  const { hederaAccountIdError } = useAccountId(
+    form.setValues,
+    form.values,
+    "address",
+  );
 
   return (
     <>
@@ -72,6 +79,16 @@ export default function MintNFT() {
               <AlertIcon />
               <AlertTitle>Mint error!</AlertTitle>
               <AlertDescription>{error.toString()}</AlertDescription>
+            </Alert>
+          )}
+          {hederaAccountIdError && (
+            <Alert status="error" mt="4">
+              <AlertIcon />
+              <AlertTitle>Hedera Account Id conversion error!</AlertTitle>
+              <AlertDescription>
+                Hedera Account Id detected. But here is an error converting it
+                to EVM address.
+              </AlertDescription>
             </Alert>
           )}
           {data && (

@@ -15,6 +15,7 @@ import { useCreateIdentityFactory } from "@/hooks/mutations/useCreateIdentityFac
 import { useContext, useEffect } from "react";
 import { Eip3643Context } from "@/contexts/Eip3643Context";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
+import { useAccountId } from "@/hooks/useAccountId";
 
 export default function CreateIdentityFactory() {
   const { accountEvm } = useWalletInterface();
@@ -63,6 +64,12 @@ export default function CreateIdentityFactory() {
     setCurrentIdentityAddress,
   ]);
 
+  const { hederaAccountIdError } = useAccountId(
+    form.setValues,
+    form.values,
+    "address",
+  );
+
   return (
     <>
       <form onSubmit={form.handleSubmit}>
@@ -87,6 +94,16 @@ export default function CreateIdentityFactory() {
           >
             Create identity {!!currentIdentityAddress && "[Already created]"}
           </Button>
+          {hederaAccountIdError && (
+            <Alert status="error" mt="4">
+              <AlertIcon />
+              <AlertTitle>Hedera Account Id conversion error!</AlertTitle>
+              <AlertDescription>
+                Hedera Account Id detected. But here is an error converting it
+                to EVM address.
+              </AlertDescription>
+            </Alert>
+          )}
           {error && (
             <Alert status="error">
               <AlertIcon />

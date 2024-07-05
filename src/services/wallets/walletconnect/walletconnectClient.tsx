@@ -14,6 +14,7 @@ import { useWeb3ModalProvider } from "@web3modal/ethers/react";
 import { hederaTestnet } from "wagmi/chains";
 import { createWeb3Modal, defaultConfig } from "@web3modal/ethers/react";
 import { estimateGas } from "../estimateGas";
+import { convertAccountIdToSolidityAddress } from "@/services/util/helpers";
 
 // 1. Get projectId at https://cloud.walletconnect.com
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID as string;
@@ -64,15 +65,6 @@ const getProvider = () => {
 };
 
 class WalletConnectWallet implements WalletInterface {
-  private convertAccountIdToSolidityAddress(accountId: AccountId): string {
-    const accountIdString =
-      accountId.evmAddress !== null
-        ? accountId.evmAddress.toString()
-        : accountId.toSolidityAddress();
-
-    return `0x${accountIdString}`;
-  }
-
   async getEvmAccountAddress(accountId: AccountId) {
     return ("0x" + accountId.toSolidityAddress()) as `0x${string}`;
   }
@@ -86,7 +78,7 @@ class WalletConnectWallet implements WalletInterface {
     const signer = await provider.getSigner();
     // build the transaction
     const tx = await signer.populateTransaction({
-      to: this.convertAccountIdToSolidityAddress(toAddress),
+      to: convertAccountIdToSolidityAddress(toAddress),
       value: ethers.parseEther(amount.toString()),
     });
     try {
@@ -114,7 +106,7 @@ class WalletConnectWallet implements WalletInterface {
         .addParam({
           type: "address",
           name: "recipient",
-          value: this.convertAccountIdToSolidityAddress(toAddress),
+          value: convertAccountIdToSolidityAddress(toAddress),
         })
         .addParam({
           type: "uint256",
@@ -149,7 +141,7 @@ class WalletConnectWallet implements WalletInterface {
         .addParam({
           type: "address",
           name: "to",
-          value: this.convertAccountIdToSolidityAddress(toAddress),
+          value: convertAccountIdToSolidityAddress(toAddress),
         })
         .addParam({
           type: "uint256",

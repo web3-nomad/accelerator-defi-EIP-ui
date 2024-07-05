@@ -1,5 +1,4 @@
 import {
-  Heading,
   Text,
   Divider,
   Button,
@@ -20,10 +19,11 @@ import {
   watchTokenTransferEvent,
 } from "@/services/contracts/wagmiGenActions";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
+import { WatchContractEventReturnType } from "@/services/contracts/watchContractEvent";
 import { useMintToken } from "@/hooks/mutations/useMintToken";
 import { useFormik } from "formik";
-import { WatchContractEventReturnType } from "@/services/contracts/watchContractEvent";
 import { ethers } from "ethers";
+import { useAccountId } from "@/hooks/useAccountId";
 
 type TokenNameItem = {
   address: `0x${string}`;
@@ -81,6 +81,12 @@ export default function TokenInfo({
     };
   }, [tokenSelected, form.values.address]);
 
+  const { hederaAccountIdError } = useAccountId(
+    form.setValues,
+    form.values,
+    "address",
+  );
+
   return (
     <>
       <Divider my={10} />
@@ -115,6 +121,16 @@ export default function TokenInfo({
                   Mint
                 </Button>
               </Stack>
+              {hederaAccountIdError && (
+                <Alert status="error" mt="4">
+                  <AlertIcon />
+                  <AlertTitle>Hedera Account Id conversion error!</AlertTitle>
+                  <AlertDescription>
+                    Hedera Account Id detected. But here is an error converting
+                    it to EVM address.
+                  </AlertDescription>
+                </Alert>
+              )}
               {error && (
                 <Alert status="error">
                   <AlertIcon />

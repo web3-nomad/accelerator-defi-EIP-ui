@@ -18,6 +18,7 @@ import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { useTransferToken } from "@/hooks/mutations/useTransferToken";
 import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
 import { TokenNameItem, TransferTokenFromRequest } from "@/types/types";
+import { useAccountId } from "@/hooks/useAccountId";
 
 export default function TransferToken({
   tokenSelected,
@@ -51,6 +52,12 @@ export default function TransferToken({
 
   const { data: tokenBalance, error: tokenBalanceError } = useReadBalanceOf(
     tokenSelected?.address as `0x${string}`,
+  );
+
+  const { hederaAccountIdError } = useAccountId(
+    form.setValues,
+    form.values,
+    "toAddress",
   );
 
   return (
@@ -96,13 +103,27 @@ export default function TransferToken({
             </NumberInput>
           </FormControl>
 
-          <Button type="submit" isLoading={isPending}>
+          <Button
+            type="submit"
+            isLoading={isPending}
+            disabled={hederaAccountIdError}
+          >
             Transfer
           </Button>
         </VStack>
       </form>
+      {hederaAccountIdError && (
+        <Alert status="error" mt="4">
+          <AlertIcon />
+          <AlertTitle>Hedera Account Id conversion error!</AlertTitle>
+          <AlertDescription>
+            Hedera Account Id detected. But here is an error converting it to
+            EVM address.
+          </AlertDescription>
+        </Alert>
+      )}
       {error && (
-        <Alert status="error">
+        <Alert status="error" mt="4">
           <AlertIcon />
           <AlertTitle>Transfer token error!</AlertTitle>
           <AlertDescription>
