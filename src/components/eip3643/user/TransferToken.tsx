@@ -19,6 +19,7 @@ import { useTransferToken } from "@/hooks/mutations/useTransferToken";
 import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
 import { TokenNameItem, TransferTokenFromRequest } from "@/types/types";
 import { useAccountId } from "@/hooks/useAccountId";
+import { AccountIdResult } from "@/components/AccountIdResult";
 
 export default function TransferToken({
   tokenSelected,
@@ -44,7 +45,7 @@ export default function TransferToken({
 
       transferToken({
         tokenAddress: tokenSelected?.address,
-        toAddress,
+        toAddress: (hederaEVMAccount || toAddress) as `0x${string}`,
         amount: amountConverted,
       } as TransferTokenFromRequest);
     },
@@ -54,8 +55,7 @@ export default function TransferToken({
     tokenSelected?.address as `0x${string}`,
   );
 
-  const { hederaAccountIdError } = useAccountId(
-    form.setValues,
+  const { hederaAccountIdError, hederaEVMAccount } = useAccountId(
     form.values,
     "toAddress",
   );
@@ -112,16 +112,10 @@ export default function TransferToken({
           </Button>
         </VStack>
       </form>
-      {hederaAccountIdError && (
-        <Alert status="error" mt="4">
-          <AlertIcon />
-          <AlertTitle>Hedera Account Id conversion error!</AlertTitle>
-          <AlertDescription>
-            Hedera Account Id detected. But here is an error converting it to
-            EVM address.
-          </AlertDescription>
-        </Alert>
-      )}
+      <AccountIdResult
+        error={hederaAccountIdError}
+        transformed={hederaEVMAccount}
+      />
       {error && (
         <Alert status="error" mt="4">
           <AlertIcon />

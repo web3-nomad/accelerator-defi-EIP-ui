@@ -1,52 +1,40 @@
-import { useEffect, useState, useCallback, SetStateAction } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { AccountId } from "@hashgraph/sdk";
-import { hashConnectWallet } from "@/services/wallets/hashconnect/hashconnectClient";
+import { convertAccountIdToEVMWallet_RPC } from "@/services/util/helpers";
 
 type FormValues = { [key: string]: string };
 
-export function useAccountId<T>(
-  setValues: SetStateAction<any>,
-  values: T,
-  columnName: string,
-) {
+export function useAccountId<T>(values: T, columnName: string) {
   const [hederaAccountIdError, setHederaAccountIdError] = useState(false);
+  const [hederaEVMAccount, setHederaEVMAccount] = useState<string>();
+
+  const columnValue = (values as FormValues)[columnName];
 
   const handleAddressValueChange = useCallback(async () => {
-    const address = (values as FormValues)[columnName];
+    const address = columnValue;
 
     if (address && /([0-9][.][0-9][.][0-9])/.test(address)) {
       try {
-        const evmAddress = await hashConnectWallet.getEvmAccountAddress(
+        const evmAddress = await convertAccountIdToEVMWallet_RPC(
           AccountId.fromString(address),
         );
         if (!evmAddress) {
           setHederaAccountIdError(true);
-          setValues((prev: object) => ({
-            ...prev,
-            [columnName]: "",
-          }));
+          setHederaEVMAccount("");
         } else {
           setHederaAccountIdError(false);
-          setValues((prev: object) => ({
-            ...prev,
-            [columnName]: evmAddress,
-          }));
+          setHederaEVMAccount(evmAddress);
         }
       } catch (err) {
         setHederaAccountIdError(true);
-        setValues((prev: object) => ({
-          ...prev,
-          [columnName]: "",
-        }));
+        setHederaEVMAccount("");
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [(values as FormValues)[columnName]]);
+  }, [columnValue]);
 
   useEffect(() => {
     handleAddressValueChange();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [(values as FormValues)[columnName], handleAddressValueChange]);
+  }, [handleAddressValueChange]);
 
-  return { hederaAccountIdError };
+  return { hederaAccountIdError, hederaEVMAccount };
 }

@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { readHederaNftBalanceOf } from "@/services/contracts/wagmiGenActions";
 import { useAccountId } from "@/hooks/useAccountId";
+import { AccountIdResult } from "@/components/AccountIdResult";
 
 export default function MintNFT() {
   const { accountEvm } = useWalletInterface();
@@ -32,7 +33,7 @@ export default function MintNFT() {
     },
     onSubmit: ({ address }) => {
       mint({
-        address: address as `0x${string}`,
+        address: (hederaEVMAccount || address) as `0x${string}`,
       });
     },
   });
@@ -45,8 +46,7 @@ export default function MintNFT() {
       : setBalance("Non valid address");
   }, [form.values.address, data]);
 
-  const { hederaAccountIdError } = useAccountId(
-    form.setValues,
+  const { hederaAccountIdError, hederaEVMAccount } = useAccountId(
     form.values,
     "address",
   );
@@ -81,16 +81,10 @@ export default function MintNFT() {
               <AlertDescription>{error.toString()}</AlertDescription>
             </Alert>
           )}
-          {hederaAccountIdError && (
-            <Alert status="error" mt="4">
-              <AlertIcon />
-              <AlertTitle>Hedera Account Id conversion error!</AlertTitle>
-              <AlertDescription>
-                Hedera Account Id detected. But here is an error converting it
-                to EVM address.
-              </AlertDescription>
-            </Alert>
-          )}
+          <AccountIdResult
+            error={hederaAccountIdError}
+            transformed={hederaEVMAccount}
+          />
           {data && (
             <Alert status="success">
               <AlertIcon />

@@ -24,6 +24,7 @@ import { useMintToken } from "@/hooks/mutations/useMintToken";
 import { useFormik } from "formik";
 import { ethers } from "ethers";
 import { useAccountId } from "@/hooks/useAccountId";
+import { AccountIdResult } from "@/components/AccountIdResult";
 
 type TokenNameItem = {
   address: `0x${string}`;
@@ -48,7 +49,7 @@ export default function TokenInfo({
     onSubmit: ({ address, value }) => {
       tokenSelected &&
         mint({
-          address: address as `0x${string}`,
+          address: (hederaEVMAccount || address) as `0x${string}`,
           value,
           token: tokenSelected.address,
         });
@@ -81,8 +82,7 @@ export default function TokenInfo({
     };
   }, [tokenSelected, form.values.address]);
 
-  const { hederaAccountIdError } = useAccountId(
-    form.setValues,
+  const { hederaAccountIdError, hederaEVMAccount } = useAccountId(
     form.values,
     "address",
   );
@@ -121,16 +121,10 @@ export default function TokenInfo({
                   Mint
                 </Button>
               </Stack>
-              {hederaAccountIdError && (
-                <Alert status="error" mt="4">
-                  <AlertIcon />
-                  <AlertTitle>Hedera Account Id conversion error!</AlertTitle>
-                  <AlertDescription>
-                    Hedera Account Id detected. But here is an error converting
-                    it to EVM address.
-                  </AlertDescription>
-                </Alert>
-              )}
+              <AccountIdResult
+                error={hederaAccountIdError}
+                transformed={hederaEVMAccount}
+              />
               {error && (
                 <Alert status="error">
                   <AlertIcon />
