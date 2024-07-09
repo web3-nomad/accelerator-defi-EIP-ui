@@ -68,8 +68,7 @@ export default function CreateIdentityFactory() {
   ]);
 
   const { hederaAccountIdError, hederaEVMAccount } = useAccountId(
-    form.values,
-    "address",
+    form.values.address,
   );
 
   return (

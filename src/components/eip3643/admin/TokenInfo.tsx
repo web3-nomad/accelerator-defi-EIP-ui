@@ -83,8 +83,7 @@ export default function TokenInfo({
   }, [tokenSelected, form.values.address]);
 
   const { hederaAccountIdError, hederaEVMAccount } = useAccountId(
-    form.values,
-    "address",
+    form.values.address,
   );
 
   return (

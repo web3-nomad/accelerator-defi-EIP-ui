@@ -1,5 +1,5 @@
 import axios from "axios";
-import { TransactionId } from "@hashgraph/sdk";
+import { AccountId, TransactionId } from "@hashgraph/sdk";
 
 const TESTNET_URL = `https://testnet.mirrornode.hedera.com`;
 const testnetMirrorNodeAPI = axios.create({
@@ -53,4 +53,26 @@ export async function getContractCallResultsByTxId(
   );
 
   return transaction;
+}
+
+export async function convertAccountIdToEVMWallet(accountId: AccountId) {
+  const response: any = await fetch(
+    "https://testnet.mirrornode.hedera.com/api/v1/accounts/" +
+      accountId.toString(),
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    },
+  );
+  const responseJson = await response.json();
+  if (
+    responseJson?._status?.messages &&
+    responseJson?._status?.messages[0]?.message === "Not found"
+  ) {
+    return null;
+  }
+  return responseJson?._status || responseJson.evm_address;
 }

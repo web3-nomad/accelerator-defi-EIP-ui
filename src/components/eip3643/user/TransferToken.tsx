@@ -56,8 +56,7 @@ export default function TransferToken({
   );
 
   const { hederaAccountIdError, hederaEVMAccount } = useAccountId(
-    form.values,
-    "toAddress",
+    form.values.toAddress,
   );
 
   return (

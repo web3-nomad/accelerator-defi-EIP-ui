@@ -47,8 +47,7 @@ export default function MintNFT() {
   }, [form.values.address, data]);
 
   const { hederaAccountIdError, hederaEVMAccount } = useAccountId(
-    form.values,
-    "address",
+    form.values.address,
   );
 
   return (

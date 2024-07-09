@@ -3,28 +3,6 @@ import { isNil } from "lodash";
 import { VAULT_TOKEN_PRECISION_VALUE } from "@/config/constants";
 import BigNumber from "bignumber.js";
 
-export async function convertAccountIdToEVMWallet_RPC(accountId: AccountId) {
-  const response: any = await fetch(
-    "https://testnet.mirrornode.hedera.com/api/v1/accounts/" +
-      accountId.toString(),
-    {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    },
-  );
-  const responseJson = await response.json();
-  if (
-    responseJson?._status?.messages &&
-    responseJson?._status?.messages[0]?.message === "Not found"
-  ) {
-    return null;
-  }
-  return responseJson?._status || responseJson.evm_address;
-}
-
 export function convertAccountIdToSolidityAddress(
   accountId: AccountId,
 ): `0x${string}` {

@@ -1,22 +1,16 @@
 import { useEffect, useState, useCallback } from "react";
 import { AccountId } from "@hashgraph/sdk";
-import { convertAccountIdToEVMWallet_RPC } from "@/services/util/helpers";
+import { convertAccountIdToEVMWallet } from "@/services/api/requests";
 
-type FormValues = { [key: string]: string };
-
-export function useAccountId<T>(values: T, columnName: string) {
+export function useAccountId(value?: string) {
   const [hederaAccountIdError, setHederaAccountIdError] = useState(false);
-  const [hederaEVMAccount, setHederaEVMAccount] = useState<string>();
-
-  const columnValue = (values as FormValues)[columnName];
+  const [hederaEVMAccount, setHederaEVMAccount] = useState("");
 
   const handleAddressValueChange = useCallback(async () => {
-    const address = columnValue;
-
-    if (address && /([0-9][.][0-9][.][0-9])/.test(address)) {
+    if (value && /([0-9][.][0-9][.][0-9])/.test(value)) {
       try {
-        const evmAddress = await convertAccountIdToEVMWallet_RPC(
-          AccountId.fromString(address),
+        const evmAddress = await convertAccountIdToEVMWallet(
+          AccountId.fromString(value),
         );
         if (!evmAddress) {
           setHederaAccountIdError(true);
@@ -30,7 +24,7 @@ export function useAccountId<T>(values: T, columnName: string) {
         setHederaEVMAccount("");
       }
     }
-  }, [columnValue]);
+  }, [value]);
 
   useEffect(() => {
     handleAddressValueChange();
