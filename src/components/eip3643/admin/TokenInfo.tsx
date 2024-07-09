@@ -1,5 +1,4 @@
 import {
-  Heading,
   Text,
   Divider,
   Button,
@@ -20,10 +19,12 @@ import {
   watchTokenTransferEvent,
 } from "@/services/contracts/wagmiGenActions";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
+import { WatchContractEventReturnType } from "@/services/contracts/watchContractEvent";
 import { useMintToken } from "@/hooks/mutations/useMintToken";
 import { useFormik } from "formik";
-import { WatchContractEventReturnType } from "@/services/contracts/watchContractEvent";
 import { ethers } from "ethers";
+import { useAccountId } from "@/hooks/useAccountId";
+import { AccountIdResult } from "@/components/AccountIdResult";
 
 type TokenNameItem = {
   address: `0x${string}`;
@@ -48,7 +49,7 @@ export default function TokenInfo({
     onSubmit: ({ address, value }) => {
       tokenSelected &&
         mint({
-          address: address as `0x${string}`,
+          address: (hederaEVMAccount || address) as `0x${string}`,
           value,
           token: tokenSelected.address,
         });
@@ -80,6 +81,10 @@ export default function TokenInfo({
       unsub && unsub();
     };
   }, [tokenSelected, form.values.address]);
+
+  const { hederaAccountIdError, hederaEVMAccount } = useAccountId(
+    form.values.address,
+  );
 
   return (
     <>
@@ -115,6 +120,10 @@ export default function TokenInfo({
                   Mint
                 </Button>
               </Stack>
+              <AccountIdResult
+                error={hederaAccountIdError}
+                transformed={hederaEVMAccount}
+              />
               {error && (
                 <Alert status="error">
                   <AlertIcon />

@@ -19,6 +19,8 @@ import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { readHederaNftBalanceOf } from "@/services/contracts/wagmiGenActions";
+import { useAccountId } from "@/hooks/useAccountId";
+import { AccountIdResult } from "@/components/AccountIdResult";
 
 export default function MintNFT() {
   const { accountEvm } = useWalletInterface();
@@ -31,7 +33,7 @@ export default function MintNFT() {
     },
     onSubmit: ({ address }) => {
       mint({
-        address: address as `0x${string}`,
+        address: (hederaEVMAccount || address) as `0x${string}`,
       });
     },
   });
@@ -43,6 +45,10 @@ export default function MintNFT() {
         }).then((res) => setBalance(res.toString()))
       : setBalance("Non valid address");
   }, [form.values.address, data]);
+
+  const { hederaAccountIdError, hederaEVMAccount } = useAccountId(
+    form.values.address,
+  );
 
   return (
     <>
@@ -74,6 +80,10 @@ export default function MintNFT() {
               <AlertDescription>{error.toString()}</AlertDescription>
             </Alert>
           )}
+          <AccountIdResult
+            error={hederaAccountIdError}
+            transformed={hederaEVMAccount}
+          />
           {data && (
             <Alert status="success">
               <AlertIcon />

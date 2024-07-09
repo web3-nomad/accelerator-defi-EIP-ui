@@ -18,6 +18,8 @@ import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { useTransferToken } from "@/hooks/mutations/useTransferToken";
 import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
 import { TokenNameItem, TransferTokenFromRequest } from "@/types/types";
+import { useAccountId } from "@/hooks/useAccountId";
+import { AccountIdResult } from "@/components/AccountIdResult";
 
 export default function TransferToken({
   tokenSelected,
@@ -43,7 +45,7 @@ export default function TransferToken({
 
       transferToken({
         tokenAddress: tokenSelected?.address,
-        toAddress,
+        toAddress: (hederaEVMAccount || toAddress) as `0x${string}`,
         amount: amountConverted,
       } as TransferTokenFromRequest);
     },
@@ -51,6 +53,10 @@ export default function TransferToken({
 
   const { data: tokenBalance, error: tokenBalanceError } = useReadBalanceOf(
     tokenSelected?.address as `0x${string}`,
+  );
+
+  const { hederaAccountIdError, hederaEVMAccount } = useAccountId(
+    form.values.toAddress,
   );
 
   return (
@@ -96,13 +102,21 @@ export default function TransferToken({
             </NumberInput>
           </FormControl>
 
-          <Button type="submit" isLoading={isPending}>
+          <Button
+            type="submit"
+            isLoading={isPending}
+            disabled={hederaAccountIdError}
+          >
             Transfer
           </Button>
         </VStack>
       </form>
+      <AccountIdResult
+        error={hederaAccountIdError}
+        transformed={hederaEVMAccount}
+      />
       {error && (
-        <Alert status="error">
+        <Alert status="error" mt="4">
           <AlertIcon />
           <AlertTitle>Transfer token error!</AlertTitle>
           <AlertDescription>
