@@ -29,7 +29,7 @@ const contracts: Contracts = [
   {
     name: "ERC20",
     address: "0x0000000000000000000000000000000000387719", // Dummy address, will be overridden on every call
-    url: `https://raw.githubusercontent.com/web3-nomad/accelerator-defi-EIP/main/data/abis/ERC20.json`,
+    url: `https://raw.githubusercontent.com/hashgraph/hedera-accelerator-defi-eip/main/data/abis/ERC20.json`,
   },
 ];
 
