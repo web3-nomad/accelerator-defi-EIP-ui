@@ -4,8 +4,9 @@ import { readHtsTokenTokenAddress } from "@/services/contracts/wagmiGenActions";
 import { EvmAddress } from "@/types/types";
 
 /**
- * Considering that we use HTSToken CA as a wrapper to call "mint" of regular HTS token,
- * we want to read the full non-zeroed EVM address of the underlying HTS token
+ * Considering that we use HTSToken CA as a proxy to allow users to associate/mint underlying HTS token,
+ * `tokenAddress` will return the EVM address of the said HTS token
+ *
  * @param deployedProxyHtsToken
  */
 export function useReadHtsTokenTokenAddress(deployedProxyHtsToken: EvmAddress) {
