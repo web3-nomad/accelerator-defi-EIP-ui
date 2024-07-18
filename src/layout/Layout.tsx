@@ -25,6 +25,7 @@ import EIP3643 from "@/views/eip3643/EIP3643";
 import { Eip3643ContextProvider } from "@/contexts/Eip3643Context";
 import EIP4626 from "@/views/eip4626/EIP4626";
 import { Eip4626ContextProvider } from "@/contexts/Eip4626Context";
+import AboutEIP3643 from "@/views/about/EIP3643";
 
 const queryClient = new QueryClient();
 
@@ -42,8 +43,9 @@ const Layout = () => {
                 <Sidebar />
                 <Box p={10} width={"100%"}>
                   <Routes>
+                    <Route path="eip3643" element={<AboutEIP3643 />} />
                     <Route
-                      path="eip3643"
+                      path="eip3643/start-operating"
                       element={
                         <Eip3643ContextProvider>
                           <EIP3643 />
