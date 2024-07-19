@@ -8,14 +8,13 @@ import {
   Button,
   Text,
 } from "@chakra-ui/react";
-import { VaultMintTokenProps } from "@/types/types";
+import { EvmAddress, VaultMintTokenProps } from "@/types/types";
 import { useWriteHtsTokenMint } from "@/hooks/eip4626/mutations/useWriteHtsTokenMint";
 
 export function MintAssetToken({ vaultAssetSelected }: VaultMintTokenProps) {
   //@TODO add readTokenName to show vault asset token names
   const { data: deployedHtsTokensAddress } =
     useReadHtsTokenTokenAddress(vaultAssetSelected);
-  console.log("L11 deployedHtsTokensAddress ===", deployedHtsTokensAddress);
 
   const {
     data: associateResult,
@@ -40,7 +39,8 @@ export function MintAssetToken({ vaultAssetSelected }: VaultMintTokenProps) {
           <Button
             onClick={() =>
               associate({
-                tokenAddress: vaultAssetSelected,
+                tokenAddress:
+                  deployedHtsTokensAddress?.toString() as EvmAddress,
               })
             }
           >

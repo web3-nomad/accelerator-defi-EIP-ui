@@ -665,7 +665,7 @@ export const htsTokenFactoryAbi = [
 ] as const;
 
 export const htsTokenFactoryAddress =
-  "0x92eC9DDB4da01d421c2650E41dcAFdA7DD49a4a8" as const;
+  "0x76f8470F2973e2FB0295AF85cfA7B1B52F732C6C" as const;
 
 export const htsTokenFactoryConfig = {
   address: htsTokenFactoryAddress,
