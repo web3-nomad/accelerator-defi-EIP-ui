@@ -129,6 +129,9 @@ export default function Compliance({
               will be ignored.
             </FormHelperText>
             <Button
+              mt="2"
+              pr="8"
+              pl="8"
               type="submit"
               isLoading={
                 addRequiresNFTModulePending || callModuleFunctionPending
