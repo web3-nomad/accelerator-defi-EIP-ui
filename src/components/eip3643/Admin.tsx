@@ -1,4 +1,4 @@
-import { Button, Divider, Select, Stack, Text } from "@chakra-ui/react";
+import { Button, Divider, Stack, Text } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 
 import DeployToken from "@/components/eip3643/admin/DeployToken";
@@ -13,6 +13,7 @@ import { TokenNameItem } from "@/types/types";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import TokenInfo from "@/components/eip3643/admin/TokenInfo";
 import Compliance from "@/components/eip3643/admin/Compliance";
+import { MenuSelect } from "@/components/MenuSelect";
 
 export default function Admin() {
   const [isDeploy, setIsDeploy] = useState(false);
@@ -44,26 +45,25 @@ export default function Admin() {
     });
   }, [deployedTokens, accountEvm, setOwnTokens]);
 
+  const handleTokenSelect = (value: string | number) => {
+    const tokenItem = ownTokens.find((itemSub) => itemSub.address === value);
+    setTokenSelected(tokenItem || null);
+  };
+
+  const tokensData = ownTokens.map((token) => ({
+    value: token.address,
+    label: `${token.name} ${token.address}`,
+  }));
+
   return (
     <>
       {!isDeploy && (
         <Stack spacing={4} align="center">
-          <Select
-            placeholder="Select token for operation"
-            onChange={(item) => {
-              const tokenItem = ownTokens.find(
-                (itemSub) => itemSub.address === item.target.value,
-              );
-              setTokenSelected(tokenItem || null);
-            }}
-            variant="outline"
-          >
-            {ownTokens.map((item) => (
-              <option key={item.address} value={item.address}>
-                {item.name} [{item.address}]
-              </option>
-            ))}
-          </Select>
+          <MenuSelect
+            label="Select token for operation"
+            data={tokensData}
+            onTokenSelect={handleTokenSelect}
+          />
           {!tokenSelected && (
             <>
               <Text>OR</Text>

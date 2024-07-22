@@ -107,7 +107,7 @@ export default function TokenInfo({
                 </FormHelperText>
               </FormControl>
               <FormControl isRequired>
-                <FormLabel>Value</FormLabel>
+                <FormLabel>Value to mint</FormLabel>
                 <Input
                   name="value"
                   variant="outline"
@@ -116,7 +116,13 @@ export default function TokenInfo({
                 />
               </FormControl>
               <Stack spacing={4} direction="row" align="center">
-                <Button type="submit" isLoading={isPending}>
+                <Button
+                  type="submit"
+                  isLoading={isPending}
+                  pr="8"
+                  pl="8"
+                  mt="2"
+                >
                   Mint
                 </Button>
               </Stack>
