@@ -15,6 +15,8 @@ import { useCreateIdentityFactory } from "@/hooks/mutations/useCreateIdentityFac
 import { useContext, useEffect } from "react";
 import { Eip3643Context } from "@/contexts/Eip3643Context";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
+import { useAccountId } from "@/hooks/useAccountId";
+import { AccountIdResult } from "@/components/AccountIdResult";
 
 export default function CreateIdentityFactory() {
   const { accountEvm } = useWalletInterface();
@@ -37,7 +39,9 @@ export default function CreateIdentityFactory() {
       address: accountEvm,
     },
     onSubmit: ({ address }) => {
-      createIdentityFactory({ address: address as `0x${string}` });
+      createIdentityFactory({
+        address: (hederaEVMAccount || address) as `0x${string}`,
+      });
     },
   });
 
@@ -63,6 +67,10 @@ export default function CreateIdentityFactory() {
     setCurrentIdentityAddress,
   ]);
 
+  const { hederaAccountIdError, hederaEVMAccount } = useAccountId(
+    form.values.address,
+  );
+
   return (
     <>
       <form onSubmit={form.handleSubmit}>
@@ -87,6 +95,10 @@ export default function CreateIdentityFactory() {
           >
             Create identity {!!currentIdentityAddress && "[Already created]"}
           </Button>
+          <AccountIdResult
+            error={hederaAccountIdError}
+            transformed={hederaEVMAccount}
+          />
           {error && (
             <Alert status="error">
               <AlertIcon />
