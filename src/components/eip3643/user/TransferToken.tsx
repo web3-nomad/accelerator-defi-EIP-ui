@@ -38,8 +38,9 @@ export default function TransferToken({
 }) {
   const { accountEvm } = useWalletInterface();
   const { error, isPending, mutateAsync: transferToken } = useTransferToken();
-  const [mostUsedAddresses, setMostUsedAddresses] =
-    useState<StoredAddressItem[]>();
+  const [mostUsedAddresses, setMostUsedAddresses] = useState<
+    StoredAddressItem[]
+  >([]);
 
   const form = useFormik({
     initialValues: {
@@ -147,7 +148,7 @@ export default function TransferToken({
                     label: item,
                     value: item,
                   })),
-                  ...(mostUsedAddresses || []).map((item) => ({
+                  ...mostUsedAddresses.map((item) => ({
                     label: item.address,
                     value: item.address,
                   })),
