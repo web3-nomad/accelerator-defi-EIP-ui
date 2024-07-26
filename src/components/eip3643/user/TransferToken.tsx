@@ -12,7 +12,9 @@ import {
   NumberInput,
   NumberInputField,
   VStack,
+  Flex,
 } from "@chakra-ui/react";
+import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { useTransferToken } from "@/hooks/mutations/useTransferToken";
@@ -20,20 +22,24 @@ import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
 import { TokenNameItem, TransferTokenFromRequest } from "@/types/types";
 import { useAccountId } from "@/hooks/useAccountId";
 import { AccountIdResult } from "@/components/AccountIdResult";
+import { MenuSelect } from "@/components/MenuSelect";
+
+type StoredAddressItem = {
+  address: string;
+  used_times_count: number;
+};
 
 export default function TransferToken({
   tokenSelected,
+  registeredIdentities = [],
 }: {
   tokenSelected: TokenNameItem | null;
+  registeredIdentities?: string[];
 }) {
   const { accountEvm } = useWalletInterface();
-
-  const {
-    error,
-    isPending,
-    data: transferResult,
-    mutateAsync: transferToken,
-  } = useTransferToken();
+  const { error, isPending, mutateAsync: transferToken } = useTransferToken();
+  const [mostUsedAddresses, setMostUsedAddresses] =
+    useState<StoredAddressItem[]>();
 
   const form = useFormik({
     initialValues: {
@@ -42,7 +48,7 @@ export default function TransferToken({
     },
     onSubmit: ({ toAddress, amount }) => {
       const amountConverted = BigInt(amount);
-
+      updateMostUsedAddresses(toAddress);
       transferToken({
         tokenAddress: tokenSelected?.address,
         toAddress: (hederaEVMAccount || toAddress) as `0x${string}`,
@@ -58,6 +64,60 @@ export default function TransferToken({
   const { hederaAccountIdError, hederaEVMAccount } = useAccountId(
     form.values.toAddress,
   );
+
+  const updateMostUsedAddresses = (value: string) => {
+    const items = localStorage.getItem("mostUsedAddresses");
+
+    if (items) {
+      const parsedMostUsedAddresses = JSON.parse(items);
+
+      if (
+        parsedMostUsedAddresses.find(
+          (item: StoredAddressItem) => item.address === value,
+        )
+      ) {
+        parsedMostUsedAddresses.forEach((item: StoredAddressItem) => {
+          if (item.address === value) {
+            item.used_times_count += 1;
+          }
+        });
+      } else {
+        parsedMostUsedAddresses.push({
+          address: value,
+          used_times_count: 1,
+        });
+        setMostUsedAddresses(parsedMostUsedAddresses);
+      }
+      localStorage.setItem(
+        "mostUsedAddresses",
+        JSON.stringify(parsedMostUsedAddresses),
+      );
+    } else {
+      const items = [
+        {
+          address: value,
+          used_times_count: 1,
+        },
+      ];
+      localStorage.setItem("mostUsedAddresses", JSON.stringify(items));
+      setMostUsedAddresses(items);
+    }
+  };
+
+  const handleAddressSelection = (value: string | number) => {
+    form.setValues((prev) => ({
+      ...prev,
+      toAddress: value?.toString(),
+    }));
+  };
+
+  useEffect(() => {
+    const items = localStorage.getItem("mostUsedAddresses");
+
+    if (items) {
+      setMostUsedAddresses(JSON.parse(items));
+    }
+  }, []);
 
   return (
     <>
@@ -77,6 +137,25 @@ export default function TransferToken({
 
           <FormControl isRequired>
             <FormLabel>Send to address</FormLabel>
+            <Flex mt="2" mb="3">
+              <MenuSelect
+                buttonProps={{
+                  variant: "outline",
+                }}
+                data={[
+                  ...registeredIdentities.map((item) => ({
+                    label: item,
+                    value: item,
+                  })),
+                  ...(mostUsedAddresses || []).map((item) => ({
+                    label: item.address,
+                    value: item.address,
+                  })),
+                ]}
+                label="Select address which was already in use"
+                onTokenSelect={handleAddressSelection}
+              />
+            </Flex>
             <Input
               name="toAddress"
               variant="outline"

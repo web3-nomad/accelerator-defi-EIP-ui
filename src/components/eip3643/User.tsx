@@ -1,18 +1,52 @@
 import { useEffect, useContext, useState } from "react";
 import TransferToken from "@/components/eip3643/user/TransferToken";
 import { Eip3643Context } from "@/contexts/Eip3643Context";
-import { readTokenName } from "@/services/contracts/wagmiGenActions";
+import {
+  readTokenName,
+  readTokenIdentityRegistry,
+  watchIdentityRegistryIdentityRegisteredEvent,
+} from "@/services/contracts/wagmiGenActions";
 import { TokenNameItem } from "@/types/types";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { Divider, Select, Stack } from "@chakra-ui/react";
+import { WatchContractEventReturnType } from "@/services/contracts/watchContractEvent";
 
 export default function User() {
   const [tokenSelected, setTokenSelected] = useState(
     null as TokenNameItem | null,
   );
   const [tokens, setTokens] = useState([] as Array<TokenNameItem>);
+  const [registeredIdentities, setRegisteredIdentities] = useState<string[]>();
   const { accountEvm } = useWalletInterface();
   const { deployedTokens } = useContext(Eip3643Context);
+
+  useEffect(() => {
+    let unsub: WatchContractEventReturnType | null = null;
+    tokenSelected &&
+      readTokenIdentityRegistry({ args: [] }, tokenSelected.address).then(
+        (res) => {
+          setRegisteredIdentities([]);
+          unsub = watchIdentityRegistryIdentityRegisteredEvent(
+            {
+              onLogs: (data) => {
+                setRegisteredIdentities((prev: any) => {
+                  return [
+                    ...prev,
+                    ...data
+                      .map((item: any) => item.args[0])
+                      .filter((item) => !prev.includes(item)),
+                  ];
+                });
+              },
+            },
+            res[0] as `0x${string}`,
+          );
+        },
+      );
+    return () => {
+      unsub && unsub();
+    };
+  }, [tokenSelected]);
 
   useEffect(() => {
     (deployedTokens as any).map((item: any) => {
@@ -55,7 +89,10 @@ export default function User() {
       {tokenSelected && (
         <>
           <Divider my={10} />
-          <TransferToken tokenSelected={tokenSelected} />
+          <TransferToken
+            tokenSelected={tokenSelected}
+            registeredIdentities={registeredIdentities}
+          />
         </>
       )}
     </>
