@@ -14,7 +14,7 @@ import {
   VStack,
   Flex,
 } from "@chakra-ui/react";
-import { useState, useEffect } from "react";
+import { useLocalStorage } from "react-use";
 import { useFormik } from "formik";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { useTransferToken } from "@/hooks/mutations/useTransferToken";
@@ -38,9 +38,8 @@ export default function TransferToken({
 }) {
   const { accountEvm } = useWalletInterface();
   const { error, isPending, mutateAsync: transferToken } = useTransferToken();
-  const [mostUsedAddresses, setMostUsedAddresses] = useState<
-    StoredAddressItem[]
-  >([]);
+  const [mostUsedAddressesValue, setValue] =
+    useLocalStorage<StoredAddressItem[]>("mostUsedAddresses");
 
   const form = useFormik({
     initialValues: {
@@ -67,32 +66,25 @@ export default function TransferToken({
   );
 
   const updateMostUsedAddresses = (value: string) => {
-    const items = localStorage.getItem("mostUsedAddresses");
+    const _value = [...(mostUsedAddressesValue || [])];
 
-    if (items) {
-      const parsedMostUsedAddresses = JSON.parse(items);
-
-      if (
-        parsedMostUsedAddresses.find(
-          (item: StoredAddressItem) => item.address === value,
-        )
-      ) {
-        parsedMostUsedAddresses.forEach((item: StoredAddressItem) => {
+    if (_value) {
+      if (_value.find((item: StoredAddressItem) => item.address === value)) {
+        _value.forEach((item: StoredAddressItem) => {
           if (item.address === value) {
             item.used_times_count += 1;
           }
         });
+        setValue(_value);
       } else {
-        parsedMostUsedAddresses.push({
-          address: value,
-          used_times_count: 1,
-        });
-        setMostUsedAddresses(parsedMostUsedAddresses);
+        setValue([
+          ..._value,
+          {
+            address: value,
+            used_times_count: 1,
+          },
+        ]);
       }
-      localStorage.setItem(
-        "mostUsedAddresses",
-        JSON.stringify(parsedMostUsedAddresses),
-      );
     } else {
       const items = [
         {
@@ -100,8 +92,7 @@ export default function TransferToken({
           used_times_count: 1,
         },
       ];
-      localStorage.setItem("mostUsedAddresses", JSON.stringify(items));
-      setMostUsedAddresses(items);
+      setValue(items);
     }
   };
 
@@ -111,14 +102,6 @@ export default function TransferToken({
       toAddress: value?.toString(),
     }));
   };
-
-  useEffect(() => {
-    const items = localStorage.getItem("mostUsedAddresses");
-
-    if (items) {
-      setMostUsedAddresses(JSON.parse(items));
-    }
-  }, []);
 
   return (
     <>
@@ -148,7 +131,7 @@ export default function TransferToken({
                     label: item,
                     value: item,
                   })),
-                  ...mostUsedAddresses.map((item) => ({
+                  ...(mostUsedAddressesValue || []).map((item) => ({
                     label: item.address,
                     value: item.address,
                   })),

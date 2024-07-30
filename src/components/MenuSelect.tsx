@@ -27,7 +27,7 @@ export const MenuSelect = (props: Props) => {
           >
             {props.label}
           </MenuButton>
-          {props.data?.length && (
+          {props.data?.length ? (
             <MenuList>
               {props.data.map((item) => (
                 <MenuItem
@@ -38,6 +38,8 @@ export const MenuSelect = (props: Props) => {
                 </MenuItem>
               ))}
             </MenuList>
+          ) : (
+            <></>
           )}
         </>
       )}
