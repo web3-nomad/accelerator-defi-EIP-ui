@@ -23,6 +23,12 @@ const routes: optionsProps[] = [
     route: "/eip4626",
     isDisabled: false,
   },
+  {
+    icon: "Coin",
+    title: "Manage identities",
+    route: "/manage-identities",
+    isDisabled: false,
+  },
 ];
 
 const Sidebar = () => {

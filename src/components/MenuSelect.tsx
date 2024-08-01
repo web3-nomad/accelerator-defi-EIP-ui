@@ -18,6 +18,7 @@ export const MenuSelect = (props: Props) => {
       {({ isOpen }) => (
         <>
           <MenuButton
+            style={{ width: "100%" }}
             as={Button}
             rightIcon={
               isOpen ? <Icon name="CaretUp" /> : <Icon name="CaretDown" />
