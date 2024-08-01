@@ -9,6 +9,7 @@ type ItemOption = {
 type Props = {
   label: string;
   data: ItemOption[];
+  buttonProps?: object;
   onTokenSelect: (value: string | number) => void;
 };
 
@@ -23,10 +24,11 @@ export const MenuSelect = (props: Props) => {
             rightIcon={
               isOpen ? <Icon name="CaretUp" /> : <Icon name="CaretDown" />
             }
+            {...(props.buttonProps ?? {})}
           >
             {props.label}
           </MenuButton>
-          {props.data?.length && (
+          {props.data?.length ? (
             <MenuList>
               {props.data.map((item) => (
                 <MenuItem
@@ -37,6 +39,8 @@ export const MenuSelect = (props: Props) => {
                 </MenuItem>
               ))}
             </MenuList>
+          ) : (
+            <></>
           )}
         </>
       )}
