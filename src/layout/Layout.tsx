@@ -69,7 +69,11 @@ const Layout = () => {
                     />
                     <Route
                       path="manage-identities"
-                      element={<ManageIdentities />}
+                      element={
+                        <Eip3643ContextProvider>
+                          <ManageIdentities />
+                        </Eip3643ContextProvider>
+                      }
                     />
                   </Routes>
                 </Box>

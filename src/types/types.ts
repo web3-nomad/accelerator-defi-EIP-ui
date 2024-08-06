@@ -73,3 +73,7 @@ export type VaultWithdrawRequest = {
   vaultAddress: `0x${string}`;
   tokenAmount: bigint;
 };
+
+export type UpdateCountryProps = {
+  country: number;
+};
