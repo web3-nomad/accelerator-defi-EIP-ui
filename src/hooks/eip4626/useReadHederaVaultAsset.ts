@@ -20,7 +20,6 @@ export function useReadHederaVaultAssetQueries(vaultAddresses: EvmAddress[]) {
           vaultAssetAddress: vaultAssetAddress.toString(),
           vaultAddress,
         };
-        console.log("L21 useReadHederaVaultAssetQueries ===", result);
         return result;
       },
       // staleTime: Infinity,

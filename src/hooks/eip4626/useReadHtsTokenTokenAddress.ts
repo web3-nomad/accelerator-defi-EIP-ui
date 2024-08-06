@@ -14,5 +14,6 @@ export function useReadHtsTokenTokenAddress(deployedProxyHtsToken: EvmAddress) {
     queryKey: [QueryKeys.ReadHtsTokenTokenAddress, deployedProxyHtsToken],
     queryFn: () => readHtsTokenTokenAddress({}, deployedProxyHtsToken),
     enabled: !!deployedProxyHtsToken,
+    select: (data) => data?.toString() as EvmAddress,
   });
 }

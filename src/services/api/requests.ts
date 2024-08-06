@@ -31,6 +31,22 @@ interface MirrorNodeTransaction {
   token_transfers: MirrorNodeTokenTransfer[];
 }
 
+interface MirrorNodeAccountToken {
+  automatic_association: boolean;
+  balance: number;
+  created_timestamp: string;
+  decimals: number;
+  freeze_status: string;
+  kyc_status: string;
+  token_id: string;
+}
+interface MirrorNodeAccountTokens {
+  links: {
+    next: string;
+  };
+  tokens: MirrorNodeAccountToken[];
+}
+
 /**
  * Fetches transaction details / records on Hedera network for a given TransactionId
  * @param transactionId - The ID of the transactions.
@@ -76,3 +92,16 @@ export async function convertAccountIdToEVMWallet(accountId: AccountId) {
   }
   return responseJson?._status || responseJson.evm_address;
 }
+
+export const fetchAccountTokens = async (
+  accountId: string | undefined,
+  pageParam: string,
+): Promise<MirrorNodeAccountTokens> => {
+  // if (!accountId) return [];
+
+  const { data: tokens } = await testnetMirrorNodeAPI.get(
+    pageParam ? pageParam : `/api/v1/accounts/${accountId}/tokens`,
+  );
+
+  return tokens;
+};

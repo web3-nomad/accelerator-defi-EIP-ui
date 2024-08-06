@@ -9,12 +9,24 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { EvmAddress, VaultMintTokenProps } from "@/types/types";
-import { useWriteHtsTokenMint } from "@/hooks/eip4626/mutations/useWriteHtsTokenMint";
+import {
+  DEFAULT_TOKEN_MINT_AMOUNT,
+  useWriteHtsTokenMint,
+} from "@/hooks/eip4626/mutations/useWriteHtsTokenMint";
+import { useReadTokenDecimals } from "@/hooks/eip4626/useReadTokenDecimals";
+import { formatNumberToBigint } from "@/services/util/helpers";
+import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
+import { useAccountTokens } from "@/hooks/useAccountTokens";
+import { useEffect } from "react";
 
 export function MintAssetToken({ vaultAssetSelected }: VaultMintTokenProps) {
   //@TODO add readTokenName to show vault asset token names
   const { data: deployedHtsTokensAddress } =
     useReadHtsTokenTokenAddress(vaultAssetSelected);
+
+  const { data: vaultAssetSelectedDecimals } = useReadTokenDecimals(
+    deployedHtsTokensAddress,
+  );
 
   const {
     data: associateResult,
@@ -30,6 +42,26 @@ export function MintAssetToken({ vaultAssetSelected }: VaultMintTokenProps) {
     isPending: isMintPending,
   } = useWriteHtsTokenMint();
 
+  const { data: tokenBalance, error: tokenBalanceError } = useReadBalanceOf(
+    deployedHtsTokensAddress as `0x${string}`,
+  );
+
+  console.log("L60 tokenBalance ===", tokenBalance);
+
+  const {
+    data: accountTokens,
+    isFetching,
+    hasNextPage,
+    fetchNextPage,
+  } = useAccountTokens();
+  console.log("L67 accountTokens ===", accountTokens);
+
+  useEffect(() => {
+    if (hasNextPage && !isFetching) {
+      fetchNextPage();
+    }
+  }, [accountTokens, fetchNextPage, hasNextPage, isFetching]);
+
   return (
     <>
       {deployedHtsTokensAddress && (
@@ -37,6 +69,7 @@ export function MintAssetToken({ vaultAssetSelected }: VaultMintTokenProps) {
           <Text>HTS Token CA: {deployedHtsTokensAddress}</Text>
           <Text>HTS Token Proxy CA: {vaultAssetSelected}</Text>
           <Button
+            isLoading={isAssociatePending}
             onClick={() =>
               associate({
                 tokenAddress:
@@ -47,13 +80,18 @@ export function MintAssetToken({ vaultAssetSelected }: VaultMintTokenProps) {
             Associate
           </Button>
           <Button
+            isLoading={isMintPending}
             onClick={() =>
               mint({
                 tokenAddress: vaultAssetSelected,
+                mintAmount: formatNumberToBigint(
+                  DEFAULT_TOKEN_MINT_AMOUNT,
+                  vaultAssetSelectedDecimals,
+                ),
               })
             }
           >
-            Mint 1000 tokens
+            Mint {DEFAULT_TOKEN_MINT_AMOUNT} tokens
           </Button>
         </>
       )}

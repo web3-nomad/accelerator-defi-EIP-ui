@@ -4,17 +4,17 @@ import { HtsTokenMintRequest } from "@/types/types";
 import { writeHtsTokenMint } from "@/services/contracts/wagmiGenActions";
 import { WalletInterface } from "@/services/wallets/walletInterface";
 
+export const DEFAULT_TOKEN_MINT_AMOUNT = 100;
+
 export function useWriteHtsTokenMint() {
   const { walletInterface } = useWalletInterface();
 
-  const DEFAULT_TOKEN_MINT_AMOUNT = BigInt(1000);
-
   return useMutation({
-    mutationFn: ({ tokenAddress }: HtsTokenMintRequest) => {
+    mutationFn: ({ tokenAddress, mintAmount }: HtsTokenMintRequest) => {
       return writeHtsTokenMint(
         walletInterface as WalletInterface,
         {
-          args: [DEFAULT_TOKEN_MINT_AMOUNT],
+          args: [mintAmount],
         },
         tokenAddress,
       );

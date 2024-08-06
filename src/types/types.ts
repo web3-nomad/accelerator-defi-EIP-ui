@@ -80,6 +80,7 @@ export type HtsTokenAssociateRequest = {
 
 export type HtsTokenMintRequest = {
   tokenAddress: EvmAddress;
+  mintAmount: bigint;
 };
 
 export type VaultMintTokenProps = {
