@@ -24,6 +24,8 @@ import {
   writeIdentityRegistryUpdateIdentity,
   writeIdentityRegistryAddAgent,
   watchIdentityRegistryAgentAddedEvent,
+  watchIdentityRegistryAgentRemovedEvent,
+  writeIdentityRegistryRemoveAgent,
 } from "@/services/contracts/wagmiGenActions";
 import { useTokenIdentityRegistry } from "@/hooks/useTokenIdentityRegistry";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
@@ -42,7 +44,7 @@ const investorCountriesItems = [
 ];
 
 export function ManageTokensList() {
-  const [_addedAgents, setAddedAgents] = useState([] as Array<string>);
+  const [addedAgents, setAddedAgents] = useState([] as Array<string>);
   const [ownTokens, setOwnTokens] = useState([] as Array<TokenNameItem>);
   const [updateTxResult, setUpdateTxResult] = useState<string>();
   const [updateTxError, setUpdateTxError] = useState<string>();
@@ -51,11 +53,13 @@ export function ManageTokensList() {
   const [selectedToken, setSelectedToken] = useState<TokenNameItem | null>(
     null,
   );
+  const [selectedAgent, setSelectedAgent] = useState<`0x${string}`>();
   const [selectedIdentity, setSelectedIdentity] = useState<`0x${string}`>("0x");
   const [newIdentityAddress, setNewIdentityAddress] = useState<string>();
   const [newUserAgentAddress, setNewUserAgentAddress] = useState<string>();
   const { registry, registryAgents } = useTokenIdentityRegistry(selectedToken);
   const { walletInterface } = useWalletInterface();
+
   const { mutateAsync: mutateDeleteIdentity } = useMutation({
     mutationFn: async () => {
       return writeIdentityRegistryDeleteIdentity(
@@ -65,6 +69,7 @@ export function ManageTokensList() {
       );
     },
   });
+
   const { mutateAsync: mutateUpdateIdentityCountry } = useMutation({
     mutationFn: async ({ country }: UpdateCountryProps) => {
       return writeIdentityRegistryUpdateCountry(
@@ -74,6 +79,7 @@ export function ManageTokensList() {
       );
     },
   });
+
   const { mutateAsync: mutateUpdateIdentity } = useMutation({
     mutationFn: async () => {
       return writeIdentityRegistryUpdateIdentity(
@@ -83,6 +89,17 @@ export function ManageTokensList() {
       );
     },
   });
+
+  const { mutateAsync: mutateIdentityRegistryRemoveAgent } = useMutation({
+    mutationFn: async () => {
+      return writeIdentityRegistryRemoveAgent(
+        walletInterface as WalletInterface,
+        { args: [selectedAgent as `0x${string}`] },
+        registry as `0x${string}`,
+      );
+    },
+  });
+
   const { mutateAsync: mutateIdentityRegistryAddAgent } = useMutation({
     mutationFn: async () => {
       return writeIdentityRegistryAddAgent(
@@ -159,6 +176,21 @@ export function ManageTokensList() {
     }
   };
 
+  const handleAgentSelect = (agent: string | number) => {
+    setSelectedAgent(agent as `0x${string}`);
+  };
+
+  const removeUserAgent = async () => {
+    try {
+      const txHash = await mutateIdentityRegistryRemoveAgent();
+      setUpdateTxResult(txHash);
+      setUpdateTxError(undefined);
+    } catch (err: any) {
+      setUpdateTxResult(undefined);
+      setUpdateTxError(err);
+    }
+  };
+
   useEffect(() => {
     (deployedTokens as any).map((item: any) => {
       const tokenAddress = item["args"]?.[0];
@@ -181,82 +213,171 @@ export function ManageTokensList() {
   }, [accountEvm, deployedTokens, setOwnTokens]);
 
   useEffect(() => {
-    // TODO: find out why this event does not working
     if (registry) {
-      const unsubAgentAdded: WatchContractEventReturnType =
-        watchIdentityRegistryAgentAddedEvent({
-          onLogs: (data) => {
-            setAddedAgents(((prev: any) => {
-              return [...prev, ...data];
-            }) as any);
+      const unsubAgentsAdded: WatchContractEventReturnType =
+        watchIdentityRegistryAgentAddedEvent(
+          {
+            onLogs: (data) => {
+              setAddedAgents(((prev: any) => {
+                return [...prev, ...data.map((log: any) => log.args[0])];
+              }) as any);
+            },
           },
-        });
+          registry as `0x${string}`,
+        );
       return () => {
-        unsubAgentAdded();
+        unsubAgentsAdded();
       };
     }
   }, [registry]);
 
+  useEffect(() => {
+    if (addedAgents?.length && registry) {
+      const unsubAgentsRemoved: WatchContractEventReturnType =
+        watchIdentityRegistryAgentRemovedEvent(
+          {
+            onLogs: (data) => {
+              const agents = data.map((log: any) => log.args[0]);
+
+              if (agents.find((agent) => addedAgents.includes(agent))) {
+                setAddedAgents((prev) =>
+                  prev.filter((agent) => !agents.includes(agent)),
+                );
+              }
+            },
+          },
+          registry as `0x${string}`,
+        );
+
+      return () => {
+        unsubAgentsRemoved();
+      };
+    }
+  }, [addedAgents, registry]);
+
   return (
-    <Flex direction="column">
-      <Flex direction="column" width="50%">
-        <MenuSelect
-          data={ownTokens.map((tok) => ({
-            value: tok.address,
-            label: tok.name,
-          }))}
-          label="Select tokens to manage identities"
-          onTokenSelect={handleTokenSelect}
-        />
-        <Box mt="4">
-          <MenuSelect
-            data={registryAgents.map((identity) => ({
-              value: identity,
-              label: identity,
-            }))}
-            label="Select identity wallet to manage"
-            onTokenSelect={handleIdentitySelect}
-          />
-        </Box>
-        {selectedIdentity && (
-          <Flex direction="column" mt="6">
-            <Text fontWeight="bold">
+    <>
+      <Flex gap="4" pt="4" className="modify-identities-container">
+        <style>
+          {`
+          .modify-identities-container {
+            flex-direction: flex;
+          }
+          .modify-identities-container-section {
+            width: 49%;
+          }
+          @media screen and (max-width: 1200px) {
+            .modify-identities-container {
+              flex-direction: column;
+            }
+            .modify-identities-container-section {
+              width: 80%;
+            }
+          }
+        `}
+        </style>
+        <Flex
+          direction="column"
+          className="modify-identities-container-section"
+        >
+          <Box width="62%">
+            <MenuSelect
+              data={ownTokens.map((tok) => ({
+                value: tok.address,
+                label: tok.name,
+              }))}
+              label="Select tokens to manage identities"
+              onTokenSelect={handleTokenSelect}
+            />
+          </Box>
+          <Box mt="4" width="62%">
+            <MenuSelect
+              data={registryAgents.map((identity) => ({
+                value: identity,
+                label: identity,
+              }))}
+              label="Select identity wallet to manage"
+              onTokenSelect={handleIdentitySelect}
+            />
+          </Box>
+          <Flex direction="column" mt="9">
+            <Text fontWeight="bold" style={{ fontSize: 14 }}>
               Selected identity wallet: {selectedIdentity}
             </Text>
+            {selectedIdentity !== "0x" ? (
+              <>
+                <Input
+                  value={newIdentityAddress}
+                  placeholder="Identity wallet address to update"
+                  onChange={(e) => setNewIdentityAddress(e.target.value)}
+                />
+                <ButtonGroup mt="2">
+                  <Button minWidth="30%" onClick={handleUpdateIdentity}>
+                    Update to address
+                  </Button>
+                  <MenuSelect
+                    buttonProps={{
+                      variant: "outline",
+                    }}
+                    data={investorCountriesItems}
+                    label="Update country"
+                    onTokenSelect={handleUpdateIdentityCountry}
+                  />
+                  <Button minWidth="20%" onClick={handleDeleteIdentity}>
+                    Remove
+                  </Button>
+                </ButtonGroup>
+              </>
+            ) : (
+              <></>
+            )}
+          </Flex>
+        </Flex>
+        <Flex
+          direction="column"
+          width="49%"
+          className="modify-identities-container-section"
+        >
+          <Flex direction="column">
             <Input
-              value={newIdentityAddress}
-              placeholder="Identity wallet address to update"
-              onChange={(e) => setNewIdentityAddress(e.target.value)}
+              value={newUserAgentAddress}
+              placeholder="User agent address"
+              onChange={(e) => setNewUserAgentAddress(e.target.value)}
             />
-            <ButtonGroup mt="2">
-              <Button minWidth="30%" onClick={handleUpdateIdentity}>
-                Update to address
-              </Button>
+            <Alert status="success" mt="2">
+              <AlertDescription fontSize="13">
+                Somebody who can perform update / delete operations on{" "}
+                {"identity"} wallet.
+              </AlertDescription>
+            </Alert>
+            <Button width="30%" onClick={addNewUserAgent} mt="2">
+              Add new agent
+            </Button>
+          </Flex>
+          {addedAgents?.length ? (
+            <Flex direction="column" mt="9">
               <MenuSelect
                 buttonProps={{
                   variant: "outline",
                 }}
-                data={investorCountriesItems}
-                label="Update country"
-                onTokenSelect={handleUpdateIdentityCountry}
+                data={addedAgents.map((agent) => ({
+                  value: agent,
+                  label: agent,
+                }))}
+                label="Select agent"
+                onTokenSelect={handleAgentSelect}
               />
-              <Button minWidth="20%" onClick={handleDeleteIdentity}>
-                Remove
+              <Text fontWeight="bold" style={{ fontSize: 14 }} mt="2">
+                Selected agent: {selectedAgent}
+              </Text>
+              <Button width="30%" onClick={removeUserAgent} mt="2">
+                Remove agent
               </Button>
-            </ButtonGroup>
-          </Flex>
-        )}
-      </Flex>
-      <Flex mt="6" direction="column" width="50%">
-        <Text fontWeight="bold">Add new agent to identity registry</Text>
-        <Input
-          value={newUserAgentAddress}
-          placeholder="User agent address"
-          onChange={(e) => setNewUserAgentAddress(e.target.value)}
-        />
-        <Button width="30%" onClick={addNewUserAgent} mt="2">
-          Submit agent
-        </Button>
+            </Flex>
+          ) : (
+            <></>
+          )}
+        </Flex>
       </Flex>
       <Flex direction="column" width="90%" mt="8">
         {updateTxResult && (
@@ -274,6 +395,6 @@ export function ManageTokensList() {
           </Alert>
         )}
       </Flex>
-    </Flex>
+    </>
   );
 }
