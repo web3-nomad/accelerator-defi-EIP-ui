@@ -6,7 +6,6 @@ import { fetchAccountTokens } from "@/services/api/requests";
 export function useAccountTokens() {
   const { accountEvm } = useWalletInterface();
 
-  //@TODO convert token_id to evm address after fetching it
   return useInfiniteQuery({
     queryKey: [QueryKeys.ReadAccountTokens, accountEvm],
     queryFn: ({ pageParam }) => fetchAccountTokens(accountEvm, pageParam),

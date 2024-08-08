@@ -17,9 +17,14 @@ import { useReadTokenDecimals } from "@/hooks/eip4626/useReadTokenDecimals";
 import { formatNumberToBigint } from "@/services/util/helpers";
 import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
 import { useAccountTokens } from "@/hooks/useAccountTokens";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { AccountId } from "@hashgraph/sdk";
+import { useQueryClient } from "@tanstack/react-query";
+import { QueryKeys } from "@/hooks/types";
 
 export function MintAssetToken({ vaultAssetSelected }: VaultMintTokenProps) {
+  const queryClient = useQueryClient();
+
   //@TODO add readTokenName to show vault asset token names
   const { data: deployedHtsTokensAddress } =
     useReadHtsTokenTokenAddress(vaultAssetSelected);
@@ -54,13 +59,28 @@ export function MintAssetToken({ vaultAssetSelected }: VaultMintTokenProps) {
     hasNextPage,
     fetchNextPage,
   } = useAccountTokens();
-  console.log("L67 accountTokens ===", accountTokens);
 
   useEffect(() => {
     if (hasNextPage && !isFetching) {
       fetchNextPage();
     }
   }, [accountTokens, fetchNextPage, hasNextPage, isFetching]);
+
+  const [tokenHasAssociation, setTokenHasAssociation] = useState(false);
+  useEffect(() => {
+    if (deployedHtsTokensAddress && accountTokens) {
+      let deployedTokenLowercase = deployedHtsTokensAddress.toLowerCase();
+      let result = accountTokens.some((token) => {
+        let tokenSolidityAddress = AccountId.fromString(
+          token.token_id,
+        ).toSolidityAddress();
+
+        return `0x${tokenSolidityAddress}` === deployedTokenLowercase;
+      });
+
+      setTokenHasAssociation(result);
+    }
+  }, [accountTokens, deployedHtsTokensAddress]);
 
   return (
     <>
@@ -70,11 +90,21 @@ export function MintAssetToken({ vaultAssetSelected }: VaultMintTokenProps) {
           <Text>HTS Token Proxy CA: {vaultAssetSelected}</Text>
           <Button
             isLoading={isAssociatePending}
+            isDisabled={tokenHasAssociation}
             onClick={() =>
-              associate({
-                tokenAddress:
-                  deployedHtsTokensAddress?.toString() as EvmAddress,
-              })
+              associate(
+                {
+                  tokenAddress:
+                    deployedHtsTokensAddress?.toString() as EvmAddress,
+                },
+                {
+                  onSuccess: () => {
+                    queryClient.invalidateQueries({
+                      queryKey: [QueryKeys.ReadAccountTokens],
+                    });
+                  },
+                },
+              )
             }
           >
             Associate
