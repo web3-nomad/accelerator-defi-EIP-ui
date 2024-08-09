@@ -14,7 +14,7 @@ import {
   useWriteHtsTokenMint,
 } from "@/hooks/eip4626/mutations/useWriteHtsTokenMint";
 import { useReadTokenDecimals } from "@/hooks/eip4626/useReadTokenDecimals";
-import { formatNumberToBigint } from "@/services/util/helpers";
+import { formatBalance, formatNumberToBigint } from "@/services/util/helpers";
 import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
 import { useAccountTokens } from "@/hooks/useAccountTokens";
 import { useEffect, useState } from "react";
@@ -51,8 +51,6 @@ export function MintAssetToken({ vaultAssetSelected }: VaultMintTokenProps) {
     deployedHtsTokensAddress as `0x${string}`,
   );
 
-  console.log("L60 tokenBalance ===", tokenBalance);
-
   const {
     data: accountTokens,
     isFetching,
@@ -88,6 +86,10 @@ export function MintAssetToken({ vaultAssetSelected }: VaultMintTokenProps) {
         <>
           <Text>HTS Token CA: {deployedHtsTokensAddress}</Text>
           <Text>HTS Token Proxy CA: {vaultAssetSelected}</Text>
+          <Text>
+            User balance of token:{" "}
+            {`${formatBalance(tokenBalance, vaultAssetSelectedDecimals)}`}
+          </Text>
           <Button
             isLoading={isAssociatePending}
             isDisabled={tokenHasAssociation}

@@ -16,26 +16,15 @@ export default function User() {
   const [vaultAssetSelected, setVaultAssetSelected] = useState(
     "" as EvmAddress,
   );
-  console.log("L19 vaultAssetSelected ===", vaultAssetSelected);
 
   const { deployedProxyHtsTokens } = useContext(Eip4626Context);
-
   const { deployedVaults } = useContext(Eip4626Context);
-  console.log("L31 deployedVaults ===", deployedVaults);
 
   const vaultAddresses = deployedVaults.map((item) => item?.["args"]?.[0]);
-  console.log("L19 vaultAddresses extracted ===", vaultAddresses);
-
   const vaultAssetsFetched = useReadHederaVaultAssetQueries(vaultAddresses);
-  console.log("L20 vaultAssetsFetched ===", vaultAssetsFetched);
 
   const filteredVaultsBySelectedAsset = vaultAssetsFetched.filter(
     (item) => item?.data?.vaultAssetAddress === vaultAssetSelected,
-  );
-
-  console.log(
-    "L31 filteredVaultsBySelectedAsset ===",
-    filteredVaultsBySelectedAsset,
   );
 
   const filteredVaultsForSelect = deployedVaults.filter((item) => {
@@ -43,8 +32,6 @@ export default function User() {
       (subItem) => subItem?.data?.vaultAddress === item?.["args"]?.[0],
     );
   });
-
-  console.log("L39 filteredVaultsForSelect ===", filteredVaultsForSelect);
 
   return (
     <>
