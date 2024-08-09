@@ -13,7 +13,7 @@ import {
 import { useContext, useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { ethers } from "ethers";
-import { TokenNameItem, UpdateCountryProps } from "@/types/types";
+import { EvmAddress, TokenNameItem, UpdateCountryProps } from "@/types/types";
 import { Eip3643Context } from "@/contexts/Eip3643Context";
 import { MenuSelect } from "@/components/MenuSelect";
 import {
@@ -50,11 +50,9 @@ export function ManageTokensList() {
   const [updateTxError, setUpdateTxError] = useState<string>();
   const { deployedTokens } = useContext(Eip3643Context);
   const { accountEvm } = useWalletInterface();
-  const [selectedToken, setSelectedToken] = useState<TokenNameItem | null>(
-    null,
-  );
-  const [selectedAgent, setSelectedAgent] = useState<`0x${string}`>();
-  const [selectedIdentity, setSelectedIdentity] = useState<`0x${string}`>("0x");
+  const [selectedToken, setSelectedToken] = useState<TokenNameItem>();
+  const [selectedAgent, setSelectedAgent] = useState<EvmAddress>();
+  const [selectedIdentity, setSelectedIdentity] = useState<EvmAddress>();
   const [newIdentityAddress, setNewIdentityAddress] = useState<string>();
   const [newUserAgentAddress, setNewUserAgentAddress] = useState<string>();
   const { registry, registryAgents } = useTokenIdentityRegistry(selectedToken);
@@ -64,8 +62,8 @@ export function ManageTokensList() {
     mutationFn: async () => {
       return writeIdentityRegistryDeleteIdentity(
         walletInterface as WalletInterface,
-        { args: [selectedIdentity] },
-        registry as `0x${string}`,
+        { args: [selectedIdentity as EvmAddress] },
+        registry as EvmAddress,
       );
     },
   });
@@ -74,8 +72,8 @@ export function ManageTokensList() {
     mutationFn: async ({ country }: UpdateCountryProps) => {
       return writeIdentityRegistryUpdateCountry(
         walletInterface as WalletInterface,
-        { args: [selectedIdentity, country] },
-        registry as `0x${string}`,
+        { args: [selectedIdentity as EvmAddress, country] },
+        registry as EvmAddress,
       );
     },
   });
@@ -84,8 +82,13 @@ export function ManageTokensList() {
     mutationFn: async () => {
       return writeIdentityRegistryUpdateIdentity(
         walletInterface as WalletInterface,
-        { args: [selectedIdentity, newIdentityAddress as `0x${string}`] },
-        registry as `0x${string}`,
+        {
+          args: [
+            selectedIdentity as EvmAddress,
+            newIdentityAddress as EvmAddress,
+          ],
+        },
+        registry as EvmAddress,
       );
     },
   });
@@ -94,8 +97,8 @@ export function ManageTokensList() {
     mutationFn: async () => {
       return writeIdentityRegistryRemoveAgent(
         walletInterface as WalletInterface,
-        { args: [selectedAgent as `0x${string}`] },
-        registry as `0x${string}`,
+        { args: [selectedAgent as EvmAddress] },
+        registry as EvmAddress,
       );
     },
   });
@@ -104,8 +107,8 @@ export function ManageTokensList() {
     mutationFn: async () => {
       return writeIdentityRegistryAddAgent(
         walletInterface as WalletInterface,
-        { args: [newUserAgentAddress as `0x${string}`] },
-        registry as `0x${string}`,
+        { args: [newUserAgentAddress as EvmAddress] },
+        registry as EvmAddress,
       );
     },
   });
@@ -126,13 +129,13 @@ export function ManageTokensList() {
     }
   };
 
-  const handleTokenSelect = (tokenAddr: string | number) => {
+  const handleTokenSelect = (tokenAddr: string) => {
     setSelectedToken(
-      ownTokens.find((tok) => tok.address === (tokenAddr as string)) || null,
+      ownTokens.find((token) => token.address === (tokenAddr as string)),
     );
   };
 
-  const handleIdentitySelect = (value: string | number) => {
+  const handleIdentitySelect = (value: string) => {
     setSelectedIdentity(value as `0x${string}`);
   };
 
