@@ -31,9 +31,7 @@ export function formatBalance(
   precision = VAULT_TOKEN_PRECISION_VALUE,
 ) {
   return !isNil(initialValue)
-    ? BigNumber(initialValue)
-        .shiftedBy(-precision)
-        .toFixed(VAULT_TOKEN_PRECISION_VALUE)
+    ? BigNumber(initialValue).shiftedBy(-precision).toFixed(precision)
     : 0;
 }
 

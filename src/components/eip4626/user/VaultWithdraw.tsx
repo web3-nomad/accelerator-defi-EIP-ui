@@ -21,7 +21,6 @@ import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
 import { formatBalance, formatNumberToBigint } from "@/services/util/helpers";
 import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
 import { useQueryClient } from "@tanstack/react-query";
-import { useReadHederaVaultPreviewWithdraw } from "@/hooks/eip4626/useReadHederaVaultPreviewWithdraw";
 import { useReadHederaVaultUserContribution } from "@/hooks/eip4626/useReadHederaVaultUserContribution";
 
 export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
@@ -74,10 +73,11 @@ export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
     });
   };
 
-  const { data: previewWithdrawData } = useReadHederaVaultPreviewWithdraw(
-    vaultAddress,
-    form.values.amount,
-  );
+  //@TODO call not working for small amounts with decimals
+  // const { data: previewWithdrawData } = useReadHederaVaultPreviewWithdraw(
+  //   vaultAddress,
+  //   form.values.amount,
+  // );
 
   const { data: userContribution } =
     useReadHederaVaultUserContribution(vaultAddress);
@@ -108,10 +108,10 @@ export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
               User balance of vault share token: {`${balanceFormatted}`}
             </FormHelperText>
 
-            <FormHelperText>
-              Amount of vault share token will be burned:{" "}
-              {previewWithdrawData?.toString()}
-            </FormHelperText>
+            {/*<FormHelperText>*/}
+            {/*  Amount of vault share token will be burned:{" "}*/}
+            {/*  {previewWithdrawData?.toString()}*/}
+            {/*</FormHelperText>*/}
 
             {shareUserBalanceError && (
               <FormHelperText color={"red"}>

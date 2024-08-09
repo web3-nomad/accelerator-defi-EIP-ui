@@ -15,8 +15,5 @@ export function useCreateIdentityFactory() {
           args: [address],
         },
       ),
-    onSuccess: (data, variables, context) => {
-      console.log("useCreateIdentityFactory onSuccess", data);
-    },
   });
 }

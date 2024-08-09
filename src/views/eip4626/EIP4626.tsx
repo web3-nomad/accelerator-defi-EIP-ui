@@ -6,11 +6,15 @@ import NoWalletConnected from "@/components/NoWalletConnected";
 import { WatchContractEventReturnType } from "@/services/contracts/watchContractEvent";
 import { useContext, useEffect } from "react";
 import { Eip4626Context } from "@/contexts/Eip4626Context";
-import { watchVaultFactoryVaultDeployedEvent } from "../../services/contracts/wagmiGenActions";
+import {
+  watchHtsTokenFactoryTokenDeployedEvent,
+  watchVaultFactoryVaultDeployedEvent,
+} from "@/services/contracts/wagmiGenActions";
 
 export default function EIP4626() {
   const { accountId } = useWalletInterface();
-  const { setDeployedVaults } = useContext(Eip4626Context);
+  const { setDeployedVaults, setDeployedProxyHtsTokens } =
+    useContext(Eip4626Context);
 
   useEffect(() => {
     const unsub: WatchContractEventReturnType =
@@ -25,6 +29,25 @@ export default function EIP4626() {
       unsub();
     };
   }, [setDeployedVaults]);
+
+  useEffect(() => {
+    const unsub: WatchContractEventReturnType =
+      watchHtsTokenFactoryTokenDeployedEvent({
+        onLogs: (data) => {
+          setDeployedProxyHtsTokens(((prev: any) => {
+            return [
+              ...prev,
+              ...data
+                .map((item: any) => item.args[0])
+                .filter((item) => !prev.includes(item)),
+            ];
+          }) as any);
+        },
+      });
+    return () => {
+      unsub();
+    };
+  }, [setDeployedProxyHtsTokens]);
 
   if (!accountId) return <NoWalletConnected />;
 

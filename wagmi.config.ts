@@ -28,8 +28,8 @@ const ignore = env.SYNC_CONTRACTS_IGNORE.split(";");
 const contracts: Contracts = [
   {
     name: "ERC20",
-    address: "0x0000000000000000000000000000000000387719", // Dummy address, will be overriden on every call
-    url: `https://raw.githubusercontent.com/web3-nomad/accelerator-defi-EIP/main/data/abis/ERC20.json`,
+    address: "0x0000000000000000000000000000000000387719", // Dummy address, will be overridden on every call
+    url: `https://raw.githubusercontent.com/hashgraph/hedera-accelerator-defi-eip/main/data/abis/ERC20.json`,
   },
 ];
 
@@ -56,10 +56,14 @@ export default defineConfig({
       })),
       async parse({ response }) {
         try {
+          if (response.status === 404)
+            throw new Error("Contract abi .json file fetch failed - Not Found");
+
           const json = await response.json();
           if (json.status === "0") throw new Error(JSON.stringify(response));
           return json.abi;
         } catch (e) {
+          console.error(e);
           throw new Error(JSON.stringify(e));
         }
       },
