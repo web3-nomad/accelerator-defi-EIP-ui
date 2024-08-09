@@ -21,7 +21,7 @@ import { useTokenIdentityRegistry } from "@/hooks/useTokenIdentityRegistry";
 export default function RegisterIdentity({
   tokenSelected,
 }: {
-  tokenSelected: TokenNameItem | null;
+  tokenSelected?: TokenNameItem;
 }) {
   const { currentIdentityAddress, currentIdentityWallet } =
     useContext(Eip3643Context);

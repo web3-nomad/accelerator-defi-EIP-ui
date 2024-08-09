@@ -5,7 +5,8 @@ import { readTokenName } from "@/services/contracts/wagmiGenActions";
 import { TokenNameItem } from "@/types/types";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { Divider, Select, Stack } from "@chakra-ui/react";
-import { useTokenIdentityRegistry } from "@/hooks/useTokenIdentityRegistry";
+// import { useTokenIdentityRegistry } from "@/hooks/useTokenIdentityRegistry";
+import { useTokensIdentityRegistries } from "@/hooks/useTokensIdentityRegistries";
 
 export default function User() {
   const [tokenSelected, setTokenSelected] = useState(
@@ -14,7 +15,8 @@ export default function User() {
   const [tokens, setTokens] = useState([] as Array<TokenNameItem>);
   const { accountEvm } = useWalletInterface();
   const { deployedTokens } = useContext(Eip3643Context);
-  const { registryAgents } = useTokenIdentityRegistry(tokenSelected);
+  // const { registryAgents } = useTokenIdentityRegistry(tokenSelected);
+  const { registriesAgents } = useTokensIdentityRegistries(tokens);
 
   useEffect(() => {
     (deployedTokens as any).map((item: any) => {
@@ -34,6 +36,23 @@ export default function User() {
     });
   }, [deployedTokens, accountEvm, setTokens]);
 
+  const sortTokensList = () => {
+    if (registriesAgents && accountEvm) {
+      return tokens.sort((a) => {
+        const tokenIncludesIdentity =
+          registriesAgents[a.address]?.includes(accountEvm);
+
+        if (tokenIncludesIdentity) {
+          return -1;
+        }
+
+        return 1;
+      });
+    }
+
+    return tokens;
+  };
+
   return (
     <>
       <Stack spacing={4} align="center">
@@ -47,22 +66,24 @@ export default function User() {
           }}
           variant="outline"
         >
-          {tokens.map((item) => (
+          {sortTokensList().map((item) => (
             <option key={item.address} value={item.address}>
               {item.name} [{item.address}]
             </option>
           ))}
         </Select>
       </Stack>
-      {tokenSelected && (
-        <>
-          <Divider my={10} />
-          <TransferToken
-            tokenSelected={tokenSelected}
-            registeredIdentities={registryAgents}
-          />
-        </>
-      )}
+      {tokenSelected &&
+        registriesAgents &&
+        registriesAgents[tokenSelected?.address] && (
+          <>
+            <Divider my={10} />
+            <TransferToken
+              tokenSelected={tokenSelected}
+              registeredIdentities={registriesAgents[tokenSelected?.address]}
+            />
+          </>
+        )}
     </>
   );
 }

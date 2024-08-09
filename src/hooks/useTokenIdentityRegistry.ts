@@ -6,7 +6,7 @@ import {
   watchIdentityRegistryIdentityRegisteredEvent,
 } from "@/services/contracts/wagmiGenActions";
 
-export function useTokenIdentityRegistry(tokenSelected: TokenNameItem | null) {
+export function useTokenIdentityRegistry(tokenSelected?: TokenNameItem) {
   const [registry, setRegistry] = useState("");
   const [registryAgents, setRegistryAgents] = useState<string[]>([]);
 

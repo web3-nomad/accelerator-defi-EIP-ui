@@ -21,6 +21,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { AllWalletsProvider } from "@/services/wallets/AllWalletsProvider";
 
+import ManageIdentities from "@/views/manage-identities/ManageIdentities";
 import EIP3643 from "@/views/eip3643/EIP3643";
 import { Eip3643ContextProvider } from "@/contexts/Eip3643Context";
 import EIP4626 from "@/views/eip4626/EIP4626";
@@ -65,6 +66,14 @@ const Layout = () => {
                     <Route
                       path="*"
                       element={<Navigate to="/eip3643" replace />}
+                    />
+                    <Route
+                      path="manage-identities"
+                      element={
+                        <Eip3643ContextProvider>
+                          <ManageIdentities />
+                        </Eip3643ContextProvider>
+                      }
                     />
                   </Routes>
                 </Box>
