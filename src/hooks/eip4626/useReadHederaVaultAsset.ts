@@ -22,7 +22,6 @@ export function useReadHederaVaultAssetQueries(vaultAddresses: EvmAddress[]) {
         };
         return result;
       },
-      // staleTime: Infinity,
     })),
   });
 }

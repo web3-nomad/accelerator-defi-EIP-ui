@@ -12,7 +12,13 @@ export function useAccountTokens() {
     initialPageParam: "",
     refetchOnWindowFocus: false,
     enabled: !!accountEvm,
-    select: (data) => data.pages.flatMap((x) => x.tokens),
+    select: (data) => {
+      if (data && data.pages) {
+        return data.pages.flatMap((x) => x.tokens);
+      } else {
+        return [];
+      }
+    },
     getNextPageParam: (lastPage, allPages, lastPageParam) => {
       if (lastPage?.links?.next) {
         return lastPage?.links?.next;

@@ -97,8 +97,6 @@ export const fetchAccountTokens = async (
   accountId: string | undefined,
   pageParam: string,
 ): Promise<MirrorNodeAccountTokens> => {
-  // if (!accountId) return [];
-
   const { data: tokens } = await testnetMirrorNodeAPI.get(
     pageParam ? pageParam : `/api/v1/accounts/${accountId}/tokens`,
   );

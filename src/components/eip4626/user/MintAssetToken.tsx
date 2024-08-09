@@ -48,7 +48,7 @@ export function MintAssetToken({ vaultAssetSelected }: VaultMintTokenProps) {
   } = useWriteHtsTokenMint();
 
   const { data: tokenBalance, error: tokenBalanceError } = useReadBalanceOf(
-    deployedHtsTokensAddress as `0x${string}`,
+    deployedHtsTokensAddress as EvmAddress,
   );
 
   const {
@@ -69,6 +69,7 @@ export function MintAssetToken({ vaultAssetSelected }: VaultMintTokenProps) {
     if (deployedHtsTokensAddress && accountTokens) {
       let deployedTokenLowercase = deployedHtsTokensAddress.toLowerCase();
       let result = accountTokens.some((token) => {
+        if (!token) return false;
         let tokenSolidityAddress = AccountId.fromString(
           token.token_id,
         ).toSolidityAddress();
@@ -78,7 +79,7 @@ export function MintAssetToken({ vaultAssetSelected }: VaultMintTokenProps) {
 
       setTokenHasAssociation(result);
     }
-  }, [accountTokens, deployedHtsTokensAddress]);
+  }, [accountTokens, deployedHtsTokensAddress, setTokenHasAssociation]);
 
   return (
     <>
@@ -109,29 +110,53 @@ export function MintAssetToken({ vaultAssetSelected }: VaultMintTokenProps) {
               )
             }
           >
-            Associate
+            {tokenHasAssociation ? `Token already associated` : `Associate`}
           </Button>
           <Button
             isLoading={isMintPending}
             onClick={() =>
-              mint({
-                tokenAddress: vaultAssetSelected,
-                mintAmount: formatNumberToBigint(
-                  DEFAULT_TOKEN_MINT_AMOUNT,
-                  vaultAssetSelectedDecimals,
-                ),
-              })
+              mint(
+                {
+                  tokenAddress: vaultAssetSelected,
+                  mintAmount: formatNumberToBigint(
+                    DEFAULT_TOKEN_MINT_AMOUNT,
+                    vaultAssetSelectedDecimals,
+                  ),
+                },
+                {
+                  onSuccess: () => {
+                    queryClient.invalidateQueries({
+                      queryKey: [QueryKeys.ReadBalanceOf],
+                    });
+                  },
+                },
+              )
             }
           >
             Mint {DEFAULT_TOKEN_MINT_AMOUNT} tokens
           </Button>
         </>
       )}
+      {associateResult && (
+        <Alert status="success">
+          <AlertIcon />
+          <AlertTitle>Associate success!</AlertTitle>
+          <AlertDescription>TxId: {associateResult}</AlertDescription>
+        </Alert>
+      )}
       {associateError && (
         <Alert status="error">
           <AlertIcon />
           <AlertTitle>Associate token error!</AlertTitle>
           <AlertDescription>{associateError.toString()}</AlertDescription>
+        </Alert>
+      )}
+
+      {mintResult && (
+        <Alert status="success">
+          <AlertIcon />
+          <AlertTitle>Mint success!</AlertTitle>
+          <AlertDescription>TxId: {mintResult}</AlertDescription>
         </Alert>
       )}
       {mintError && (
