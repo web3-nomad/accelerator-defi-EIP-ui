@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { TokenNameItem } from "@/types/types";
+import { EvmAddress, TokenNameItem } from "@/types/types";
 import { WatchContractEventReturnType } from "@/services/contracts/watchContractEvent";
 import {
   readTokenIdentityRegistry,
@@ -15,8 +15,8 @@ export function useTokensIdentityRegistries(tokens?: TokenNameItem[]) {
     let unsubs: WatchContractEventReturnType[] = [];
 
     if (tokens?.length) {
-      tokens.forEach((tok) => {
-        readTokenIdentityRegistry({ args: [] }, tok.address).then((res) => {
+      tokens.forEach((token) => {
+        readTokenIdentityRegistry({ args: [] }, token.address).then((res) => {
           unsubs.push(
             watchIdentityRegistryIdentityRegisteredEvent(
               {
@@ -28,12 +28,12 @@ export function useTokensIdentityRegistries(tokens?: TokenNameItem[]) {
 
                     return {
                       ...prev,
-                      [tok.address]: data.map((item: any) => item.args[0]),
+                      [token.address]: data.map((item: any) => item.args[0]),
                     };
                   });
                 },
               },
-              res[0] as `0x${string}`,
+              res[0] as EvmAddress,
             ),
           );
         });

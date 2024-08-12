@@ -12,10 +12,15 @@ import { WatchContractEventReturnType } from "viem";
 import NoWalletConnected from "@/components/NoWalletConnected";
 import NFT from "@/components/eip3643/NFT";
 
-export default function EIP3643() {
+export default function EIP3643({
+  onlyIdentities = false,
+  children,
+}: {
+  onlyIdentities?: boolean;
+  children?: JSX.Element;
+}) {
   const { accountId } = useWalletInterface();
-  const { setDeployedTokens, identities, setIdentities } =
-    useContext(Eip3643Context);
+  const { setDeployedTokens, setIdentities } = useContext(Eip3643Context);
 
   useEffect(() => {
     const unsubTokens: WatchContractEventReturnType =
@@ -41,6 +46,10 @@ export default function EIP3643() {
   }, [setDeployedTokens, setIdentities]);
 
   if (!accountId) return <NoWalletConnected />;
+
+  if (onlyIdentities) {
+    return children;
+  }
 
   return (
     <>

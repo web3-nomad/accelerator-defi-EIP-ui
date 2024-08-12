@@ -21,13 +21,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { AllWalletsProvider } from "@/services/wallets/AllWalletsProvider";
 
-import ManageIdentities from "@/views/manage-identities/ManageIdentities";
 import EIP3643 from "@/views/eip3643/EIP3643";
 import { Eip3643ContextProvider } from "@/contexts/Eip3643Context";
 import EIP4626 from "@/views/eip4626/EIP4626";
 import AboutEIP4626 from "@/views/about/EIP4626";
 import { Eip4626ContextProvider } from "@/contexts/Eip4626Context";
 import AboutEIP3643 from "@/views/about/EIP3643";
+import { ManageIdentities } from "@/views/manage-identities/ManageIdentities";
 
 const queryClient = new QueryClient();
 
@@ -71,7 +71,9 @@ const Layout = () => {
                       path="manage-identities"
                       element={
                         <Eip3643ContextProvider>
-                          <ManageIdentities />
+                          <EIP3643 onlyIdentities>
+                            <ManageIdentities />
+                          </EIP3643>
                         </Eip3643ContextProvider>
                       }
                     />

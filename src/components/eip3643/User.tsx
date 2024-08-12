@@ -1,21 +1,19 @@
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useContext, useState, useMemo } from "react";
 import TransferToken from "@/components/eip3643/user/TransferToken";
 import { Eip3643Context } from "@/contexts/Eip3643Context";
 import { readTokenName } from "@/services/contracts/wagmiGenActions";
 import { TokenNameItem } from "@/types/types";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { Divider, Select, Stack } from "@chakra-ui/react";
-// import { useTokenIdentityRegistry } from "@/hooks/useTokenIdentityRegistry";
 import { useTokensIdentityRegistries } from "@/hooks/useTokensIdentityRegistries";
 
 export default function User() {
   const [tokenSelected, setTokenSelected] = useState(
     null as TokenNameItem | null,
   );
-  const [tokens, setTokens] = useState([] as Array<TokenNameItem>);
+  const [tokens, setTokens] = useState<TokenNameItem[]>([]);
   const { accountEvm } = useWalletInterface();
   const { deployedTokens } = useContext(Eip3643Context);
-  // const { registryAgents } = useTokenIdentityRegistry(tokenSelected);
   const { registriesAgents } = useTokensIdentityRegistries(tokens);
 
   useEffect(() => {
@@ -36,7 +34,8 @@ export default function User() {
     });
   }, [deployedTokens, accountEvm, setTokens]);
 
-  const sortTokensList = () => {
+  // Sorting tokens by bring to the top ones account matched in.
+  const sortedTokensByOwnership = useMemo(() => {
     if (registriesAgents && accountEvm) {
       return tokens.sort((a) => {
         const tokenIncludesIdentity =
@@ -51,7 +50,7 @@ export default function User() {
     }
 
     return tokens;
-  };
+  }, [tokens, registriesAgents, accountEvm]);
 
   return (
     <>
@@ -66,7 +65,7 @@ export default function User() {
           }}
           variant="outline"
         >
-          {sortTokensList().map((item) => (
+          {sortedTokensByOwnership.map((item) => (
             <option key={item.address} value={item.address}>
               {item.name} [{item.address}]
             </option>
