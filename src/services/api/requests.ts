@@ -94,8 +94,8 @@ export async function convertAccountIdToEVMWallet(accountId: AccountId) {
 }
 
 export const fetchAccountTokens = async (
-  accountId: string | undefined,
-  pageParam: string,
+  accountId?: string,
+  pageParam?: string,
 ): Promise<MirrorNodeAccountTokens> => {
   const { data: tokens } = await testnetMirrorNodeAPI.get(
     pageParam ? pageParam : `/api/v1/accounts/${accountId}/tokens`,

@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { Divider, Select, Stack } from "@chakra-ui/react";
+import { Divider, Select, Stack, Text } from "@chakra-ui/react";
 import { VaultWithdraw } from "@/components/eip4626/user/VaultWithdraw";
 import { VaultAssociate } from "@/components/eip4626/user/VaultAssociate";
 import { VaultClaimAllReward } from "@/components/eip4626/user/VaultClaimAllReward";
@@ -35,9 +35,7 @@ export default function User() {
 
   return (
     <>
-      {!deployedProxyHtsTokens.length ? (
-        <>No deployed HTS token addresses found</>
-      ) : (
+      {deployedProxyHtsTokens.length ? (
         <Stack spacing={4} align="center">
           <Select
             placeholder="Select vault asset for operation"
@@ -53,6 +51,8 @@ export default function User() {
             ))}
           </Select>
         </Stack>
+      ) : (
+        <Text>No deployed HTS token addresses found</Text>
       )}
 
       <Stack>

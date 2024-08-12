@@ -62,7 +62,7 @@ export function MintAssetToken({ vaultAssetSelected }: VaultMintTokenProps) {
     if (hasNextPage && !isFetching) {
       fetchNextPage();
     }
-  }, [accountTokens, fetchNextPage, hasNextPage, isFetching]);
+  }, [fetchNextPage, hasNextPage, isFetching]);
 
   const [tokenHasAssociation, setTokenHasAssociation] = useState(false);
   useEffect(() => {

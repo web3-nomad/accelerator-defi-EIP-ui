@@ -21,7 +21,7 @@ export function useAccountTokens() {
     },
     getNextPageParam: (lastPage, allPages, lastPageParam) => {
       if (lastPage?.links?.next) {
-        return lastPage?.links?.next;
+        return lastPage.links.next;
       } else {
         return undefined;
       }
