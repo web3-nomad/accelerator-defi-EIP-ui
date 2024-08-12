@@ -4,8 +4,9 @@ import { Eip3643Context } from "@/contexts/Eip3643Context";
 import { readTokenName } from "@/services/contracts/wagmiGenActions";
 import { TokenNameItem } from "@/types/types";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
-import { Divider, Select, Stack } from "@chakra-ui/react";
+import { Divider, Select, Stack, Text } from "@chakra-ui/react";
 import { useTokensIdentityRegistries } from "@/hooks/useTokensIdentityRegistries";
+import { MenuSelect } from "../MenuSelect";
 
 export default function User() {
   const [tokenSelected, setTokenSelected] = useState(
@@ -52,31 +53,32 @@ export default function User() {
     return tokens;
   }, [tokens, registriesAgents, accountEvm]);
 
+  const handleTokenSelect = (value: string) => {
+    const tokenItem = tokens.find((itemSub) => itemSub.address === value);
+    setTokenSelected(tokenItem || null);
+  };
+
   return (
     <>
       <Stack spacing={4} align="center">
-        <Select
-          placeholder="Select token for operation"
-          onChange={(item) => {
-            const tokenItem = tokens.find(
-              (itemSub) => itemSub.address === item.target.value,
-            );
-            setTokenSelected(tokenItem || null);
-          }}
-          variant="outline"
-        >
-          {sortedTokensByOwnership.map((item) => (
-            <option key={item.address} value={item.address}>
-              {item.name} [{item.address}]
-            </option>
-          ))}
-        </Select>
+        <MenuSelect
+          buttonProps={{ style: { width: "50%" } }}
+          data={sortedTokensByOwnership.map((item) => ({
+            value: item.address,
+            label: item.name,
+          }))}
+          onTokenSelect={(value) => handleTokenSelect(value)}
+          label="Select token for operation"
+        />
       </Stack>
       {tokenSelected &&
         registriesAgents &&
         registriesAgents[tokenSelected?.address] && (
           <>
             <Divider my={10} />
+            <Text mb="2" fontWeight="bold">
+              Address: {tokenSelected?.address}
+            </Text>
             <TransferToken
               tokenSelected={tokenSelected}
               registeredIdentities={registriesAgents[tokenSelected?.address]}
