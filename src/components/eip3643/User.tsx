@@ -5,6 +5,7 @@ import { readTokenName } from "@/services/contracts/wagmiGenActions";
 import { TokenNameItem } from "@/types/types";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { Divider, Select, Stack } from "@chakra-ui/react";
+import { useTokenIdentityRegistry } from "@/hooks/useTokenIdentityRegistry";
 
 export default function User() {
   const [tokenSelected, setTokenSelected] = useState(
@@ -13,6 +14,7 @@ export default function User() {
   const [tokens, setTokens] = useState([] as Array<TokenNameItem>);
   const { accountEvm } = useWalletInterface();
   const { deployedTokens } = useContext(Eip3643Context);
+  const { registryAgents } = useTokenIdentityRegistry(tokenSelected);
 
   useEffect(() => {
     (deployedTokens as any).map((item: any) => {
@@ -55,7 +57,10 @@ export default function User() {
       {tokenSelected && (
         <>
           <Divider my={10} />
-          <TransferToken tokenSelected={tokenSelected} />
+          <TransferToken
+            tokenSelected={tokenSelected}
+            registeredIdentities={registryAgents}
+          />
         </>
       )}
     </>
