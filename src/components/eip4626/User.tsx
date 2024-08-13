@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { Divider, Select, Stack, Text } from "@chakra-ui/react";
+import { Divider, Select, Stack, Text, VStack } from "@chakra-ui/react";
 import { VaultWithdraw } from "@/components/eip4626/user/VaultWithdraw";
 import { VaultAssociate } from "@/components/eip4626/user/VaultAssociate";
 import { VaultClaimAllReward } from "@/components/eip4626/user/VaultClaimAllReward";
@@ -55,9 +55,13 @@ export default function User() {
         <Text>No deployed HTS token addresses found</Text>
       )}
 
+      <Divider my={10} />
+
       <Stack>
         <MintAssetToken vaultAssetSelected={vaultAssetSelected} />
       </Stack>
+
+      <Divider my={10} />
 
       {vaultAssetSelected && (
         <Stack spacing={4} align="center">

@@ -86,7 +86,6 @@ export function MintAssetToken({ vaultAssetSelected }: VaultMintTokenProps) {
       {deployedHtsTokensAddress && (
         <>
           <Text>HTS Token CA: {deployedHtsTokensAddress}</Text>
-          <Text>HTS Token Proxy CA: {vaultAssetSelected}</Text>
           <Text>
             User balance of token:{" "}
             {`${formatBalance(tokenBalance, vaultAssetSelectedDecimals)}`}
@@ -135,6 +134,7 @@ export function MintAssetToken({ vaultAssetSelected }: VaultMintTokenProps) {
           >
             Mint {DEFAULT_TOKEN_MINT_AMOUNT} tokens
           </Button>
+          <Text fontSize={12}>HTS Token Proxy CA: {vaultAssetSelected}</Text>
         </>
       )}
       {associateResult && (
