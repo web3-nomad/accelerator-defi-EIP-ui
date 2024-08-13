@@ -260,28 +260,20 @@ export function ManageIdentities() {
 
   return (
     <>
-      <Flex gap="4" pt="4" className="modify-identities-container">
-        <style>
-          {`
-          .modify-identities-container {
-            flex-direction: flex;
-          }
-          .modify-identities-container-section {
-            width: 49%;
-          }
-          @media screen and (max-width: 1200px) {
-            .modify-identities-container {
-              flex-direction: column;
-            }
-            .modify-identities-container-section {
-              width: 80%;
-            }
-          }
-        `}
-        </style>
+      <Flex
+        gap="4"
+        pt="4"
+        flexDirection={{
+          xl: "row",
+          base: "column",
+        }}
+      >
         <Flex
           direction="column"
-          className="modify-identities-container-section"
+          width={{
+            xl: "49%",
+            base: "80%",
+          }}
         >
           <Box width="62%">
             <MenuSelect
