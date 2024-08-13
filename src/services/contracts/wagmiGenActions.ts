@@ -519,6 +519,109 @@ export const erc20Address =
 export const erc20Config = { address: erc20Address, abi: erc20Abi } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// HTSToken
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const htsTokenAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "tokenName", internalType: "string", type: "string" },
+      { name: "tokenSymbol", internalType: "string", type: "string" },
+      { name: "decimals", internalType: "int32", type: "int32" },
+    ],
+    stateMutability: "payable",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "tokenAddress",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      {
+        name: "userAddress",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "AssociatedToken",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "tokenAddress",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+    ],
+    name: "CreatedToken",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "tokenAddress",
+        internalType: "address",
+        type: "address",
+        indexed: false,
+      },
+      { name: "amount", internalType: "int64", type: "int64", indexed: false },
+      {
+        name: "newTotalSupply",
+        internalType: "int64",
+        type: "int64",
+        indexed: false,
+      },
+    ],
+    name: "MintedToken",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "associate",
+    outputs: [
+      { name: "responseCode", internalType: "uint256", type: "uint256" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "amount", internalType: "int64", type: "int64" }],
+    name: "mint",
+    outputs: [
+      { name: "responseCode", internalType: "int256", type: "int256" },
+      { name: "newTotalSupply", internalType: "int64", type: "int64" },
+      { name: "serialNumbers", internalType: "int64[]", type: "int64[]" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "tokenAddress",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+] as const;
+
+export const htsTokenAddress =
+  "0xDCf36eAd241EB927E1046abcF17fE9FB31ecc646" as const;
+
+export const htsTokenConfig = {
+  address: htsTokenAddress,
+  abi: htsTokenAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // HTSTokenFactory
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -562,7 +665,7 @@ export const htsTokenFactoryAbi = [
 ] as const;
 
 export const htsTokenFactoryAddress =
-  "0x7ae9b7b41A17F586B12226B3a50bF98Ecf641B5b" as const;
+  "0x1Ed9b9832A84E312d1B2670A3a9b853FAd499189" as const;
 
 export const htsTokenFactoryConfig = {
   address: htsTokenFactoryAddress,
@@ -7290,6 +7393,113 @@ export const watchErc20TransferEvent = /*#__PURE__*/ createWatchContractEvent({
   address: erc20Address,
   eventName: "Transfer",
 });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link htsTokenAbi}__
+ */
+export const readHtsToken = /*#__PURE__*/ createReadContract({
+  abi: htsTokenAbi,
+  address: htsTokenAddress,
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link htsTokenAbi}__ and `functionName` set to `"tokenAddress"`
+ */
+export const readHtsTokenTokenAddress = /*#__PURE__*/ createReadContract({
+  abi: htsTokenAbi,
+  address: htsTokenAddress,
+  functionName: "tokenAddress",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link htsTokenAbi}__
+ */
+export const writeHtsToken = /*#__PURE__*/ createWriteContract({
+  abi: htsTokenAbi,
+  address: htsTokenAddress,
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link htsTokenAbi}__ and `functionName` set to `"associate"`
+ */
+export const writeHtsTokenAssociate = /*#__PURE__*/ createWriteContract({
+  abi: htsTokenAbi,
+  address: htsTokenAddress,
+  functionName: "associate",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link htsTokenAbi}__ and `functionName` set to `"mint"`
+ */
+export const writeHtsTokenMint = /*#__PURE__*/ createWriteContract({
+  abi: htsTokenAbi,
+  address: htsTokenAddress,
+  functionName: "mint",
+});
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link htsTokenAbi}__
+ */
+export const simulateHtsToken = /*#__PURE__*/ createSimulateContract({
+  abi: htsTokenAbi,
+  address: htsTokenAddress,
+});
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link htsTokenAbi}__ and `functionName` set to `"associate"`
+ */
+export const simulateHtsTokenAssociate = /*#__PURE__*/ createSimulateContract({
+  abi: htsTokenAbi,
+  address: htsTokenAddress,
+  functionName: "associate",
+});
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link htsTokenAbi}__ and `functionName` set to `"mint"`
+ */
+export const simulateHtsTokenMint = /*#__PURE__*/ createSimulateContract({
+  abi: htsTokenAbi,
+  address: htsTokenAddress,
+  functionName: "mint",
+});
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link htsTokenAbi}__
+ */
+export const watchHtsTokenEvent = /*#__PURE__*/ createWatchContractEvent({
+  abi: htsTokenAbi,
+  address: htsTokenAddress,
+});
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link htsTokenAbi}__ and `eventName` set to `"AssociatedToken"`
+ */
+export const watchHtsTokenAssociatedTokenEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: htsTokenAbi,
+    address: htsTokenAddress,
+    eventName: "AssociatedToken",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link htsTokenAbi}__ and `eventName` set to `"CreatedToken"`
+ */
+export const watchHtsTokenCreatedTokenEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: htsTokenAbi,
+    address: htsTokenAddress,
+    eventName: "CreatedToken",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link htsTokenAbi}__ and `eventName` set to `"MintedToken"`
+ */
+export const watchHtsTokenMintedTokenEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: htsTokenAbi,
+    address: htsTokenAddress,
+    eventName: "MintedToken",
+  });
 
 /**
  * Wraps __{@link readContract}__ with `abi` set to __{@link htsTokenFactoryAbi}__

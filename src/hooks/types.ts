@@ -5,6 +5,8 @@ export enum QueryKeys {
   ReadBalanceOf = "readBalanceOf",
   ReadTokenCompliance = "readTokenCompliance",
   ReadModularComplianceGetModules = "readModularComplianceGetModules",
+  ReadHtsTokenTokenAddress = "readHtsTokenTokenAddress",
+  ReadAccountTokens = "readAccountTokens",
 }
 
 export enum QueryKeysEIP4626 {
@@ -20,4 +22,5 @@ export enum QueryKeysEIP4626 {
   ReadHederaVaultPreviewWithdraw = "readHederaVaultPreviewWithdraw",
   ReadHederaVaultGetUserReward = "readHederaVaultGetUserReward",
   ReadHederaVaultUserContribution = "readHederaVaultUserContribution",
+  ReadHederaVaultAssetQueries = "readHederaVaultAssetQueries",
 }
