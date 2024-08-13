@@ -27,7 +27,6 @@ import EIP4626 from "@/views/eip4626/EIP4626";
 import AboutEIP4626 from "@/views/about/EIP4626";
 import { Eip4626ContextProvider } from "@/contexts/Eip4626Context";
 import AboutEIP3643 from "@/views/about/EIP3643";
-import { ManageIdentities } from "@/views/manage-identities/ManageIdentities";
 
 const queryClient = new QueryClient();
 
@@ -66,16 +65,6 @@ const Layout = () => {
                     <Route
                       path="*"
                       element={<Navigate to="/eip3643" replace />}
-                    />
-                    <Route
-                      path="manage-identities"
-                      element={
-                        <Eip3643ContextProvider>
-                          <EIP3643 onlyIdentities>
-                            <ManageIdentities />
-                          </EIP3643>
-                        </Eip3643ContextProvider>
-                      }
                     />
                   </Routes>
                 </Box>

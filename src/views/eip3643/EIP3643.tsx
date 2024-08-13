@@ -11,14 +11,9 @@ import {
 import { WatchContractEventReturnType } from "viem";
 import NoWalletConnected from "@/components/NoWalletConnected";
 import NFT from "@/components/eip3643/NFT";
+import { ManageIdentities } from "@/components/manage-identities/ManageIdentities";
 
-export default function EIP3643({
-  onlyIdentities = false,
-  children,
-}: {
-  onlyIdentities?: boolean;
-  children?: JSX.Element;
-}) {
+export default function EIP3643() {
   const { accountId } = useWalletInterface();
   const { setDeployedTokens, setIdentities } = useContext(Eip3643Context);
 
@@ -47,10 +42,6 @@ export default function EIP3643({
 
   if (!accountId) return <NoWalletConnected />;
 
-  if (onlyIdentities) {
-    return children;
-  }
-
   return (
     <>
       <Tabs>
@@ -58,6 +49,7 @@ export default function EIP3643({
           <Tab>User Area</Tab>
           <Tab>Admin Area</Tab>
           <Tab>Manage demo NFT</Tab>
+          <Tab>Manage identities</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
@@ -68,6 +60,9 @@ export default function EIP3643({
           </TabPanel>
           <TabPanel>
             <NFT />
+          </TabPanel>
+          <TabPanel>
+            <ManageIdentities />
           </TabPanel>
         </TabPanels>
       </Tabs>

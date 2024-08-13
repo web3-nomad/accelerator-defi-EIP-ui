@@ -35,7 +35,7 @@ export default function User() {
     });
   }, [deployedTokens, accountEvm, setTokens]);
 
-  // Sorting tokens by bring to the top ones account matched in.
+  // Show the tokens which have the current user's identity added to the registry first.
   const sortedTokensByOwnership = useMemo(() => {
     if (registriesAgents && accountEvm) {
       return tokens.sort((a) => {
