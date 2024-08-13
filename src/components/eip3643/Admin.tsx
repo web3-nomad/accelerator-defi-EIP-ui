@@ -60,6 +60,7 @@ export default function Admin() {
       {!isDeploy && (
         <Stack spacing={4} align="center">
           <MenuSelect
+            buttonProps={{ style: { width: "50%" } }}
             label="Select token for operation"
             data={tokensData}
             onTokenSelect={handleTokenSelect}
