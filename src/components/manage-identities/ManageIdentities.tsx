@@ -44,8 +44,8 @@ const investorCountriesItems = [
 ];
 
 export function ManageIdentities() {
-  const [addedAgents, setAddedAgents] = useState([] as Array<string>);
-  const [ownTokens, setOwnTokens] = useState([] as Array<TokenNameItem>);
+  const [addedAgents, setAddedAgents] = useState<Array<string>>([]);
+  const [ownTokens, setOwnTokens] = useState<Array<TokenNameItem>>([]);
   const [updateTxResult, setUpdateTxResult] = useState<string>();
   const [updateTxError, setUpdateTxError] = useState<string>();
   const { deployedTokens } = useContext(Eip3643Context);
@@ -166,10 +166,10 @@ export function ManageIdentities() {
     }
   };
 
-  const handleUpdateIdentityCountry = async (value: string | number) => {
+  const handleUpdateIdentityCountry = async (value: string) => {
     try {
       const txHash = await mutateUpdateIdentityCountry({
-        country: value as number,
+        country: Number(value),
       });
       setUpdateTxResult(txHash);
       setUpdateTxError(undefined);
@@ -179,8 +179,8 @@ export function ManageIdentities() {
     }
   };
 
-  const handleAgentSelect = (agent: string | number) => {
-    setSelectedAgent(agent as `0x${string}`);
+  const handleAgentSelect = (agent: string) => {
+    setSelectedAgent(agent as EvmAddress);
   };
 
   const removeUserAgent = async () => {
@@ -307,7 +307,7 @@ export function ManageIdentities() {
             <Text fontWeight="bold" style={{ fontSize: 14 }}>
               Selected identity wallet: {selectedIdentity}
             </Text>
-            {selectedIdentity !== "0x" ? (
+            {!!selectedIdentity && (
               <>
                 <Input
                   value={newIdentityAddress}
@@ -331,8 +331,6 @@ export function ManageIdentities() {
                   </Button>
                 </ButtonGroup>
               </>
-            ) : (
-              <></>
             )}
           </Flex>
         </Flex>
