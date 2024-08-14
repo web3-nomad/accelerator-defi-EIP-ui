@@ -7,6 +7,7 @@ import { Eip4626Context } from "@/contexts/Eip4626Context";
 import { VaultNameItem } from "@/types/types";
 import { readHederaVaultOwner } from "@/services/contracts/wagmiGenActions";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
+import { MenuSelect } from "@/components/MenuSelect";
 
 export default function Admin() {
   const { accountEvm } = useWalletInterface();
@@ -37,26 +38,23 @@ export default function Admin() {
     });
   }, [accountEvm, deployedVaults]);
 
+  const handleVaultSelect = (value: string) => {
+    const vaultItem = ownVaults.find((itemSub) => itemSub.address === value);
+    setVaultSelected(vaultItem || null);
+  };
+
   return (
     <>
       {!isDeploy && (
         <Stack spacing={4} align="center">
-          <Select
-            placeholder="Select vault for operation"
-            onChange={(item) => {
-              const vaultItem = ownVaults.find(
-                (itemSub) => itemSub.address === item.target.value,
-              );
-              setVaultSelected(vaultItem || null);
-            }}
-            variant="outline"
-          >
-            {ownVaults.map((item) => (
-              <option key={item.address} value={item.address}>
-                {item.shareTokenName} ({item.shareTokenSymbol}) [{item.address}]
-              </option>
-            ))}
-          </Select>
+          <MenuSelect
+            label="Select vault for operation"
+            data={ownVaults.map((vault) => ({
+              label: `${vault.shareTokenName} ${vault.shareTokenSymbol} ${vault.address}`,
+              value: vault.address,
+            }))}
+            onTokenSelect={handleVaultSelect}
+          />
           {!vaultSelected && (
             <>
               <Text>OR</Text>

@@ -7,6 +7,7 @@ import {
   AlertTitle,
   Button,
   Text,
+  Flex,
 } from "@chakra-ui/react";
 import { EvmAddress, VaultMintTokenProps } from "@/types/types";
 import {
@@ -90,50 +91,54 @@ export function MintAssetToken({ vaultAssetSelected }: VaultMintTokenProps) {
             User balance of token:{" "}
             {`${formatBalance(tokenBalance, vaultAssetSelectedDecimals)}`}
           </Text>
-          <Button
-            isLoading={isAssociatePending}
-            isDisabled={tokenHasAssociation}
-            onClick={() =>
-              associate(
-                {
-                  tokenAddress:
-                    deployedHtsTokensAddress?.toString() as EvmAddress,
-                },
-                {
-                  onSuccess: () => {
-                    queryClient.invalidateQueries({
-                      queryKey: [QueryKeys.ReadAccountTokens],
-                    });
+          <Flex direction="row" gap="4">
+            <Button
+              width="49%"
+              isLoading={isAssociatePending}
+              isDisabled={tokenHasAssociation}
+              onClick={() =>
+                associate(
+                  {
+                    tokenAddress:
+                      deployedHtsTokensAddress?.toString() as EvmAddress,
                   },
-                },
-              )
-            }
-          >
-            {tokenHasAssociation ? `Token already associated` : `Associate`}
-          </Button>
-          <Button
-            isLoading={isMintPending}
-            onClick={() =>
-              mint(
-                {
-                  tokenAddress: vaultAssetSelected,
-                  mintAmount: formatNumberToBigint(
-                    DEFAULT_TOKEN_MINT_AMOUNT,
-                    vaultAssetSelectedDecimals,
-                  ),
-                },
-                {
-                  onSuccess: () => {
-                    queryClient.invalidateQueries({
-                      queryKey: [QueryKeys.ReadBalanceOf],
-                    });
+                  {
+                    onSuccess: () => {
+                      queryClient.invalidateQueries({
+                        queryKey: [QueryKeys.ReadAccountTokens],
+                      });
+                    },
                   },
-                },
-              )
-            }
-          >
-            Mint {DEFAULT_TOKEN_MINT_AMOUNT} tokens
-          </Button>
+                )
+              }
+            >
+              {tokenHasAssociation ? `Token already associated` : `Associate`}
+            </Button>
+            <Button
+              width="49%"
+              isLoading={isMintPending}
+              onClick={() =>
+                mint(
+                  {
+                    tokenAddress: vaultAssetSelected,
+                    mintAmount: formatNumberToBigint(
+                      DEFAULT_TOKEN_MINT_AMOUNT,
+                      vaultAssetSelectedDecimals,
+                    ),
+                  },
+                  {
+                    onSuccess: () => {
+                      queryClient.invalidateQueries({
+                        queryKey: [QueryKeys.ReadBalanceOf],
+                      });
+                    },
+                  },
+                )
+              }
+            >
+              Mint {DEFAULT_TOKEN_MINT_AMOUNT} tokens
+            </Button>
+          </Flex>
           <Text fontSize={12}>HTS Token Proxy CA: {vaultAssetSelected}</Text>
         </>
       )}
