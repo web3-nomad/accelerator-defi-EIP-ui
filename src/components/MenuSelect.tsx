@@ -11,6 +11,8 @@ type Props = {
   data: ItemOption[];
   buttonProps?: object;
   onTokenSelect: (value: string) => void;
+  selectedValue?: string | number;
+  isLoading?: boolean;
 };
 
 export const MenuSelect = (props: Props) => {
@@ -21,12 +23,13 @@ export const MenuSelect = (props: Props) => {
           <MenuButton
             style={{ width: "100%" }}
             as={Button}
+            isLoading={props.isLoading}
             rightIcon={
               isOpen ? <Icon name="CaretUp" /> : <Icon name="CaretDown" />
             }
             {...(props.buttonProps ?? {})}
           >
-            {props.label}
+            {props.selectedValue || props.label}
           </MenuButton>
           {props.data?.length ? (
             <MenuList>

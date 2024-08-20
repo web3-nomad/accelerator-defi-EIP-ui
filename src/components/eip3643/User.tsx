@@ -62,13 +62,18 @@ export default function User() {
     <>
       <Stack spacing={4} align="center">
         <MenuSelect
-          buttonProps={{ style: { width: "50%" } }}
+          buttonProps={{ style: { width: "55%" } }}
           data={sortedTokensByOwnership.map((item) => ({
             value: item.address,
             label: item.name,
           }))}
           onTokenSelect={(value) => handleTokenSelect(value)}
           label="Select token for operation"
+          selectedValue={
+            tokenSelected
+              ? `${tokenSelected?.name} (${tokenSelected?.address})`
+              : undefined
+          }
         />
       </Stack>
       {tokenSelected &&

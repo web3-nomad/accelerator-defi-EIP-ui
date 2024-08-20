@@ -50,20 +50,23 @@ export default function Admin() {
     setTokenSelected(tokenItem || null);
   };
 
-  const tokensData = ownTokens.map((token) => ({
-    value: token.address,
-    label: `${token.name} ${token.address}`,
-  }));
-
   return (
     <>
       {!isDeploy && (
         <Stack spacing={4} align="center">
           <MenuSelect
-            buttonProps={{ style: { width: "50%" } }}
+            buttonProps={{ style: { width: "55%" } }}
             label="Select token for operation"
-            data={tokensData}
+            data={ownTokens.map((token) => ({
+              value: token.address,
+              label: token.name,
+            }))}
             onTokenSelect={handleTokenSelect}
+            selectedValue={
+              tokenSelected
+                ? `${tokenSelected?.name} (${tokenSelected?.address})`
+                : undefined
+            }
           />
           {!tokenSelected && (
             <>

@@ -31,6 +31,7 @@ import { useTokenIdentityRegistry } from "@/hooks/useTokenIdentityRegistry";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { WalletInterface } from "@/services/wallets/walletInterface";
 import { WatchContractEventReturnType } from "@/services/contracts/watchContractEvent";
+import { catTextToLen } from "@/services/util/helpers";
 
 const investorCountriesItems = [
   {
@@ -53,12 +54,16 @@ export function ManageIdentities() {
   const [selectedToken, setSelectedToken] = useState<TokenNameItem>();
   const [selectedAgent, setSelectedAgent] = useState<EvmAddress>();
   const [selectedIdentity, setSelectedIdentity] = useState<EvmAddress>();
+  const [selectedCountry, setSelectedCountry] = useState<string>();
   const [newIdentityAddress, setNewIdentityAddress] = useState<string>();
   const [newUserAgentAddress, setNewUserAgentAddress] = useState<string>();
   const { registry, registryAgents } = useTokenIdentityRegistry(selectedToken);
   const { walletInterface } = useWalletInterface();
 
-  const { mutateAsync: mutateDeleteIdentity } = useMutation({
+  const {
+    mutateAsync: mutateDeleteIdentity,
+    isPending: isDeleteIdentityPending,
+  } = useMutation({
     mutationFn: async () => {
       return writeIdentityRegistryDeleteIdentity(
         walletInterface as WalletInterface,
@@ -68,7 +73,10 @@ export function ManageIdentities() {
     },
   });
 
-  const { mutateAsync: mutateUpdateIdentityCountry } = useMutation({
+  const {
+    mutateAsync: mutateUpdateIdentityCountry,
+    isPending: isUpdateIdentityCountryPending,
+  } = useMutation({
     mutationFn: async ({ country }: UpdateCountryProps) => {
       return writeIdentityRegistryUpdateCountry(
         walletInterface as WalletInterface,
@@ -78,7 +86,10 @@ export function ManageIdentities() {
     },
   });
 
-  const { mutateAsync: mutateUpdateIdentity } = useMutation({
+  const {
+    mutateAsync: mutateUpdateIdentity,
+    isPending: isUpdateIdentityPending,
+  } = useMutation({
     mutationFn: async () => {
       return writeIdentityRegistryUpdateIdentity(
         walletInterface as WalletInterface,
@@ -93,7 +104,10 @@ export function ManageIdentities() {
     },
   });
 
-  const { mutateAsync: mutateIdentityRegistryRemoveAgent } = useMutation({
+  const {
+    mutateAsync: mutateIdentityRegistryRemoveAgent,
+    isPending: isRemoveAgentPending,
+  } = useMutation({
     mutationFn: async () => {
       return writeIdentityRegistryRemoveAgent(
         walletInterface as WalletInterface,
@@ -103,7 +117,10 @@ export function ManageIdentities() {
     },
   });
 
-  const { mutateAsync: mutateIdentityRegistryAddAgent } = useMutation({
+  const {
+    mutateAsync: mutateIdentityRegistryAddAgent,
+    isPending: isAddAgentPending,
+  } = useMutation({
     mutationFn: async () => {
       return writeIdentityRegistryAddAgent(
         walletInterface as WalletInterface,
@@ -166,10 +183,21 @@ export function ManageIdentities() {
     }
   };
 
-  const handleUpdateIdentityCountry = async (value: string) => {
+  const handleIdentityCountrySelect = (value: string) => {
+    setSelectedCountry(
+      investorCountriesItems.find((country) => country.value === Number(value))
+        ?.label,
+    );
+  };
+
+  const handleAgentSelect = (agent: string) => {
+    setSelectedAgent(agent as EvmAddress);
+  };
+
+  const handleUpdateCountry = async () => {
     try {
       const txHash = await mutateUpdateIdentityCountry({
-        country: Number(value),
+        country: Number(selectedCountry),
       });
       setUpdateTxResult(txHash);
       setUpdateTxError(undefined);
@@ -177,10 +205,6 @@ export function ManageIdentities() {
       setUpdateTxError(err);
       setUpdateTxResult(undefined);
     }
-  };
-
-  const handleAgentSelect = (agent: string) => {
-    setSelectedAgent(agent as EvmAddress);
   };
 
   const removeUserAgent = async () => {
@@ -275,17 +299,30 @@ export function ManageIdentities() {
             base: "80%",
           }}
         >
-          <Box width="62%">
+          <Box width="82%">
             <MenuSelect
               data={ownTokens.map((tok) => ({
                 value: tok.address,
                 label: tok.name,
               }))}
-              label="Select tokens to manage identities"
+              label="Select token to manage identities"
               onTokenSelect={handleTokenSelect}
+              selectedValue={
+                selectedToken
+                  ? catTextToLen(
+                      `${selectedToken?.name} (${selectedToken?.address})`,
+                      40,
+                    )
+                  : undefined
+              }
             />
+            {selectedToken && (
+              <Text fontWeight="bold" style={{ fontSize: 14 }}>
+                Selected token: {selectedToken?.name} ({selectedToken?.address})
+              </Text>
+            )}
           </Box>
-          <Box mt="4" width="62%">
+          <Box mt="4" width="82%">
             <MenuSelect
               data={registryAgents.map((identity) => ({
                 value: identity,
@@ -293,12 +330,19 @@ export function ManageIdentities() {
               }))}
               label="Select identity wallet to manage"
               onTokenSelect={handleIdentitySelect}
+              selectedValue={
+                selectedIdentity
+                  ? catTextToLen(selectedIdentity, 36)
+                  : undefined
+              }
             />
+            {selectedIdentity && (
+              <Text fontWeight="bold" style={{ fontSize: 14 }}>
+                Selected identity wallet: {selectedIdentity}
+              </Text>
+            )}
           </Box>
           <Flex direction="column" mt="9">
-            <Text fontWeight="bold" style={{ fontSize: 14 }}>
-              Selected identity wallet: {selectedIdentity}
-            </Text>
             {!!selectedIdentity && (
               <>
                 <Input
@@ -307,21 +351,42 @@ export function ManageIdentities() {
                   onChange={(e) => setNewIdentityAddress(e.target.value)}
                 />
                 <ButtonGroup mt="2">
-                  <Button minWidth="30%" onClick={handleUpdateIdentity}>
-                    Update to address
+                  <Button
+                    minWidth="49%"
+                    onClick={handleUpdateIdentity}
+                    isLoading={isUpdateIdentityPending}
+                  >
+                    Update address
                   </Button>
-                  <MenuSelect
-                    buttonProps={{
-                      variant: "outline",
-                    }}
-                    data={investorCountriesItems}
-                    label="Update country"
-                    onTokenSelect={handleUpdateIdentityCountry}
-                  />
-                  <Button minWidth="20%" onClick={handleDeleteIdentity}>
+                  <Button
+                    minWidth="39%"
+                    onClick={handleDeleteIdentity}
+                    isLoading={isDeleteIdentityPending}
+                  >
                     Remove
                   </Button>
                 </ButtonGroup>
+                <Flex gap="2" mt="2">
+                  <MenuSelect
+                    buttonProps={{
+                      variant: "outline",
+                      style: {
+                        width: "49%",
+                      },
+                    }}
+                    data={investorCountriesItems}
+                    label="Select country"
+                    onTokenSelect={handleIdentityCountrySelect}
+                    selectedValue={selectedCountry}
+                  />
+                  <Button
+                    width="39%"
+                    onClick={handleUpdateCountry}
+                    isLoading={isUpdateIdentityCountryPending}
+                  >
+                    Update country
+                  </Button>
+                </Flex>
               </>
             )}
           </Flex>
@@ -343,7 +408,12 @@ export function ManageIdentities() {
                 {"identity"} wallet.
               </AlertDescription>
             </Alert>
-            <Button width="30%" onClick={addNewUserAgent} mt="2">
+            <Button
+              width="30%"
+              onClick={addNewUserAgent}
+              mt="2"
+              isLoading={isAddAgentPending}
+            >
               Add new agent
             </Button>
           </Flex>
@@ -359,13 +429,25 @@ export function ManageIdentities() {
                 }))}
                 label="Select agent"
                 onTokenSelect={handleAgentSelect}
+                selectedValue={
+                  selectedAgent ? catTextToLen(selectedAgent, 36) : undefined
+                }
               />
-              <Text fontWeight="bold" style={{ fontSize: 14 }} mt="2">
-                Selected agent: {selectedAgent}
-              </Text>
-              <Button width="30%" onClick={removeUserAgent} mt="2">
-                Remove agent
-              </Button>
+              {selectedAgent && (
+                <>
+                  <Text fontWeight="bold" style={{ fontSize: 14 }} mt="2">
+                    Selected agent: {selectedAgent}
+                  </Text>
+                  <Button
+                    width="30%"
+                    onClick={removeUserAgent}
+                    mt="2"
+                    isLoading={isRemoveAgentPending}
+                  >
+                    Remove agent
+                  </Button>
+                </>
+              )}
             </Flex>
           ) : (
             <></>

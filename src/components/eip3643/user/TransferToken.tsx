@@ -96,10 +96,10 @@ export default function TransferToken({
     }
   };
 
-  const handleAddressSelection = (value: string | number) => {
+  const handleAddressSelection = (value: string) => {
     form.setValues((prev) => ({
       ...prev,
-      toAddress: value?.toString(),
+      toAddress: value,
     }));
   };
 
@@ -124,20 +124,23 @@ export default function TransferToken({
             <Flex mt="2" mb="3">
               <MenuSelect
                 buttonProps={{
-                  variant: "outline",
+                  style: {
+                    width: "55%",
+                  },
                 }}
                 data={[
-                  ...registeredIdentities.map((item) => ({
-                    label: item,
-                    value: item,
+                  ...registeredIdentities.map((identity) => ({
+                    label: identity,
+                    value: identity,
                   })),
-                  ...(mostUsedAddressesValue || []).map((item) => ({
-                    label: item.address,
-                    value: item.address,
+                  ...(mostUsedAddressesValue || []).map((usedAddress) => ({
+                    label: usedAddress.address,
+                    value: usedAddress.address,
                   })),
                 ]}
                 label="Select address which was already in use"
                 onTokenSelect={handleAddressSelection}
+                selectedValue={form.values.toAddress}
               />
             </Flex>
             <Input
