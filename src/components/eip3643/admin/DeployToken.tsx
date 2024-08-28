@@ -19,7 +19,49 @@ import {
   AlertDescription,
   FormHelperText,
 } from "@chakra-ui/react";
-import { hederaNftAddress } from "@/services/contracts/wagmiGenActions";
+import {
+  countryAllowModuleAddress,
+  hederaNftAddress,
+  maxOwnershipByCountryModuleAddress,
+  maxTenPercentOwnershipModuleAddress,
+  onlyUsaModuleAddress,
+  requiresNftModuleAddress,
+  transferLimitOneHundredModuleAddress,
+} from "@/services/contracts/wagmiGenActions";
+import { MenuSelect } from "@/components/MenuSelect";
+import { useCallback, useState } from "react";
+import { EvmAddress } from "@/types/types";
+
+export const complianceModulesList = [
+  {
+    label: "None",
+    value: "",
+  },
+  {
+    label: "Only USA identities allowed",
+    value: onlyUsaModuleAddress,
+  },
+  {
+    label: "Transfer limit of 100 tokens",
+    value: transferLimitOneHundredModuleAddress,
+  },
+  {
+    label: "Max 10% of token supply ownership",
+    value: maxTenPercentOwnershipModuleAddress,
+  },
+  {
+    label: "Requires NFT to be present",
+    value: requiresNftModuleAddress,
+  },
+  {
+    label: "Only identities from allowed countries list",
+    value: countryAllowModuleAddress,
+  },
+  {
+    label: "Max % of token supply ownership by identity country",
+    value: maxOwnershipByCountryModuleAddress,
+  },
+];
 
 export default function DeployToken({ onClose = () => {} }) {
   const {
@@ -35,17 +77,90 @@ export default function DeployToken({ onClose = () => {} }) {
       name: "",
       symbol: "",
       decimals: 18,
-      nftAddress: "",
+      nftAddress: "", //
+      complianceModules: [] as EvmAddress[],
+      complianceSettings: [] as EvmAddress[],
     },
-    onSubmit: ({ name, symbol, decimals, nftAddress }) => {
+    onSubmit: ({
+      name,
+      symbol,
+      decimals,
+      nftAddress,
+      complianceModules,
+      complianceSettings,
+    }) => {
+      //@TODO add validation for not filled fields of selected compl module - nft address, percentages etc
+      //prevent submit if not filled
+
+      console.log("L56 onsubmit ===", complianceModules, complianceSettings);
+
       deployToken({
         name,
         symbol,
         decimals,
         nftAddress: nftAddress as `0x${string}`,
+        complianceModules,
+        complianceSettings,
       });
     },
   });
+
+  const [complianceModuleSelected, setComplianceModuleSelected] = useState("");
+  const handleComplianceModuleSelect = (value: string) => {
+    console.log("L90 value ===", value); //this is addy
+    setComplianceModuleSelected(value);
+    form.setValues((prev) => ({
+      ...prev,
+      complianceModules: [value as EvmAddress],
+      complianceSettings: [],
+    }));
+  };
+
+  // const handleAddressSelection = (value: string | number) => {
+  //   form.setValues((prev) => ({
+  //     ...prev,
+  //     toAddress: value?.toString(),
+  //   }));
+  // };
+
+  const showComplianceModule = useCallback(() => {
+    console.log("L127 showComplianceModule RUN ===");
+    console.log(
+      "L128 showComplianceModule selected module ===",
+      complianceModuleSelected,
+    );
+    switch (complianceModuleSelected) {
+      case requiresNftModuleAddress:
+        return (
+          <FormControl>
+            <FormLabel>NFT address for compliance module (optional)</FormLabel>
+            <Input
+              name="nftAddress"
+              variant="outline"
+              value={form.values.nftAddress}
+              onChange={form.handleChange}
+            />
+            <FormHelperText>
+              <Button
+                onClick={() => {
+                  form.setFieldValue("nftAddress", hederaNftAddress);
+                }}
+              >
+                Use demo NFT address
+              </Button>
+            </FormHelperText>
+            <FormHelperText>
+              If entered, it will be required for the token operators to have an
+              NFT of the provided address. If empty, compliance functionality
+              will be ignored.
+            </FormHelperText>
+          </FormControl>
+        );
+
+      case onlyUsaModuleAddress:
+        return null;
+    }
+  }, [complianceModuleSelected, form]);
 
   return (
     <form onSubmit={form.handleSubmit}>
@@ -86,29 +201,27 @@ export default function DeployToken({ onClose = () => {} }) {
             </NumberInputStepper>
           </NumberInput>
         </FormControl>
+
         <FormControl>
-          <FormLabel>NFT address for compliance module (optional)</FormLabel>
-          <Input
-            name="nftAddress"
-            variant="outline"
-            value={form.values.nftAddress}
-            onChange={form.handleChange}
+          <FormLabel>Select compliance module to add (optional)</FormLabel>
+          <MenuSelect
+            buttonProps={{ style: { width: "50%" } }}
+            label="Select compliance module"
+            data={complianceModulesList}
+            onTokenSelect={handleComplianceModuleSelect}
           />
           <FormHelperText>
-            <Button
-              onClick={() => {
-                form.setFieldValue("nftAddress", hederaNftAddress);
-              }}
-            >
-              Use demo NFT
-            </Button>
-          </FormHelperText>
-          <FormHelperText>
-            If entered, it will be required for the token operators to have an
-            NFT of the provided address. If empty, compliance functionality will
-            be ignored.
+            Selected compliance module:{" "}
+            {!form.values.complianceModules.length
+              ? "None"
+              : complianceModulesList.find(
+                  (module) => module.value === form.values.complianceModules[0],
+                )?.label}
           </FormHelperText>
         </FormControl>
+
+        {showComplianceModule()}
+
         {!deployResult && (
           <Stack spacing={4} direction="row" align="center">
             <Button type="submit" isLoading={isPending}>

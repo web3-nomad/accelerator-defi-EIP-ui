@@ -3832,6 +3832,238 @@ export const maxOwnershipByCountryModuleConfig = {
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// MaxTenPercentOwnershipModule
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const maxTenPercentOwnershipModuleAbi = [
+  {
+    type: "error",
+    inputs: [
+      { name: "_compliance", internalType: "address", type: "address" },
+      { name: "_id", internalType: "address[]", type: "address[]" },
+      { name: "_balance", internalType: "uint256[]", type: "uint256[]" },
+    ],
+    name: "InvalidPresetValues",
+  },
+  { type: "error", inputs: [], name: "MathOverflowedMulDiv" },
+  {
+    type: "error",
+    inputs: [
+      { name: "_compliance", internalType: "address", type: "address" },
+      { name: "_value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "MaxOwnershipExceeded",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "OnlyComplianceOwnerCanCall",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "TokenAlreadyBound",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "_compliance",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "ComplianceBound",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "_compliance",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "ComplianceUnbound",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "_compliance",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      { name: "_id", internalType: "address", type: "address", indexed: true },
+      {
+        name: "_balance",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "IDBalancePreSet",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "_compliance",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "_maxPercetage",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: true,
+      },
+    ],
+    name: "MaxPercentageSet",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_compliance", internalType: "address", type: "address" },
+      { name: "_id", internalType: "address[]", type: "address[]" },
+      { name: "_balance", internalType: "uint256[]", type: "uint256[]" },
+    ],
+    name: "batchPreSetModuleState",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "bindCompliance",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "canComplianceBind",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_compliance", internalType: "address", type: "address" },
+      { name: "_identity", internalType: "address", type: "address" },
+    ],
+    name: "getIDBalance",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "isComplianceBound",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "isPlugAndPlay",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_from", internalType: "address", type: "address" },
+      { name: "_value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "moduleBurnAction",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "", internalType: "address", type: "address" },
+      { name: "_to", internalType: "address", type: "address" },
+      { name: "_value", internalType: "uint256", type: "uint256" },
+      { name: "_compliance", internalType: "address", type: "address" },
+    ],
+    name: "moduleCheck",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_to", internalType: "address", type: "address" },
+      { name: "_value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "moduleMintAction",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_from", internalType: "address", type: "address" },
+      { name: "_to", internalType: "address", type: "address" },
+      { name: "_value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "moduleTransferAction",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "name",
+    outputs: [{ name: "_name", internalType: "string", type: "string" }],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_compliance", internalType: "address", type: "address" },
+      { name: "_id", internalType: "address", type: "address" },
+      { name: "_balance", internalType: "uint256", type: "uint256" },
+    ],
+    name: "preSetModuleState",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "presetCompleted",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "unbindCompliance",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
+export const maxTenPercentOwnershipModuleAddress =
+  "0xb4224765b8d201D536d56Ce84654d687c26B3B7b" as const;
+
+export const maxTenPercentOwnershipModuleConfig = {
+  address: maxTenPercentOwnershipModuleAddress,
+  abi: maxTenPercentOwnershipModuleAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ModularCompliance
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -4088,6 +4320,147 @@ export const modularComplianceAddress =
 export const modularComplianceConfig = {
   address: modularComplianceAddress,
   abi: modularComplianceAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// OnlyUsaModule
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const onlyUsaModuleAbi = [
+  {
+    type: "error",
+    inputs: [
+      { name: "_compliance", internalType: "address", type: "address" },
+      { name: "_country", internalType: "uint16", type: "uint16" },
+    ],
+    name: "CountryNotAllowed",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "_compliance",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "ComplianceBound",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "_compliance",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "ComplianceUnbound",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "bindCompliance",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "", internalType: "address", type: "address" }],
+    name: "canComplianceBind",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "isComplianceBound",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_country", internalType: "uint16", type: "uint16" }],
+    name: "isCountryAllowed",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "isPlugAndPlay",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_from", internalType: "address", type: "address" },
+      { name: "_value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "moduleBurnAction",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "", internalType: "address", type: "address" },
+      { name: "_to", internalType: "address", type: "address" },
+      { name: "", internalType: "uint256", type: "uint256" },
+      { name: "_compliance", internalType: "address", type: "address" },
+    ],
+    name: "moduleCheck",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_to", internalType: "address", type: "address" },
+      { name: "_value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "moduleMintAction",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_from", internalType: "address", type: "address" },
+      { name: "_to", internalType: "address", type: "address" },
+      { name: "_value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "moduleTransferAction",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "name",
+    outputs: [{ name: "_name", internalType: "string", type: "string" }],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "unbindCompliance",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
+export const onlyUsaModuleAddress =
+  "0xDaBdA04476928f0beeFA428721eD2a7E0E6Eb07a" as const;
+
+export const onlyUsaModuleConfig = {
+  address: onlyUsaModuleAddress,
+  abi: onlyUsaModuleAbi,
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -6313,6 +6686,132 @@ export const tokenAddress =
   "0xB0f1AD71bA47Cc10cD925f06E1b467A5544e9592" as const;
 
 export const tokenConfig = { address: tokenAddress, abi: tokenAbi } as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// TransferLimitOneHundredModule
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const transferLimitOneHundredModuleAbi = [
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "_compliance",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "ComplianceBound",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "_compliance",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "ComplianceUnbound",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "bindCompliance",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "", internalType: "address", type: "address" }],
+    name: "canComplianceBind",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "isComplianceBound",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "isPlugAndPlay",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_from", internalType: "address", type: "address" },
+      { name: "_value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "moduleBurnAction",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "", internalType: "address", type: "address" },
+      { name: "_to", internalType: "address", type: "address" },
+      { name: "", internalType: "uint256", type: "uint256" },
+      { name: "_compliance", internalType: "address", type: "address" },
+    ],
+    name: "moduleCheck",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_to", internalType: "address", type: "address" },
+      { name: "_value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "moduleMintAction",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_from", internalType: "address", type: "address" },
+      { name: "_to", internalType: "address", type: "address" },
+      { name: "_value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "moduleTransferAction",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "name",
+    outputs: [{ name: "_name", internalType: "string", type: "string" }],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "unbindCompliance",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
+export const transferLimitOneHundredModuleAddress =
+  "0xF29a8A633018984A19315D1080975FA793118076" as const;
+
+export const transferLimitOneHundredModuleConfig = {
+  address: transferLimitOneHundredModuleAddress,
+  abi: transferLimitOneHundredModuleAbi,
+} as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // TrustedIssuersRegistry
@@ -10993,6 +11492,302 @@ export const watchMaxOwnershipByCountryModuleMaxPercentageSetEvent =
   });
 
 /**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__
+ */
+export const readMaxTenPercentOwnershipModule =
+  /*#__PURE__*/ createReadContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `functionName` set to `"canComplianceBind"`
+ */
+export const readMaxTenPercentOwnershipModuleCanComplianceBind =
+  /*#__PURE__*/ createReadContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    functionName: "canComplianceBind",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `functionName` set to `"getIDBalance"`
+ */
+export const readMaxTenPercentOwnershipModuleGetIdBalance =
+  /*#__PURE__*/ createReadContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    functionName: "getIDBalance",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `functionName` set to `"isComplianceBound"`
+ */
+export const readMaxTenPercentOwnershipModuleIsComplianceBound =
+  /*#__PURE__*/ createReadContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    functionName: "isComplianceBound",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `functionName` set to `"isPlugAndPlay"`
+ */
+export const readMaxTenPercentOwnershipModuleIsPlugAndPlay =
+  /*#__PURE__*/ createReadContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    functionName: "isPlugAndPlay",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `functionName` set to `"moduleCheck"`
+ */
+export const readMaxTenPercentOwnershipModuleModuleCheck =
+  /*#__PURE__*/ createReadContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    functionName: "moduleCheck",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `functionName` set to `"name"`
+ */
+export const readMaxTenPercentOwnershipModuleName =
+  /*#__PURE__*/ createReadContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    functionName: "name",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__
+ */
+export const writeMaxTenPercentOwnershipModule =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `functionName` set to `"batchPreSetModuleState"`
+ */
+export const writeMaxTenPercentOwnershipModuleBatchPreSetModuleState =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    functionName: "batchPreSetModuleState",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `functionName` set to `"bindCompliance"`
+ */
+export const writeMaxTenPercentOwnershipModuleBindCompliance =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    functionName: "bindCompliance",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `functionName` set to `"moduleBurnAction"`
+ */
+export const writeMaxTenPercentOwnershipModuleModuleBurnAction =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    functionName: "moduleBurnAction",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `functionName` set to `"moduleMintAction"`
+ */
+export const writeMaxTenPercentOwnershipModuleModuleMintAction =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    functionName: "moduleMintAction",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `functionName` set to `"moduleTransferAction"`
+ */
+export const writeMaxTenPercentOwnershipModuleModuleTransferAction =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    functionName: "moduleTransferAction",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `functionName` set to `"preSetModuleState"`
+ */
+export const writeMaxTenPercentOwnershipModulePreSetModuleState =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    functionName: "preSetModuleState",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `functionName` set to `"presetCompleted"`
+ */
+export const writeMaxTenPercentOwnershipModulePresetCompleted =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    functionName: "presetCompleted",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `functionName` set to `"unbindCompliance"`
+ */
+export const writeMaxTenPercentOwnershipModuleUnbindCompliance =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    functionName: "unbindCompliance",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__
+ */
+export const simulateMaxTenPercentOwnershipModule =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `functionName` set to `"batchPreSetModuleState"`
+ */
+export const simulateMaxTenPercentOwnershipModuleBatchPreSetModuleState =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    functionName: "batchPreSetModuleState",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `functionName` set to `"bindCompliance"`
+ */
+export const simulateMaxTenPercentOwnershipModuleBindCompliance =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    functionName: "bindCompliance",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `functionName` set to `"moduleBurnAction"`
+ */
+export const simulateMaxTenPercentOwnershipModuleModuleBurnAction =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    functionName: "moduleBurnAction",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `functionName` set to `"moduleMintAction"`
+ */
+export const simulateMaxTenPercentOwnershipModuleModuleMintAction =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    functionName: "moduleMintAction",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `functionName` set to `"moduleTransferAction"`
+ */
+export const simulateMaxTenPercentOwnershipModuleModuleTransferAction =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    functionName: "moduleTransferAction",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `functionName` set to `"preSetModuleState"`
+ */
+export const simulateMaxTenPercentOwnershipModulePreSetModuleState =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    functionName: "preSetModuleState",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `functionName` set to `"presetCompleted"`
+ */
+export const simulateMaxTenPercentOwnershipModulePresetCompleted =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    functionName: "presetCompleted",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `functionName` set to `"unbindCompliance"`
+ */
+export const simulateMaxTenPercentOwnershipModuleUnbindCompliance =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    functionName: "unbindCompliance",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__
+ */
+export const watchMaxTenPercentOwnershipModuleEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `eventName` set to `"ComplianceBound"`
+ */
+export const watchMaxTenPercentOwnershipModuleComplianceBoundEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    eventName: "ComplianceBound",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `eventName` set to `"ComplianceUnbound"`
+ */
+export const watchMaxTenPercentOwnershipModuleComplianceUnboundEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    eventName: "ComplianceUnbound",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `eventName` set to `"IDBalancePreSet"`
+ */
+export const watchMaxTenPercentOwnershipModuleIdBalancePreSetEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    eventName: "IDBalancePreSet",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link maxTenPercentOwnershipModuleAbi}__ and `eventName` set to `"MaxPercentageSet"`
+ */
+export const watchMaxTenPercentOwnershipModuleMaxPercentageSetEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: maxTenPercentOwnershipModuleAbi,
+    address: maxTenPercentOwnershipModuleAddress,
+    eventName: "MaxPercentageSet",
+  });
+
+/**
  * Wraps __{@link readContract}__ with `abi` set to __{@link modularComplianceAbi}__
  */
 export const readModularCompliance = /*#__PURE__*/ createReadContract({
@@ -11361,6 +12156,215 @@ export const watchModularComplianceTokenUnboundEvent =
     abi: modularComplianceAbi,
     address: modularComplianceAddress,
     eventName: "TokenUnbound",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link onlyUsaModuleAbi}__
+ */
+export const readOnlyUsaModule = /*#__PURE__*/ createReadContract({
+  abi: onlyUsaModuleAbi,
+  address: onlyUsaModuleAddress,
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link onlyUsaModuleAbi}__ and `functionName` set to `"canComplianceBind"`
+ */
+export const readOnlyUsaModuleCanComplianceBind =
+  /*#__PURE__*/ createReadContract({
+    abi: onlyUsaModuleAbi,
+    address: onlyUsaModuleAddress,
+    functionName: "canComplianceBind",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link onlyUsaModuleAbi}__ and `functionName` set to `"isComplianceBound"`
+ */
+export const readOnlyUsaModuleIsComplianceBound =
+  /*#__PURE__*/ createReadContract({
+    abi: onlyUsaModuleAbi,
+    address: onlyUsaModuleAddress,
+    functionName: "isComplianceBound",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link onlyUsaModuleAbi}__ and `functionName` set to `"isCountryAllowed"`
+ */
+export const readOnlyUsaModuleIsCountryAllowed =
+  /*#__PURE__*/ createReadContract({
+    abi: onlyUsaModuleAbi,
+    address: onlyUsaModuleAddress,
+    functionName: "isCountryAllowed",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link onlyUsaModuleAbi}__ and `functionName` set to `"isPlugAndPlay"`
+ */
+export const readOnlyUsaModuleIsPlugAndPlay = /*#__PURE__*/ createReadContract({
+  abi: onlyUsaModuleAbi,
+  address: onlyUsaModuleAddress,
+  functionName: "isPlugAndPlay",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link onlyUsaModuleAbi}__ and `functionName` set to `"moduleCheck"`
+ */
+export const readOnlyUsaModuleModuleCheck = /*#__PURE__*/ createReadContract({
+  abi: onlyUsaModuleAbi,
+  address: onlyUsaModuleAddress,
+  functionName: "moduleCheck",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link onlyUsaModuleAbi}__ and `functionName` set to `"name"`
+ */
+export const readOnlyUsaModuleName = /*#__PURE__*/ createReadContract({
+  abi: onlyUsaModuleAbi,
+  address: onlyUsaModuleAddress,
+  functionName: "name",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link onlyUsaModuleAbi}__
+ */
+export const writeOnlyUsaModule = /*#__PURE__*/ createWriteContract({
+  abi: onlyUsaModuleAbi,
+  address: onlyUsaModuleAddress,
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link onlyUsaModuleAbi}__ and `functionName` set to `"bindCompliance"`
+ */
+export const writeOnlyUsaModuleBindCompliance =
+  /*#__PURE__*/ createWriteContract({
+    abi: onlyUsaModuleAbi,
+    address: onlyUsaModuleAddress,
+    functionName: "bindCompliance",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link onlyUsaModuleAbi}__ and `functionName` set to `"moduleBurnAction"`
+ */
+export const writeOnlyUsaModuleModuleBurnAction =
+  /*#__PURE__*/ createWriteContract({
+    abi: onlyUsaModuleAbi,
+    address: onlyUsaModuleAddress,
+    functionName: "moduleBurnAction",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link onlyUsaModuleAbi}__ and `functionName` set to `"moduleMintAction"`
+ */
+export const writeOnlyUsaModuleModuleMintAction =
+  /*#__PURE__*/ createWriteContract({
+    abi: onlyUsaModuleAbi,
+    address: onlyUsaModuleAddress,
+    functionName: "moduleMintAction",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link onlyUsaModuleAbi}__ and `functionName` set to `"moduleTransferAction"`
+ */
+export const writeOnlyUsaModuleModuleTransferAction =
+  /*#__PURE__*/ createWriteContract({
+    abi: onlyUsaModuleAbi,
+    address: onlyUsaModuleAddress,
+    functionName: "moduleTransferAction",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link onlyUsaModuleAbi}__ and `functionName` set to `"unbindCompliance"`
+ */
+export const writeOnlyUsaModuleUnbindCompliance =
+  /*#__PURE__*/ createWriteContract({
+    abi: onlyUsaModuleAbi,
+    address: onlyUsaModuleAddress,
+    functionName: "unbindCompliance",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link onlyUsaModuleAbi}__
+ */
+export const simulateOnlyUsaModule = /*#__PURE__*/ createSimulateContract({
+  abi: onlyUsaModuleAbi,
+  address: onlyUsaModuleAddress,
+});
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link onlyUsaModuleAbi}__ and `functionName` set to `"bindCompliance"`
+ */
+export const simulateOnlyUsaModuleBindCompliance =
+  /*#__PURE__*/ createSimulateContract({
+    abi: onlyUsaModuleAbi,
+    address: onlyUsaModuleAddress,
+    functionName: "bindCompliance",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link onlyUsaModuleAbi}__ and `functionName` set to `"moduleBurnAction"`
+ */
+export const simulateOnlyUsaModuleModuleBurnAction =
+  /*#__PURE__*/ createSimulateContract({
+    abi: onlyUsaModuleAbi,
+    address: onlyUsaModuleAddress,
+    functionName: "moduleBurnAction",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link onlyUsaModuleAbi}__ and `functionName` set to `"moduleMintAction"`
+ */
+export const simulateOnlyUsaModuleModuleMintAction =
+  /*#__PURE__*/ createSimulateContract({
+    abi: onlyUsaModuleAbi,
+    address: onlyUsaModuleAddress,
+    functionName: "moduleMintAction",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link onlyUsaModuleAbi}__ and `functionName` set to `"moduleTransferAction"`
+ */
+export const simulateOnlyUsaModuleModuleTransferAction =
+  /*#__PURE__*/ createSimulateContract({
+    abi: onlyUsaModuleAbi,
+    address: onlyUsaModuleAddress,
+    functionName: "moduleTransferAction",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link onlyUsaModuleAbi}__ and `functionName` set to `"unbindCompliance"`
+ */
+export const simulateOnlyUsaModuleUnbindCompliance =
+  /*#__PURE__*/ createSimulateContract({
+    abi: onlyUsaModuleAbi,
+    address: onlyUsaModuleAddress,
+    functionName: "unbindCompliance",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link onlyUsaModuleAbi}__
+ */
+export const watchOnlyUsaModuleEvent = /*#__PURE__*/ createWatchContractEvent({
+  abi: onlyUsaModuleAbi,
+  address: onlyUsaModuleAddress,
+});
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link onlyUsaModuleAbi}__ and `eventName` set to `"ComplianceBound"`
+ */
+export const watchOnlyUsaModuleComplianceBoundEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: onlyUsaModuleAbi,
+    address: onlyUsaModuleAddress,
+    eventName: "ComplianceBound",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link onlyUsaModuleAbi}__ and `eventName` set to `"ComplianceUnbound"`
+ */
+export const watchOnlyUsaModuleComplianceUnboundEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: onlyUsaModuleAbi,
+    address: onlyUsaModuleAddress,
+    eventName: "ComplianceUnbound",
   });
 
 /**
@@ -13726,6 +14730,212 @@ export const watchTokenUpdatedTokenInformationEvent =
     abi: tokenAbi,
     address: tokenAddress,
     eventName: "UpdatedTokenInformation",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link transferLimitOneHundredModuleAbi}__
+ */
+export const readTransferLimitOneHundredModule =
+  /*#__PURE__*/ createReadContract({
+    abi: transferLimitOneHundredModuleAbi,
+    address: transferLimitOneHundredModuleAddress,
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link transferLimitOneHundredModuleAbi}__ and `functionName` set to `"canComplianceBind"`
+ */
+export const readTransferLimitOneHundredModuleCanComplianceBind =
+  /*#__PURE__*/ createReadContract({
+    abi: transferLimitOneHundredModuleAbi,
+    address: transferLimitOneHundredModuleAddress,
+    functionName: "canComplianceBind",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link transferLimitOneHundredModuleAbi}__ and `functionName` set to `"isComplianceBound"`
+ */
+export const readTransferLimitOneHundredModuleIsComplianceBound =
+  /*#__PURE__*/ createReadContract({
+    abi: transferLimitOneHundredModuleAbi,
+    address: transferLimitOneHundredModuleAddress,
+    functionName: "isComplianceBound",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link transferLimitOneHundredModuleAbi}__ and `functionName` set to `"isPlugAndPlay"`
+ */
+export const readTransferLimitOneHundredModuleIsPlugAndPlay =
+  /*#__PURE__*/ createReadContract({
+    abi: transferLimitOneHundredModuleAbi,
+    address: transferLimitOneHundredModuleAddress,
+    functionName: "isPlugAndPlay",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link transferLimitOneHundredModuleAbi}__ and `functionName` set to `"moduleCheck"`
+ */
+export const readTransferLimitOneHundredModuleModuleCheck =
+  /*#__PURE__*/ createReadContract({
+    abi: transferLimitOneHundredModuleAbi,
+    address: transferLimitOneHundredModuleAddress,
+    functionName: "moduleCheck",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link transferLimitOneHundredModuleAbi}__ and `functionName` set to `"name"`
+ */
+export const readTransferLimitOneHundredModuleName =
+  /*#__PURE__*/ createReadContract({
+    abi: transferLimitOneHundredModuleAbi,
+    address: transferLimitOneHundredModuleAddress,
+    functionName: "name",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link transferLimitOneHundredModuleAbi}__
+ */
+export const writeTransferLimitOneHundredModule =
+  /*#__PURE__*/ createWriteContract({
+    abi: transferLimitOneHundredModuleAbi,
+    address: transferLimitOneHundredModuleAddress,
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link transferLimitOneHundredModuleAbi}__ and `functionName` set to `"bindCompliance"`
+ */
+export const writeTransferLimitOneHundredModuleBindCompliance =
+  /*#__PURE__*/ createWriteContract({
+    abi: transferLimitOneHundredModuleAbi,
+    address: transferLimitOneHundredModuleAddress,
+    functionName: "bindCompliance",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link transferLimitOneHundredModuleAbi}__ and `functionName` set to `"moduleBurnAction"`
+ */
+export const writeTransferLimitOneHundredModuleModuleBurnAction =
+  /*#__PURE__*/ createWriteContract({
+    abi: transferLimitOneHundredModuleAbi,
+    address: transferLimitOneHundredModuleAddress,
+    functionName: "moduleBurnAction",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link transferLimitOneHundredModuleAbi}__ and `functionName` set to `"moduleMintAction"`
+ */
+export const writeTransferLimitOneHundredModuleModuleMintAction =
+  /*#__PURE__*/ createWriteContract({
+    abi: transferLimitOneHundredModuleAbi,
+    address: transferLimitOneHundredModuleAddress,
+    functionName: "moduleMintAction",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link transferLimitOneHundredModuleAbi}__ and `functionName` set to `"moduleTransferAction"`
+ */
+export const writeTransferLimitOneHundredModuleModuleTransferAction =
+  /*#__PURE__*/ createWriteContract({
+    abi: transferLimitOneHundredModuleAbi,
+    address: transferLimitOneHundredModuleAddress,
+    functionName: "moduleTransferAction",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link transferLimitOneHundredModuleAbi}__ and `functionName` set to `"unbindCompliance"`
+ */
+export const writeTransferLimitOneHundredModuleUnbindCompliance =
+  /*#__PURE__*/ createWriteContract({
+    abi: transferLimitOneHundredModuleAbi,
+    address: transferLimitOneHundredModuleAddress,
+    functionName: "unbindCompliance",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link transferLimitOneHundredModuleAbi}__
+ */
+export const simulateTransferLimitOneHundredModule =
+  /*#__PURE__*/ createSimulateContract({
+    abi: transferLimitOneHundredModuleAbi,
+    address: transferLimitOneHundredModuleAddress,
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link transferLimitOneHundredModuleAbi}__ and `functionName` set to `"bindCompliance"`
+ */
+export const simulateTransferLimitOneHundredModuleBindCompliance =
+  /*#__PURE__*/ createSimulateContract({
+    abi: transferLimitOneHundredModuleAbi,
+    address: transferLimitOneHundredModuleAddress,
+    functionName: "bindCompliance",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link transferLimitOneHundredModuleAbi}__ and `functionName` set to `"moduleBurnAction"`
+ */
+export const simulateTransferLimitOneHundredModuleModuleBurnAction =
+  /*#__PURE__*/ createSimulateContract({
+    abi: transferLimitOneHundredModuleAbi,
+    address: transferLimitOneHundredModuleAddress,
+    functionName: "moduleBurnAction",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link transferLimitOneHundredModuleAbi}__ and `functionName` set to `"moduleMintAction"`
+ */
+export const simulateTransferLimitOneHundredModuleModuleMintAction =
+  /*#__PURE__*/ createSimulateContract({
+    abi: transferLimitOneHundredModuleAbi,
+    address: transferLimitOneHundredModuleAddress,
+    functionName: "moduleMintAction",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link transferLimitOneHundredModuleAbi}__ and `functionName` set to `"moduleTransferAction"`
+ */
+export const simulateTransferLimitOneHundredModuleModuleTransferAction =
+  /*#__PURE__*/ createSimulateContract({
+    abi: transferLimitOneHundredModuleAbi,
+    address: transferLimitOneHundredModuleAddress,
+    functionName: "moduleTransferAction",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link transferLimitOneHundredModuleAbi}__ and `functionName` set to `"unbindCompliance"`
+ */
+export const simulateTransferLimitOneHundredModuleUnbindCompliance =
+  /*#__PURE__*/ createSimulateContract({
+    abi: transferLimitOneHundredModuleAbi,
+    address: transferLimitOneHundredModuleAddress,
+    functionName: "unbindCompliance",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link transferLimitOneHundredModuleAbi}__
+ */
+export const watchTransferLimitOneHundredModuleEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: transferLimitOneHundredModuleAbi,
+    address: transferLimitOneHundredModuleAddress,
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link transferLimitOneHundredModuleAbi}__ and `eventName` set to `"ComplianceBound"`
+ */
+export const watchTransferLimitOneHundredModuleComplianceBoundEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: transferLimitOneHundredModuleAbi,
+    address: transferLimitOneHundredModuleAddress,
+    eventName: "ComplianceBound",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link transferLimitOneHundredModuleAbi}__ and `eventName` set to `"ComplianceUnbound"`
+ */
+export const watchTransferLimitOneHundredModuleComplianceUnboundEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: transferLimitOneHundredModuleAbi,
+    address: transferLimitOneHundredModuleAddress,
+    eventName: "ComplianceUnbound",
   });
 
 /**

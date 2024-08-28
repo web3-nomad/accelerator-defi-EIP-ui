@@ -28,6 +28,7 @@ import { WatchContractEventReturnType } from "viem";
 import { useFormik } from "formik";
 import { useAddRequiresNFTModule } from "@/hooks/mutations/useAddRequiresNFTModule";
 import { useCallModuleFunction } from "@/hooks/mutations/useCallModuleFunction";
+import { complianceModulesList } from "@/components/eip3643/admin/DeployToken";
 
 export default function Compliance({
   tokenSelected,
@@ -95,8 +96,20 @@ export default function Compliance({
         ModularCompliance address of current selected token:{" "}
         {modularComplianceAddress}
       </Text>
+      {/*//@TODO show the name of the module*/}
       <Text>
-        Modules added: {addedModules && addedModules.map((module) => module)}
+        Module added address:{" "}
+        {addedModules && addedModules.map((module) => module)}
+      </Text>
+      <Text>
+        Module added name:{" "}
+        {addedModules &&
+          addedModules.map(
+            (module) =>
+              complianceModulesList.find(
+                (moduleItem) => moduleItem.value == module,
+              )?.label,
+          )}
       </Text>
 
       <Divider my={10} />
@@ -120,7 +133,7 @@ export default function Compliance({
                   form.setFieldValue("nftAddress", hederaNftAddress);
                 }}
               >
-                Use demo NFT
+                Fill with demo NFT address
               </Button>
             </FormHelperText>
             <FormHelperText>

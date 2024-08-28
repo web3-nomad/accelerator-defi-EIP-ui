@@ -2,12 +2,14 @@ export type DeployTokenRequest = {
   name: string;
   symbol: string;
   decimals: number;
-  nftAddress?: `0x${string}`;
+  nftAddress?: EvmAddress;
+  complianceModules: EvmAddress[];
+  complianceSettings: EvmAddress[];
 };
 
 export type MintTokenRequest = {
   address: `0x${string}`;
-  value: string;
+  amount: bigint;
   token: `0x${string}`;
 };
 

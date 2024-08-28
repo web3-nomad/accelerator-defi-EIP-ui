@@ -16,5 +16,6 @@ export function useReadBalanceOf(tokenAddress: EvmAddress) {
         { args: [accountEvm as EvmAddress] },
         tokenAddress.toString() as EvmAddress,
       ),
+    initialData: () => BigInt(0),
   });
 }

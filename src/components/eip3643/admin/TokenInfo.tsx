@@ -13,18 +13,15 @@ import {
   VStack,
   FormHelperText,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import {
-  readTokenBalanceOf,
-  watchTokenTransferEvent,
-} from "@/services/contracts/wagmiGenActions";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
-import { WatchContractEventReturnType } from "@/services/contracts/watchContractEvent";
 import { useMintToken } from "@/hooks/mutations/useMintToken";
 import { useFormik } from "formik";
-import { ethers } from "ethers";
 import { useAccountId } from "@/hooks/useAccountId";
 import { AccountIdResult } from "@/components/AccountIdResult";
+import { TokenBalance } from "@/components/eip3643/TokenBalance";
+import { useReadTokenDecimals } from "@/hooks/eip4626/useReadTokenDecimals";
+import { DEFAULT_TOKEN_MINT_AMOUNT } from "@/hooks/eip4626/mutations/useWriteHtsTokenMint";
+import { parseUnitsWithDecimals } from "@/services/util/helpers";
 
 type TokenNameItem = {
   address: `0x${string}`;
@@ -34,53 +31,29 @@ type TokenNameItem = {
 export default function TokenInfo({
   tokenSelected,
 }: {
-  tokenSelected: TokenNameItem | null;
+  tokenSelected: TokenNameItem;
 }) {
   const { accountEvm } = useWalletInterface();
-  const [balance, setBalance] = useState("");
-
+  const { data: tokenDecimals } = useReadTokenDecimals(tokenSelected.address);
   const { data, mutateAsync: mint, error, isPending } = useMintToken();
 
+  //@TODO separate out mint form from token info
   const form = useFormik({
     initialValues: {
       address: accountEvm,
-      value: "10",
+      value: `${DEFAULT_TOKEN_MINT_AMOUNT}`,
     },
     onSubmit: ({ address, value }) => {
+      const tokenAmountFormatted = parseUnitsWithDecimals(value, tokenDecimals);
+
       tokenSelected &&
         mint({
           address: (hederaEVMAccount || address) as `0x${string}`,
-          value,
+          amount: tokenAmountFormatted,
           token: tokenSelected.address,
         });
     },
   });
-
-  useEffect(() => {
-    let unsub: WatchContractEventReturnType | null = null;
-    if (tokenSelected) {
-      const checkBalance = () => {
-        ethers.isAddress(form.values.address)
-          ? readTokenBalanceOf(
-              { args: [form.values.address as `0x${string}`] },
-              tokenSelected.address,
-            ).then((res) => setBalance(res.toString()))
-          : setBalance("Non valid address");
-      };
-
-      unsub = watchTokenTransferEvent(
-        {
-          onLogs: (data) => {
-            checkBalance();
-          },
-        },
-        tokenSelected.address as `0x${string}`,
-      );
-    }
-    return () => {
-      unsub && unsub();
-    };
-  }, [tokenSelected, form.values.address]);
 
   const { hederaAccountIdError, hederaEVMAccount } = useAccountId(
     form.values.address,
@@ -92,10 +65,15 @@ export default function TokenInfo({
       {!tokenSelected && <Text> Token not selected </Text>}
       {tokenSelected && (
         <>
+          <Text>Token name: {tokenSelected.name}</Text>
+          <Text>Token address: {tokenSelected.address}</Text>
+          <Text>Token decimals: {tokenDecimals}</Text>
+          <Divider my={10} />
+
           <form onSubmit={form.handleSubmit}>
             <VStack gap={2} alignItems="flex-start">
               <FormControl isRequired>
-                <FormLabel>Address</FormLabel>
+                <FormLabel>Token receiver address</FormLabel>
                 <Input
                   name="address"
                   variant="outline"
@@ -103,11 +81,11 @@ export default function TokenInfo({
                   onChange={form.handleChange}
                 />
                 <FormHelperText>
-                  <b>Balance of address: </b> {balance}
+                  <TokenBalance tokenAddress={tokenSelected.address} />
                 </FormHelperText>
               </FormControl>
               <FormControl isRequired>
-                <FormLabel>Value to mint</FormLabel>
+                <FormLabel>Amount of tokens to mint</FormLabel>
                 <Input
                   name="value"
                   variant="outline"

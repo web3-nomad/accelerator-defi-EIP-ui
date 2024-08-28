@@ -7,11 +7,11 @@ import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { Divider, Select, Stack, Text } from "@chakra-ui/react";
 import { useTokensIdentityRegistries } from "@/hooks/useTokensIdentityRegistries";
 import { MenuSelect } from "../MenuSelect";
+import RegisterIdentity from "@/components/eip3643/admin/RegisterIdentity";
+import CreateIdentityFactory from "@/components/eip3643/admin/CreateIdentityFactory";
 
 export default function User() {
-  const [tokenSelected, setTokenSelected] = useState(
-    null as TokenNameItem | null,
-  );
+  const [tokenSelected, setTokenSelected] = useState<TokenNameItem>();
   const [tokens, setTokens] = useState<TokenNameItem[]>([]);
   const { accountEvm } = useWalletInterface();
   const { deployedTokens } = useContext(Eip3643Context);
@@ -55,7 +55,7 @@ export default function User() {
 
   const handleTokenSelect = (value: string) => {
     const tokenItem = tokens.find((itemSub) => itemSub.address === value);
-    setTokenSelected(tokenItem || null);
+    setTokenSelected(tokenItem);
   };
 
   return (
@@ -73,16 +73,20 @@ export default function User() {
       </Stack>
       {tokenSelected &&
         registriesAgents &&
-        registriesAgents[tokenSelected?.address] && (
+        registriesAgents[tokenSelected.address] && (
           <>
             <Divider my={10} />
-            <Text mb="2" fontWeight="bold">
-              Address: {tokenSelected?.address}
-            </Text>
+            <Text>Token name: {tokenSelected.name}</Text>
+            <Text>Token address: {tokenSelected.address}</Text>
+            <Divider my={10} />
             <TransferToken
               tokenSelected={tokenSelected}
-              registeredIdentities={registriesAgents[tokenSelected?.address]}
+              registeredIdentities={registriesAgents[tokenSelected.address]}
             />
+            <Divider my={10} />
+            <CreateIdentityFactory />
+            <Divider my={10} />
+            <RegisterIdentity tokenSelected={tokenSelected} />
           </>
         )}
     </>

@@ -23,6 +23,8 @@ import { TokenNameItem, TransferTokenFromRequest } from "@/types/types";
 import { useAccountId } from "@/hooks/useAccountId";
 import { AccountIdResult } from "@/components/AccountIdResult";
 import { MenuSelect } from "@/components/MenuSelect";
+import { useReadTokenDecimals } from "@/hooks/eip4626/useReadTokenDecimals";
+import { formatBalance } from "@/services/util/helpers";
 
 type StoredAddressItem = {
   address: string;
@@ -59,6 +61,15 @@ export default function TransferToken({
 
   const { data: tokenBalance, error: tokenBalanceError } = useReadBalanceOf(
     tokenSelected?.address as `0x${string}`,
+  );
+
+  const { data: tokenSelectedDecimals } = useReadTokenDecimals(
+    tokenSelected?.address,
+  );
+
+  const tokenSelectedBalance = formatBalance(
+    tokenBalance,
+    tokenSelectedDecimals,
   );
 
   const { hederaAccountIdError, hederaEVMAccount } = useAccountId(
@@ -110,7 +121,7 @@ export default function TransferToken({
         <VStack gap={2} alignItems="flex-start">
           <FormControl isRequired>
             <FormHelperText>
-              Balance of token: {`${tokenBalance}`}
+              Balance of token: {`${tokenSelectedBalance}`}
             </FormHelperText>
             {tokenBalanceError && (
               <FormHelperText color={"red"}>
@@ -182,6 +193,7 @@ export default function TransferToken({
         <Alert status="error" mt="4">
           <AlertIcon />
           <AlertTitle>Transfer token error!</AlertTitle>
+          {/*//@TODO change text to cover compliance stuff*/}
           <AlertDescription>
             {error.toString()}
             Potential reasons: - no sender or recipient identity present in the
