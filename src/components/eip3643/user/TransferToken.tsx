@@ -123,11 +123,6 @@ export default function TransferToken({
             <FormLabel>Send to address</FormLabel>
             <Flex mt="2" mb="3">
               <MenuSelect
-                buttonProps={{
-                  style: {
-                    width: "55%",
-                  },
-                }}
                 data={[
                   ...registeredIdentities.map((identity) => ({
                     label: identity,
@@ -141,6 +136,12 @@ export default function TransferToken({
                 label="Select address which was already in use"
                 onTokenSelect={handleAddressSelection}
                 selectedValue={form.values.toAddress}
+                styles={{
+                  container: (base) => ({
+                    ...base,
+                    width: "45%",
+                  }),
+                }}
               />
             </Flex>
             <Input

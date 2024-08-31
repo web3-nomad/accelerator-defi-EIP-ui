@@ -1,12 +1,12 @@
-import { useEffect, useContext, useState, useMemo } from "react";
+import { useEffect, useContext, useState } from "react";
 import TransferToken from "@/components/eip3643/user/TransferToken";
 import { Eip3643Context } from "@/contexts/Eip3643Context";
 import { readTokenName } from "@/services/contracts/wagmiGenActions";
 import { TokenNameItem } from "@/types/types";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
-import { Divider, Select, Stack, Text } from "@chakra-ui/react";
+import { Divider, Stack, Text } from "@chakra-ui/react";
 import { useTokensIdentityRegistries } from "@/hooks/useTokensIdentityRegistries";
-import { MenuSelect } from "../MenuSelect";
+import { MenuSelect } from "@/components/MenuSelect";
 
 export default function User() {
   const [tokenSelected, setTokenSelected] = useState(
@@ -16,6 +16,10 @@ export default function User() {
   const { accountEvm } = useWalletInterface();
   const { deployedTokens } = useContext(Eip3643Context);
   const { registriesAgents } = useTokensIdentityRegistries(tokens);
+  const [tokensByOwnership, setTokensByOwnership] = useState<TokenNameItem[]>(
+    [],
+  );
+  const [allowed, setAllowed] = useState<boolean>(false);
 
   useEffect(() => {
     (deployedTokens as any).map((item: any) => {
@@ -35,23 +39,36 @@ export default function User() {
     });
   }, [deployedTokens, accountEvm, setTokens]);
 
-  // Show the tokens which have the current user's identity added to the registry first.
-  const sortedTokensByOwnership = useMemo(() => {
-    if (registriesAgents && accountEvm) {
-      return tokens.sort((a) => {
-        const tokenIncludesIdentity =
-          registriesAgents[a.address]?.includes(accountEvm);
+  useEffect(() => {
+    const $timeout = setTimeout(() => {
+      setAllowed(true);
+    }, 5000);
 
-        if (tokenIncludesIdentity) {
-          return -1;
-        }
+    return () => {
+      clearTimeout($timeout);
+    };
+  }, []);
 
-        return 1;
-      });
+  useEffect(() => {
+    if (allowed) {
+      if (registriesAgents && accountEvm) {
+        setTokensByOwnership(
+          tokens.sort((a) => {
+            const tokenIncludesIdentity =
+              registriesAgents[a.address]?.includes(accountEvm);
+
+            if (tokenIncludesIdentity) {
+              return -1;
+            }
+
+            return 1;
+          }),
+        );
+      } else if (tokens) {
+        setTokensByOwnership(tokens);
+      }
     }
-
-    return tokens;
-  }, [tokens, registriesAgents, accountEvm]);
+  }, [registriesAgents, allowed, accountEvm, tokens]);
 
   const handleTokenSelect = (value: string) => {
     const tokenItem = tokens.find((itemSub) => itemSub.address === value);
@@ -62,18 +79,19 @@ export default function User() {
     <>
       <Stack spacing={4} align="center">
         <MenuSelect
-          buttonProps={{ style: { width: "55%" } }}
-          data={sortedTokensByOwnership.map((item) => ({
+          loadingInProgress={!tokensByOwnership?.length}
+          data={tokensByOwnership.map((item) => ({
             value: item.address,
             label: item.name,
           }))}
           onTokenSelect={(value) => handleTokenSelect(value)}
           label="Select token for operation"
-          selectedValue={
-            tokenSelected
-              ? `${tokenSelected?.name} (${tokenSelected?.address})`
-              : undefined
-          }
+          styles={{
+            container: (base) => ({
+              ...base,
+              width: "45%",
+            }),
+          }}
         />
       </Stack>
       {tokenSelected &&

@@ -1,5 +1,5 @@
 import { Button, Divider, Stack, Text } from "@chakra-ui/react";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useMemo } from "react";
 
 import DeployToken from "@/components/eip3643/admin/DeployToken";
 import RegisterIdentity from "@/components/eip3643/admin/RegisterIdentity";
@@ -50,23 +50,29 @@ export default function Admin() {
     setTokenSelected(tokenItem || null);
   };
 
+  const ownTokensData = useMemo(
+    () =>
+      ownTokens.map((token) => ({
+        value: token.address,
+        label: token.name,
+      })),
+    [ownTokens],
+  );
+
   return (
     <>
       {!isDeploy && (
         <Stack spacing={4} align="center">
           <MenuSelect
-            buttonProps={{ style: { width: "55%" } }}
             label="Select token for operation"
-            data={ownTokens.map((token) => ({
-              value: token.address,
-              label: token.name,
-            }))}
+            data={ownTokensData}
             onTokenSelect={handleTokenSelect}
-            selectedValue={
-              tokenSelected
-                ? `${tokenSelected?.name} (${tokenSelected?.address})`
-                : undefined
-            }
+            styles={{
+              container: (base) => ({
+                ...base,
+                width: "45%",
+              }),
+            }}
           />
           {!tokenSelected && (
             <>

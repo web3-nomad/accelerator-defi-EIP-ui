@@ -69,24 +69,29 @@ export default function DeployToken({ onClose = () => {} }) {
             value={form.values.stakingTokenAddress}
             onChange={form.handleChange}
           />
+          <FormHelperText>
+            Token that users can stake to the vault
+          </FormHelperText>
         </FormControl>
         <FormControl isRequired>
-          <FormLabel>Share token name</FormLabel>
+          <FormLabel>Share token name (must be unique)</FormLabel>
           <Input
             name="shareTokenName"
             variant="outline"
             value={form.values.shareTokenName}
             onChange={form.handleChange}
           />
+          <FormHelperText>Specific vault token name</FormHelperText>
         </FormControl>
         <FormControl isRequired>
-          <FormLabel>Share token symbol</FormLabel>
+          <FormLabel>Share token symbol (must be unique)</FormLabel>
           <Input
             name="shareTokenSymbol"
             variant="outline"
             value={form.values.shareTokenSymbol}
             onChange={form.handleChange}
           />
+          <FormHelperText>Specific vault token symbol</FormHelperText>
         </FormControl>
         <FormControl isRequired>
           <FormLabel>Reward token address</FormLabel>
@@ -96,6 +101,9 @@ export default function DeployToken({ onClose = () => {} }) {
             value={form.values.rewardTokenAddress}
             onChange={form.handleChange}
           />
+          <FormHelperText>
+            Token that will be deposited to the user wallet as a reward
+          </FormHelperText>
         </FormControl>
         <FormControl isRequired>
           <FormLabel>Fee receiver address</FormLabel>
@@ -105,6 +113,9 @@ export default function DeployToken({ onClose = () => {} }) {
             value={form.values.feeReceiverAddress}
             onChange={form.handleChange}
           />
+          <FormHelperText>
+            Wallet address that should receive fee rewards
+          </FormHelperText>
         </FormControl>
         <FormControl isRequired>
           <FormLabel>Fee percentage (*100, example: 10% = 1000)</FormLabel>

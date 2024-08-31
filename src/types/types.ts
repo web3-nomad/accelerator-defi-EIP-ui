@@ -74,8 +74,12 @@ export type VaultWithdrawRequest = {
   tokenAmount: bigint;
 };
 
-export type UpdateCountryProps = {
+export type UpdateIdentityCountryProps = {
   country: number;
+};
+
+export type UpdateIdentityProps = {
+  identity: EvmAddress;
 };
 
 export type HtsTokenAssociateRequest = {
@@ -89,4 +93,5 @@ export type HtsTokenMintRequest = {
 
 export type VaultMintTokenProps = {
   vaultAssetSelected: EvmAddress;
+  vaultAssetSelectedName: string;
 };

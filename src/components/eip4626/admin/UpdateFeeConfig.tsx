@@ -18,8 +18,10 @@ import { useEffect, useState } from "react";
 
 export default function UpdateFeeConfig({
   vaultSelected,
+  resetSelectedVault,
 }: {
   vaultSelected: any | null;
+  resetSelectedVault: () => void;
 }) {
   const {
     error,
@@ -92,6 +94,7 @@ export default function UpdateFeeConfig({
           <Button type="submit" isLoading={isPending}>
             Update
           </Button>
+          <Button onClick={resetSelectedVault}>Cancel</Button>
         </Stack>
         {error && (
           <Alert status="error">

@@ -1,7 +1,5 @@
 import {
-  Box,
   Button,
-  ButtonGroup,
   Flex,
   Text,
   Input,
@@ -9,11 +7,30 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  Table,
+  Tbody,
+  Thead,
+  Tr,
+  Th,
+  Td,
+  Modal,
+  ModalOverlay,
+  ModalCloseButton,
+  ModalContent,
+  ModalBody,
+  ModalHeader,
+  ModalFooter,
+  Divider,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useContext, useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { ethers } from "ethers";
-import { EvmAddress, TokenNameItem, UpdateCountryProps } from "@/types/types";
+import {
+  EvmAddress,
+  TokenNameItem,
+  UpdateIdentityCountryProps,
+} from "@/types/types";
 import { Eip3643Context } from "@/contexts/Eip3643Context";
 import { MenuSelect } from "@/components/MenuSelect";
 import {
@@ -31,7 +48,6 @@ import { useTokenIdentityRegistry } from "@/hooks/useTokenIdentityRegistry";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { WalletInterface } from "@/services/wallets/walletInterface";
 import { WatchContractEventReturnType } from "@/services/contracts/watchContractEvent";
-import { catTextToLen } from "@/services/util/helpers";
 
 const investorCountriesItems = [
   {
@@ -51,14 +67,16 @@ export function ManageIdentities() {
   const [updateTxError, setUpdateTxError] = useState<string>();
   const { deployedTokens } = useContext(Eip3643Context);
   const { accountEvm } = useWalletInterface();
+  const [selectedIdentity, setSelectedIdentity] = useState<EvmAddress>();
   const [selectedToken, setSelectedToken] = useState<TokenNameItem>();
   const [selectedAgent, setSelectedAgent] = useState<EvmAddress>();
-  const [selectedIdentity, setSelectedIdentity] = useState<EvmAddress>();
   const [selectedCountry, setSelectedCountry] = useState<string>();
   const [newIdentityAddress, setNewIdentityAddress] = useState<string>();
   const [newUserAgentAddress, setNewUserAgentAddress] = useState<string>();
   const { registry, registryAgents } = useTokenIdentityRegistry(selectedToken);
   const { walletInterface } = useWalletInterface();
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const {
     mutateAsync: mutateDeleteIdentity,
@@ -77,7 +95,7 @@ export function ManageIdentities() {
     mutateAsync: mutateUpdateIdentityCountry,
     isPending: isUpdateIdentityCountryPending,
   } = useMutation({
-    mutationFn: async ({ country }: UpdateCountryProps) => {
+    mutationFn: async ({ country }: UpdateIdentityCountryProps) => {
       return writeIdentityRegistryUpdateCountry(
         walletInterface as WalletInterface,
         { args: [selectedIdentity as EvmAddress, country] },
@@ -144,16 +162,14 @@ export function ManageIdentities() {
       setUpdateTxError("User agent address is incorrect");
       setUpdateTxResult(undefined);
     }
+    onClose();
+    setNewUserAgentAddress(undefined);
   };
 
   const handleTokenSelect = (tokenAddr: string) => {
     setSelectedToken(
       ownTokens.find((token) => token.address === (tokenAddr as string)),
     );
-  };
-
-  const handleIdentitySelect = (value: string) => {
-    setSelectedIdentity(value as `0x${string}`);
   };
 
   const handleUpdateIdentity = async () => {
@@ -170,6 +186,8 @@ export function ManageIdentities() {
       setUpdateTxError("New identity address is incorrect");
       setUpdateTxResult(undefined);
     }
+    onClose();
+    setNewIdentityAddress(undefined);
   };
 
   const handleDeleteIdentity = async () => {
@@ -181,6 +199,7 @@ export function ManageIdentities() {
       setUpdateTxError(err);
       setUpdateTxResult(undefined);
     }
+    onClose();
   };
 
   const handleIdentityCountrySelect = (value: string) => {
@@ -197,14 +216,19 @@ export function ManageIdentities() {
   const handleUpdateCountry = async () => {
     try {
       const txHash = await mutateUpdateIdentityCountry({
-        country: Number(selectedCountry),
+        country: Number(
+          investorCountriesItems.find(
+            (country) => country.label === selectedCountry,
+          )?.value,
+        ),
       });
       setUpdateTxResult(txHash);
       setUpdateTxError(undefined);
     } catch (err: any) {
-      setUpdateTxError(err);
+      setUpdateTxError(err.message);
       setUpdateTxResult(undefined);
     }
+    onClose();
   };
 
   const removeUserAgent = async () => {
@@ -216,6 +240,8 @@ export function ManageIdentities() {
       setUpdateTxResult(undefined);
       setUpdateTxError(err);
     }
+    onClose();
+    setSelectedAgent(undefined);
   };
 
   useEffect(() => {
@@ -240,7 +266,8 @@ export function ManageIdentities() {
   }, [accountEvm, deployedTokens, setOwnTokens]);
 
   useEffect(() => {
-    if (registry) {
+    if (registry && isOpen) {
+      setAddedAgents([]);
       const unsubAgentsAdded: WatchContractEventReturnType =
         watchIdentityRegistryAgentAddedEvent(
           {
@@ -256,10 +283,10 @@ export function ManageIdentities() {
         unsubAgentsAdded();
       };
     }
-  }, [registry]);
+  }, [registry, isOpen]);
 
   useEffect(() => {
-    if (addedAgents?.length && registry) {
+    if (addedAgents?.length && registry && isOpen) {
       const unsubAgentsRemoved: WatchContractEventReturnType =
         watchIdentityRegistryAgentRemovedEvent(
           {
@@ -280,195 +307,224 @@ export function ManageIdentities() {
         unsubAgentsRemoved();
       };
     }
-  }, [addedAgents, registry]);
+  }, [addedAgents, registry, isOpen]);
 
-  return (
-    <>
-      <Flex
-        gap="4"
-        pt="4"
-        flexDirection={{
-          xl: "row",
-          base: "column",
-        }}
-      >
-        <Flex
-          direction="column"
-          width={{
-            xl: "49%",
-            base: "80%",
-          }}
-        >
-          <Box width="82%">
-            <MenuSelect
-              data={ownTokens.map((tok) => ({
-                value: tok.address,
-                label: tok.name,
-              }))}
-              label="Select token to manage identities"
-              onTokenSelect={handleTokenSelect}
-              selectedValue={
-                selectedToken
-                  ? catTextToLen(
-                      `${selectedToken?.name} (${selectedToken?.address})`,
-                      40,
-                    )
-                  : undefined
-              }
-            />
-            {selectedToken && (
-              <Text fontWeight="bold" style={{ fontSize: 14 }}>
-                Selected token: {selectedToken?.name} ({selectedToken?.address})
-              </Text>
-            )}
-          </Box>
-          <Box mt="4" width="82%">
-            <MenuSelect
-              data={registryAgents.map((identity) => ({
-                value: identity,
-                label: identity,
-              }))}
-              label="Select identity wallet to manage"
-              onTokenSelect={handleIdentitySelect}
-              selectedValue={
-                selectedIdentity
-                  ? catTextToLen(selectedIdentity, 36)
-                  : undefined
-              }
-            />
-            {selectedIdentity && (
-              <Text fontWeight="bold" style={{ fontSize: 14 }}>
-                Selected identity wallet: {selectedIdentity}
-              </Text>
-            )}
-          </Box>
-          <Flex direction="column" mt="9">
-            {!!selectedIdentity && (
-              <>
-                <Input
-                  value={newIdentityAddress}
-                  placeholder="Identity wallet address to update"
-                  onChange={(e) => setNewIdentityAddress(e.target.value)}
-                />
-                <ButtonGroup mt="2">
-                  <Button
-                    minWidth="49%"
-                    onClick={handleUpdateIdentity}
-                    isLoading={isUpdateIdentityPending}
-                  >
-                    Update address
-                  </Button>
-                  <Button
-                    minWidth="39%"
-                    onClick={handleDeleteIdentity}
-                    isLoading={isDeleteIdentityPending}
-                  >
-                    Remove
-                  </Button>
-                </ButtonGroup>
-                <Flex gap="2" mt="2">
-                  <MenuSelect
-                    buttonProps={{
-                      variant: "outline",
-                      style: {
-                        width: "49%",
-                      },
-                    }}
-                    data={investorCountriesItems}
-                    label="Select country"
-                    onTokenSelect={handleIdentityCountrySelect}
-                    selectedValue={selectedCountry}
-                  />
-                  <Button
-                    width="39%"
-                    onClick={handleUpdateCountry}
-                    isLoading={isUpdateIdentityCountryPending}
-                  >
-                    Update country
-                  </Button>
-                </Flex>
-              </>
-            )}
-          </Flex>
-        </Flex>
-        <Flex
-          direction="column"
-          width="49%"
-          className="modify-identities-container-section"
-        >
-          <Flex direction="column">
-            <Input
-              value={newUserAgentAddress}
-              placeholder="User agent address"
-              onChange={(e) => setNewUserAgentAddress(e.target.value)}
-            />
+  useEffect(() => {
+    setTimeout(() => {
+      setUpdateTxError(undefined);
+    }, 5000);
+  }, [updateTxError]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setUpdateTxResult(undefined);
+    }, 5000);
+  }, [updateTxResult]);
+
+  const registryDetailsModal = (
+    <Modal isOpen={isOpen} onClose={onClose} size="xl">
+      <ModalOverlay />
+      <ModalContent width="80%" pt="8">
+        <ModalHeader>
+          <Text fontSize={16} fontWeight="800" align="center">
+            Manage identity {selectedIdentity}
+          </Text>
+        </ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <Flex direction="column" gap="2">
+            <Flex direction="row" gap="2">
+              <Input
+                width="70%"
+                value={newIdentityAddress}
+                placeholder="Identity wallet address to update"
+                onChange={(e) => setNewIdentityAddress(e.target.value)}
+              />
+              <Button
+                width="28%"
+                onClick={handleUpdateIdentity}
+                isLoading={isUpdateIdentityPending}
+              >
+                Update address
+              </Button>
+            </Flex>
+            <Flex>
+              <Button
+                width="50%"
+                onClick={handleDeleteIdentity}
+                isLoading={isDeleteIdentityPending}
+              >
+                Remove identity
+              </Button>
+            </Flex>
+            <Flex direction="row" gap="2">
+              <MenuSelect
+                styles={{
+                  container: (base) => ({
+                    ...base,
+                    width: "70%",
+                  }),
+                }}
+                data={investorCountriesItems}
+                label="Select country"
+                onTokenSelect={handleIdentityCountrySelect}
+              />
+              <Button
+                width="28%"
+                onClick={handleUpdateCountry}
+                isLoading={isUpdateIdentityCountryPending}
+              >
+                Update country
+              </Button>
+            </Flex>
+            <Flex direction="row" gap="2">
+              <Input
+                width="70%"
+                value={newUserAgentAddress}
+                placeholder="User agent address"
+                onChange={(e) => setNewUserAgentAddress(e.target.value)}
+              />
+              <Button
+                width="28%"
+                onClick={addNewUserAgent}
+                isLoading={isAddAgentPending}
+              >
+                Add new agent
+              </Button>
+            </Flex>
             <Alert status="success" mt="2">
               <AlertDescription fontSize="13">
                 Somebody who can perform update / delete operations on{" "}
                 {"identity"} wallet.
               </AlertDescription>
             </Alert>
-            <Button
-              width="30%"
-              onClick={addNewUserAgent}
-              mt="2"
-              isLoading={isAddAgentPending}
-            >
-              Add new agent
-            </Button>
+            {!!addedAgents && (
+              <Flex direction="column">
+                <MenuSelect
+                  data={addedAgents.map((agent) => ({
+                    value: agent,
+                    label: agent,
+                  }))}
+                  label="Select agent"
+                  onTokenSelect={handleAgentSelect}
+                />
+                {selectedAgent && (
+                  <>
+                    <Text fontWeight="bold" style={{ fontSize: 14 }} mt="2">
+                      Selected agent: {selectedAgent}
+                    </Text>
+                    <Button
+                      width="50%"
+                      onClick={removeUserAgent}
+                      mt="2"
+                      isLoading={isRemoveAgentPending}
+                    >
+                      Remove selected agent
+                    </Button>
+                  </>
+                )}
+              </Flex>
+            )}
           </Flex>
-          {addedAgents?.length ? (
-            <Flex direction="column" mt="9">
-              <MenuSelect
-                buttonProps={{
-                  variant: "outline",
-                }}
-                data={addedAgents.map((agent) => ({
-                  value: agent,
-                  label: agent,
-                }))}
-                label="Select agent"
-                onTokenSelect={handleAgentSelect}
-                selectedValue={
-                  selectedAgent ? catTextToLen(selectedAgent, 36) : undefined
-                }
-              />
-              {selectedAgent && (
-                <>
-                  <Text fontWeight="bold" style={{ fontSize: 14 }} mt="2">
-                    Selected agent: {selectedAgent}
-                  </Text>
-                  <Button
-                    width="30%"
-                    onClick={removeUserAgent}
-                    mt="2"
-                    isLoading={isRemoveAgentPending}
-                  >
-                    Remove agent
-                  </Button>
-                </>
-              )}
+        </ModalBody>
+        <ModalFooter backgroundColor="ButtonFace">
+          <Button colorScheme="blue" onClick={onClose}>
+            Cancel modal
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+
+  const onEditRegistry = (registryAgent: string) => {
+    onOpen();
+    setSelectedIdentity(registryAgent as EvmAddress);
+  };
+
+  return (
+    <>
+      {registryDetailsModal}
+      <Flex direction="column" gap="2" pt="8">
+        <Flex direction="column">
+          <Text fontSize={20} fontWeight="800" mb="5">
+            Select Token
+          </Text>
+          <MenuSelect
+            loadingInProgress={!ownTokens?.length}
+            styles={{
+              container: (base) => ({
+                ...base,
+                width: "45%",
+              }),
+            }}
+            data={ownTokens.map((tok) => ({
+              value: tok.address,
+              label: tok.name,
+            }))}
+            label="Select token to manage identities"
+            onTokenSelect={handleTokenSelect}
+          />
+          {selectedToken && (
+            <Text fontWeight="bold" mt="2" style={{ fontSize: 14 }}>
+              Selected token: {selectedToken?.name} ({selectedToken?.address})
+            </Text>
+          )}
+        </Flex>
+        <Divider my={10} />
+        <Flex direction="column">
+          {registryAgents?.length ? (
+            <Flex direction="column">
+              <Text fontSize={20} fontWeight="800" mb="4">
+                Token Identities
+              </Text>
+              <Table>
+                <Thead>
+                  {registryAgents.map((agent) => (
+                    <Tr key={agent}>
+                      {["token", "actions"].map((column) => (
+                        <Th key={column}>
+                          <Text fontWeight="800">{column}</Text>
+                        </Th>
+                      ))}
+                    </Tr>
+                  ))}
+                </Thead>
+                <Tbody>
+                  {registryAgents.map((agent) => (
+                    <Tr key={agent}>
+                      <Td>
+                        <Text fontSize={14}>{agent}</Text>
+                      </Td>
+                      <Td>
+                        <Button onClick={() => onEditRegistry(agent)}>
+                          Edit identity
+                        </Button>
+                      </Td>
+                    </Tr>
+                  ))}
+                </Tbody>
+              </Table>
             </Flex>
           ) : (
             <></>
           )}
         </Flex>
-      </Flex>
-      <Flex direction="column" width="90%" mt="8">
-        {updateTxResult && (
-          <Alert status="success">
-            <AlertIcon />
-            <AlertTitle>Update success!</AlertTitle>
-            <AlertDescription>TxId: {updateTxResult}</AlertDescription>
-          </Alert>
-        )}
-        {updateTxError && (
-          <Alert status="error">
-            <AlertIcon />
-            <AlertTitle>Update error!</AlertTitle>
-            <AlertDescription>Reason: {updateTxError}</AlertDescription>
-          </Alert>
-        )}
+        <Flex direction="column">
+          {updateTxResult && (
+            <Alert status="success">
+              <AlertIcon />
+              <AlertTitle>Update success!</AlertTitle>
+              <AlertDescription>TxId: {updateTxResult}</AlertDescription>
+            </Alert>
+          )}
+          {updateTxError && (
+            <Alert status="error">
+              <AlertIcon />
+              <AlertTitle>Update error!</AlertTitle>
+              <AlertDescription>Reason: {updateTxError}</AlertDescription>
+            </Alert>
+          )}
+        </Flex>
       </Flex>
     </>
   );

@@ -16,14 +16,12 @@ const routes: optionsProps[] = [
     icon: "Coin",
     title: "EIP-3643",
     route: "/eip3643",
-    additionalRoutes: ["/eip3643/start-operating"],
     isDisabled: false,
   },
   {
     icon: "Coin",
     title: "EIP-4626",
     route: "/eip4626",
-    additionalRoutes: ["/eip4626/start-operating"],
     isDisabled: false,
   },
 ];
@@ -43,9 +41,7 @@ const Sidebar = () => {
       >
         <Flex flexDirection="column" alignItems="center" gap={3}>
           {routes.map((routeItem) => {
-            const isRouteActive =
-              routeItem.route === location.pathname ||
-              routeItem.additionalRoutes?.includes(location.pathname);
+            const isRouteActive = location.pathname.includes(routeItem.route);
             return (
               <SidebarOption
                 {...routeItem}
