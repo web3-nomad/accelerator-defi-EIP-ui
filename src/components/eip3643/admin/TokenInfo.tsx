@@ -12,6 +12,8 @@ import {
   Stack,
   VStack,
   FormHelperText,
+  Spinner,
+  Flex,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import {
@@ -90,7 +92,11 @@ export default function TokenInfo({
     <>
       <Divider my={10} />
       {!tokenSelected && <Text> Token not selected </Text>}
-      {tokenSelected && (
+      {tokenSelected && balance === undefined ? (
+        <Flex justifyContent="center" alignItems="center">
+          <Spinner />
+        </Flex>
+      ) : (
         <>
           <form onSubmit={form.handleSubmit}>
             <VStack gap={2} alignItems="flex-start">

@@ -41,6 +41,3 @@ export function formatNumberToBigint(
 ) {
   return BigInt(BigNumber(amount).shiftedBy(precision).toString());
 }
-
-export const cutTextToLength = (text: string, len: number) =>
-  text.slice(0, len) + "...";
