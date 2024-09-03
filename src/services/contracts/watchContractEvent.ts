@@ -20,6 +20,7 @@ export function watchContractEvent<
 >(parameters: WatchContractEventParameters<abi, eventName, strict>) {
   const contractInterface = new ethers.Interface(parameters.abi as []);
   let timeOut: NodeJS.Timeout;
+  let timeOutQueue: NodeJS.Timeout[] = [];
   let isActive = true;
   let lastTimestamp = 0;
 
@@ -27,6 +28,11 @@ export function watchContractEvent<
     isActive = false;
     timeOut && clearTimeout(timeOut);
   };
+
+  // Clear all watchers after 10s.
+  setTimeout(() => {
+    timeOutQueue.forEach((every) => clearTimeout(every));
+  }, 10000);
 
   const poll = async () => {
     // https://testnet.mirrornode.hedera.com/api/v1/docs/#/contracts/listContractLogs
@@ -56,6 +62,7 @@ export function watchContractEvent<
     }
     if (isActive) {
       timeOut = setTimeout(poll, result && result.length > 0 ? 100 : 5000);
+      timeOutQueue.push(timeOut);
     }
   };
 
