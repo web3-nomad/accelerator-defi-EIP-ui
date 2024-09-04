@@ -23,6 +23,7 @@ import { TokenNameItem, TransferTokenFromRequest } from "@/types/types";
 import { useAccountId } from "@/hooks/useAccountId";
 import { AccountIdResult } from "@/components/AccountIdResult";
 import { MenuSelect } from "@/components/MenuSelect";
+import { GroupBase } from "react-select";
 
 type StoredAddressItem = {
   address: string;
@@ -121,27 +122,23 @@ export default function TransferToken({
 
           <FormControl isRequired>
             <FormLabel>Send to address</FormLabel>
-            <Flex mt="2" mb="3">
+            <Flex mt="2" mb="3" width="50%">
               <MenuSelect
-                data={[
-                  ...registeredIdentities.map((identity) => ({
-                    label: identity,
-                    value: identity,
-                  })),
-                  ...(mostUsedAddressesValue || []).map((usedAddress) => ({
-                    label: usedAddress.address,
-                    value: usedAddress.address,
-                  })),
-                ]}
+                data={
+                  [
+                    ...registeredIdentities.map((identity) => ({
+                      label: identity,
+                      value: identity,
+                    })),
+                    ...(mostUsedAddressesValue || []).map((usedAddress) => ({
+                      label: usedAddress.address,
+                      value: usedAddress.address,
+                    })),
+                  ] as unknown as GroupBase<string | number>[]
+                }
                 label="Select address which was already in use"
                 onTokenSelect={handleAddressSelection}
                 selectedValue={form.values.toAddress}
-                styles={{
-                  container: (base) => ({
-                    ...base,
-                    width: "45%",
-                  }),
-                }}
               />
             </Flex>
             <Input

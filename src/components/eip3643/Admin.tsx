@@ -1,5 +1,6 @@
-import { Button, Divider, Stack, Text } from "@chakra-ui/react";
+import { Button, Divider, Stack, Text, Box } from "@chakra-ui/react";
 import { useContext, useEffect, useState, useMemo } from "react";
+import { GroupBase } from "react-select";
 
 import DeployToken from "@/components/eip3643/admin/DeployToken";
 import RegisterIdentity from "@/components/eip3643/admin/RegisterIdentity";
@@ -63,17 +64,13 @@ export default function Admin() {
     <>
       {!isDeploy && (
         <Stack spacing={4} align="center">
-          <MenuSelect
-            label="Select token for operation"
-            data={ownTokensData}
-            onTokenSelect={handleTokenSelect}
-            styles={{
-              container: (base) => ({
-                ...base,
-                width: "45%",
-              }),
-            }}
-          />
+          <Box width="50%">
+            <MenuSelect
+              label="Select token for operation"
+              data={ownTokensData as unknown as GroupBase<string | number>[]}
+              onTokenSelect={handleTokenSelect}
+            />
+          </Box>
           {!tokenSelected && (
             <>
               <Text>OR</Text>

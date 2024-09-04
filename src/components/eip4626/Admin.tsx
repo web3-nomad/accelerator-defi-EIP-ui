@@ -1,4 +1,4 @@
-import { Button, Divider, Select, Stack, Text } from "@chakra-ui/react";
+import { Box, Button, Divider, Select, Stack, Text } from "@chakra-ui/react";
 import { useContext, useEffect, useState } from "react";
 
 import DeployVault from "@/components/eip4626/admin/DeployVault";
@@ -8,14 +8,13 @@ import { VaultNameItem } from "@/types/types";
 import { readHederaVaultOwner } from "@/services/contracts/wagmiGenActions";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { MenuSelect } from "@/components/MenuSelect";
+import { GroupBase } from "react-select";
 
 export default function Admin() {
   const { accountEvm } = useWalletInterface();
   const [isDeploy, setIsDeploy] = useState(false);
   const [ownVaults, setOwnVaults] = useState([] as Array<VaultNameItem>);
-  const [vaultSelected, setVaultSelected] = useState(
-    null as VaultNameItem | null,
-  );
+  const [vaultSelected, setVaultSelected] = useState<VaultNameItem>();
   const { deployedVaults } = useContext(Eip4626Context);
 
   useEffect(() => {
@@ -41,20 +40,27 @@ export default function Admin() {
   return (
     <>
       {!isDeploy && (
-        <Stack spacing={4} align="center">
-          <MenuSelect
-            label="Select vault for operation"
-            data={ownVaults.map((item) => ({
-              value: item.address,
-              label: item.shareTokenName,
-            }))}
-            onTokenSelect={(value) => {
-              const vaultItem = ownVaults.find(
-                (itemSub) => itemSub.address === value,
-              );
-              setVaultSelected(vaultItem || null);
-            }}
-          />
+        <Stack align="center">
+          <Box width="50%">
+            <MenuSelect
+              label="Select vault for operation"
+              data={
+                ownVaults.map((item) => ({
+                  value: item.address,
+                  label: item.shareTokenName,
+                })) as unknown as GroupBase<string | number>[]
+              }
+              onTokenSelect={(value) => {
+                const vaultItem = ownVaults.find(
+                  (itemSub) => itemSub.address === value,
+                );
+                if (!vaultItem) {
+                  throw Error("Selected vault item not found");
+                }
+                setVaultSelected(vaultItem);
+              }}
+            />
+          </Box>
           {!vaultSelected && (
             <>
               <Text>OR</Text>
@@ -74,7 +80,7 @@ export default function Admin() {
           <Divider my={10} />
           <UpdateFeeConfig
             vaultSelected={vaultSelected}
-            resetSelectedVault={() => setVaultSelected(null)}
+            resetSelectedVault={() => setVaultSelected(undefined)}
           ></UpdateFeeConfig>
         </>
       )}

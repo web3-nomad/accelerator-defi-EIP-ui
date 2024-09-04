@@ -13,6 +13,7 @@ import {
   Tr,
   Th,
   Td,
+  Box,
   Modal,
   ModalOverlay,
   ModalCloseButton,
@@ -48,6 +49,7 @@ import { useTokenIdentityRegistry } from "@/hooks/useTokenIdentityRegistry";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { WalletInterface } from "@/services/wallets/walletInterface";
 import { WatchContractEventReturnType } from "@/services/contracts/watchContractEvent";
+import { GroupBase } from "react-select";
 
 const investorCountriesItems = [
   {
@@ -309,18 +311,6 @@ export function ManageIdentities() {
     }
   }, [addedAgents, registry, isOpen]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setUpdateTxError(undefined);
-    }, 5000);
-  }, [updateTxError]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setUpdateTxResult(undefined);
-    }, 5000);
-  }, [updateTxResult]);
-
   const registryDetailsModal = (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
@@ -358,17 +348,17 @@ export function ManageIdentities() {
               </Button>
             </Flex>
             <Flex direction="row" gap="2">
-              <MenuSelect
-                styles={{
-                  container: (base) => ({
-                    ...base,
-                    width: "70%",
-                  }),
-                }}
-                data={investorCountriesItems}
-                label="Select country"
-                onTokenSelect={handleIdentityCountrySelect}
-              />
+              <Box width="70%">
+                <MenuSelect
+                  data={
+                    investorCountriesItems as unknown as GroupBase<
+                      string | number
+                    >[]
+                  }
+                  label="Select country"
+                  onTokenSelect={handleIdentityCountrySelect}
+                />
+              </Box>
               <Button
                 width="28%"
                 onClick={handleUpdateCountry}
@@ -401,10 +391,12 @@ export function ManageIdentities() {
             {!!addedAgents && (
               <Flex direction="column">
                 <MenuSelect
-                  data={addedAgents.map((agent) => ({
-                    value: agent,
-                    label: agent,
-                  }))}
+                  data={
+                    addedAgents.map((agent) => ({
+                      value: agent,
+                      label: agent,
+                    })) as unknown as GroupBase<string | number>[]
+                  }
                   label="Select agent"
                   onTokenSelect={handleAgentSelect}
                 />
@@ -449,21 +441,25 @@ export function ManageIdentities() {
           <Text fontSize={20} fontWeight="800" mb="5">
             Select Token
           </Text>
-          <MenuSelect
-            loadingInProgress={!ownTokens?.length}
-            styles={{
-              container: (base) => ({
-                ...base,
-                width: "45%",
-              }),
-            }}
-            data={ownTokens.map((tok) => ({
-              value: tok.address,
-              label: tok.name,
-            }))}
-            label="Select token to manage identities"
-            onTokenSelect={handleTokenSelect}
-          />
+          <Box width="50%">
+            <MenuSelect
+              loadingInProgress={!ownTokens?.length}
+              styles={{
+                container: (base) => ({
+                  ...base,
+                  width: "45%",
+                }),
+              }}
+              data={
+                ownTokens.map((tok) => ({
+                  value: tok.address,
+                  label: tok.name,
+                })) as unknown as GroupBase<string | number>[]
+              }
+              label="Select token to manage identities"
+              onTokenSelect={handleTokenSelect}
+            />
+          </Box>
           {selectedToken && (
             <Text fontWeight="bold" mt="2" style={{ fontSize: 14 }}>
               Selected token: {selectedToken?.name} ({selectedToken?.address})

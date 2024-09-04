@@ -1,14 +1,13 @@
-import Icon from "@/components/Icon";
-import Select, { StylesConfig } from "react-select";
+import Select, { GroupBase, StylesConfig } from "react-select";
 
-type ItemOption = {
+type MenuSelectItemOption = {
   label: string;
-  value: string | number;
+  value: string;
 };
 
 type Props = {
   label: string;
-  data: ItemOption[];
+  data: GroupBase<string | number>[];
   styles?: StylesConfig;
   onTokenSelect: (value: string) => void;
   selectedValue?: string | number;
@@ -20,13 +19,16 @@ export const MenuSelect = (props: Props) => {
     <Select
       isLoading={props.loadingInProgress}
       options={props.data}
-      styles={props.styles}
       placeholder={props.label}
-      onChange={(item) =>
-        props.onTokenSelect(
-          (item as { value: string; label: string }).value as string,
-        )
-      }
+      onChange={(item) => {
+        props.onTokenSelect((item as unknown as MenuSelectItemOption).value);
+      }}
+      styles={{
+        container: (base) => ({
+          ...base,
+          width: "100%",
+        }),
+      }}
       {...(props.selectedValue && {
         value: props.selectedValue,
       })}

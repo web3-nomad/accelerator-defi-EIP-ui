@@ -102,7 +102,7 @@ export default function DeployToken({ onClose = () => {} }) {
             onChange={form.handleChange}
           />
           <FormHelperText>
-            Token that will be deposited to the user wallet as a reward
+            Token that will be rewarded to the vault stakers
           </FormHelperText>
         </FormControl>
         <FormControl isRequired>

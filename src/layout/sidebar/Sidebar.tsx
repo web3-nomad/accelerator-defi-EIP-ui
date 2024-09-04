@@ -8,7 +8,6 @@ interface optionsProps {
   route: string;
   isDisabled?: boolean;
   isHidden?: boolean;
-  additionalRoutes?: string[];
 }
 
 const routes: optionsProps[] = [

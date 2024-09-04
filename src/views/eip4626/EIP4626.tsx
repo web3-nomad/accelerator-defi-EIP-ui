@@ -4,7 +4,7 @@ import Admin from "@/components/eip4626/Admin";
 import User from "@/components/eip4626/User";
 import NoWalletConnected from "@/components/NoWalletConnected";
 import { WatchContractEventReturnType } from "@/services/contracts/watchContractEvent";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { Eip4626Context } from "@/contexts/Eip4626Context";
 import {
   readTokenName,
@@ -15,7 +15,6 @@ import {
 
 export default function EIP4626() {
   const { accountId } = useWalletInterface();
-  const [tabIndex, setTabIndex] = useState(0);
   const {
     setDeployedVaults,
     setDeployedProxyHtsTokens,
@@ -73,13 +72,9 @@ export default function EIP4626() {
 
   if (!accountId) return <NoWalletConnected />;
 
-  const updateTabIndex = (newIndex: number) => {
-    setTabIndex(newIndex);
-  };
-
   return (
     <>
-      <Tabs tabIndex={tabIndex}>
+      <Tabs>
         <TabList>
           <Tab>User Area</Tab>
           <Tab>Admin Area</Tab>

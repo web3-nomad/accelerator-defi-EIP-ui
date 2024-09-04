@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { Divider, Stack, Text, Flex } from "@chakra-ui/react";
+import { Divider, Stack, Text, Flex, Box } from "@chakra-ui/react";
 import { VaultWithdraw } from "@/components/eip4626/user/VaultWithdraw";
 import { VaultAssociate } from "@/components/eip4626/user/VaultAssociate";
 import { VaultClaimAllReward } from "@/components/eip4626/user/VaultClaimAllReward";
@@ -11,6 +11,7 @@ import { MintAssetToken } from "@/components/eip4626/user/MintAssetToken";
 import { useReadHederaVaultAssetQueries } from "@/hooks/eip4626/useReadHederaVaultAsset";
 import { EvmAddress } from "@/types/types";
 import { MenuSelect } from "@/components/MenuSelect";
+import { GroupBase } from "react-select";
 
 export default function User() {
   const [vaultSelected, setVaultSelected] = useState("" as EvmAddress);
@@ -38,17 +39,21 @@ export default function User() {
   return (
     <>
       {deployedProxyHtsTokens.length ? (
-        <Stack spacing={4} align="center">
-          <MenuSelect
-            label="Select vault asset for operation"
-            data={deployedProxyHtsTokens.map((item) => ({
-              value: item,
-              label: deployedHtsTokenNames[item],
-            }))}
-            onTokenSelect={(value) => {
-              setVaultSelected(value as EvmAddress);
-            }}
-          />
+        <Stack align="center">
+          <Box width="50%">
+            <MenuSelect
+              label="Select vault asset for operation"
+              data={
+                deployedProxyHtsTokens.map((item) => ({
+                  value: item,
+                  label: deployedHtsTokenNames[item],
+                })) as unknown as GroupBase<string | number>[]
+              }
+              onTokenSelect={(value) => {
+                setVaultSelected(value as EvmAddress);
+              }}
+            />
+          </Box>
         </Stack>
       ) : (
         <Text>No deployed HTS token addresses found</Text>
@@ -66,21 +71,25 @@ export default function User() {
       <Divider my={10} />
 
       {vaultAssetSelected && (
-        <Stack spacing={4} align="center">
+        <Stack align="center">
           {filteredVaultsForSelect?.length ? (
-            <MenuSelect
-              label="Select vault for operation"
-              data={filteredVaultsForSelect.map((item) => ({
-                value: item?.["args"]?.[0],
-                label: `${item?.["args"]?.[1]} (${item?.["args"]?.[2]}) [${item?.["args"]?.[0]}]`,
-              }))}
-              onTokenSelect={(value) => {
-                const vaultItem = filteredVaultsForSelect.find(
-                  (itemSub) => itemSub?.["args"]?.[0] === value,
-                );
-                setVaultSelected(vaultItem?.["args"]?.[0]);
-              }}
-            />
+            <Box width="50%">
+              <MenuSelect
+                label="Select vault for operation"
+                data={
+                  filteredVaultsForSelect.map((item) => ({
+                    value: item?.["args"]?.[0],
+                    label: `${item?.["args"]?.[1]} (${item?.["args"]?.[2]}) [${item?.["args"]?.[0]}]`,
+                  })) as unknown as GroupBase<string | number>[]
+                }
+                onTokenSelect={(value) => {
+                  const vaultItem = filteredVaultsForSelect.find(
+                    (itemSub) => itemSub?.["args"]?.[0] === value,
+                  );
+                  setVaultSelected(vaultItem?.["args"]?.[0]);
+                }}
+              />
+            </Box>
           ) : (
             <Flex>
               <Text>Deploy new vault in Admin area</Text>

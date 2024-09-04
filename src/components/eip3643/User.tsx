@@ -4,9 +4,11 @@ import { Eip3643Context } from "@/contexts/Eip3643Context";
 import { readTokenName } from "@/services/contracts/wagmiGenActions";
 import { TokenNameItem } from "@/types/types";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
-import { Divider, Stack, Text } from "@chakra-ui/react";
+import { Divider, Stack, Text, Box } from "@chakra-ui/react";
 import { useTokensIdentityRegistries } from "@/hooks/useTokensIdentityRegistries";
 import { MenuSelect } from "@/components/MenuSelect";
+import { GroupBase } from "react-select";
+import { useDebounce } from "@uidotdev/usehooks";
 
 export default function User() {
   const [tokenSelected, setTokenSelected] = useState(
@@ -19,7 +21,7 @@ export default function User() {
   const [tokensByOwnership, setTokensByOwnership] = useState<TokenNameItem[]>(
     [],
   );
-  const [allowed, setAllowed] = useState<boolean>(false);
+  const debouncedRegistriesAgents = useDebounce(registriesAgents, 5000);
 
   useEffect(() => {
     (deployedTokens as any).map((item: any) => {
@@ -40,35 +42,23 @@ export default function User() {
   }, [deployedTokens, accountEvm, setTokens]);
 
   useEffect(() => {
-    const $timeout = setTimeout(() => {
-      setAllowed(true);
-    }, 5000);
+    if (debouncedRegistriesAgents && accountEvm) {
+      setTokensByOwnership(
+        tokens.sort((a) => {
+          const tokenIncludesIdentity =
+            debouncedRegistriesAgents[a.address]?.includes(accountEvm);
 
-    return () => {
-      clearTimeout($timeout);
-    };
-  }, []);
+          if (tokenIncludesIdentity) {
+            return -1;
+          }
 
-  useEffect(() => {
-    if (allowed) {
-      if (registriesAgents && accountEvm) {
-        setTokensByOwnership(
-          tokens.sort((a) => {
-            const tokenIncludesIdentity =
-              registriesAgents[a.address]?.includes(accountEvm);
-
-            if (tokenIncludesIdentity) {
-              return -1;
-            }
-
-            return 1;
-          }),
-        );
-      } else if (tokens) {
-        setTokensByOwnership(tokens);
-      }
+          return 1;
+        }),
+      );
+    } else if (tokens) {
+      setTokensByOwnership(tokens);
     }
-  }, [registriesAgents, allowed, accountEvm, tokens]);
+  }, [debouncedRegistriesAgents, accountEvm, tokens]);
 
   const handleTokenSelect = (value: string) => {
     const tokenItem = tokens.find((itemSub) => itemSub.address === value);
@@ -77,22 +67,20 @@ export default function User() {
 
   return (
     <>
-      <Stack spacing={4} align="center">
-        <MenuSelect
-          loadingInProgress={!tokensByOwnership?.length}
-          data={tokensByOwnership.map((item) => ({
-            value: item.address,
-            label: item.name,
-          }))}
-          onTokenSelect={(value) => handleTokenSelect(value)}
-          label="Select token for operation"
-          styles={{
-            container: (base) => ({
-              ...base,
-              width: "45%",
-            }),
-          }}
-        />
+      <Stack align="center">
+        <Box width="50%">
+          <MenuSelect
+            loadingInProgress={!tokensByOwnership?.length}
+            data={
+              tokensByOwnership.map((item) => ({
+                value: item.address,
+                label: item.name,
+              })) as unknown as GroupBase<string | number>[]
+            }
+            onTokenSelect={(value) => handleTokenSelect(value)}
+            label="Select token for operation"
+          />
+        </Box>
       </Stack>
       {tokenSelected &&
         registriesAgents &&
