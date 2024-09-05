@@ -1,49 +1,37 @@
-import { Button, Menu, MenuItem, MenuList, MenuButton } from "@chakra-ui/react";
-import Icon from "@/components/Icon";
+import Select, { GroupBase, StylesConfig } from "react-select";
 
-type ItemOption = {
+type MenuSelectItemOption = {
   label: string;
-  value: string | number;
+  value: string;
 };
 
 type Props = {
   label: string;
-  data: ItemOption[];
-  buttonProps?: object;
+  data: GroupBase<string | number>[];
+  styles?: StylesConfig;
   onTokenSelect: (value: string) => void;
+  selectedValue?: string | number;
+  loadingInProgress?: boolean;
 };
 
 export const MenuSelect = (props: Props) => {
   return (
-    <Menu>
-      {({ isOpen }) => (
-        <>
-          <MenuButton
-            style={{ width: "100%" }}
-            as={Button}
-            rightIcon={
-              isOpen ? <Icon name="CaretUp" /> : <Icon name="CaretDown" />
-            }
-            {...(props.buttonProps ?? {})}
-          >
-            {props.label}
-          </MenuButton>
-          {props.data?.length ? (
-            <MenuList>
-              {props.data.map((item) => (
-                <MenuItem
-                  key={item.value}
-                  onClick={() => props.onTokenSelect(item.value as string)}
-                >
-                  {item.label}
-                </MenuItem>
-              ))}
-            </MenuList>
-          ) : (
-            <></>
-          )}
-        </>
-      )}
-    </Menu>
+    <Select
+      isLoading={props.loadingInProgress}
+      options={props.data}
+      placeholder={props.label}
+      onChange={(item) => {
+        props.onTokenSelect((item as unknown as MenuSelectItemOption).value);
+      }}
+      styles={{
+        container: (base) => ({
+          ...base,
+          width: "100%",
+        }),
+      }}
+      {...(props.selectedValue && {
+        value: props.selectedValue,
+      })}
+    />
   );
 };

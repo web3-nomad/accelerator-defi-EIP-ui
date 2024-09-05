@@ -7,14 +7,35 @@ import { WatchContractEventReturnType } from "@/services/contracts/watchContract
 import { useContext, useEffect } from "react";
 import { Eip4626Context } from "@/contexts/Eip4626Context";
 import {
+  readTokenName,
+  readHtsTokenTokenAddress,
   watchHtsTokenFactoryTokenDeployedEvent,
   watchVaultFactoryVaultDeployedEvent,
 } from "@/services/contracts/wagmiGenActions";
 
 export default function EIP4626() {
   const { accountId } = useWalletInterface();
-  const { setDeployedVaults, setDeployedProxyHtsTokens } =
-    useContext(Eip4626Context);
+  const {
+    setDeployedVaults,
+    setDeployedProxyHtsTokens,
+    setDeployedHtsTokenNames,
+    deployedProxyHtsTokens,
+  } = useContext(Eip4626Context);
+
+  useEffect(() => {
+    deployedProxyHtsTokens.forEach((token) => {
+      readHtsTokenTokenAddress({}, token).then((value) => {
+        readTokenName({}, (value as unknown as `0x${string}`[])[0]).then(
+          (data) => {
+            setDeployedHtsTokenNames((prev: any) => ({
+              ...prev,
+              [token]: data[0],
+            }));
+          },
+        );
+      });
+    });
+  }, [deployedProxyHtsTokens, setDeployedHtsTokenNames]);
 
   useEffect(() => {
     const unsub: WatchContractEventReturnType =
