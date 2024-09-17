@@ -193,12 +193,16 @@ export default function TransferToken({
         <Alert status="error" mt="4">
           <AlertIcon />
           <AlertTitle>Transfer token error!</AlertTitle>
-          {/*//@TODO change text to cover compliance stuff*/}
+          <AlertDescription>{error.toString()}</AlertDescription>
           <AlertDescription>
-            {error.toString()}
-            Potential reasons: - no sender or recipient identity present in the
-            identity registry - sender or recipient does not have KYC NFT
-            present
+            <VStack>
+              <Flex>Potential reasons: </Flex>
+              <Flex>
+                - no sender or recipient identity present in the identity
+                registry
+              </Flex>
+              <Flex>- sender or recipient fails compliance requirements</Flex>
+            </VStack>
           </AlertDescription>
         </Alert>
       )}

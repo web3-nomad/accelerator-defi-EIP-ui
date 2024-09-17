@@ -1,3 +1,5 @@
+import { CountryCodesISO } from "@/components/manage-identities/ManageIdentities";
+
 export type DeployTokenRequest = {
   name: string;
   symbol: string;
@@ -18,9 +20,10 @@ export type CreateIdentityRequest = {
 };
 
 export type AddIdentityToRegistryRequest = {
-  address: `0x${string}`;
-  identity: `0x${string}`;
-  registry: `0x${string}`;
+  address: EvmAddress;
+  identity: EvmAddress;
+  registry: EvmAddress;
+  country: CountryCodesISO;
 };
 
 export type TokenNameItem = {

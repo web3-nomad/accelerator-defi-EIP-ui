@@ -17,13 +17,17 @@ export function useDeployToken() {
       symbol,
       decimals,
       nftAddress,
+      complianceModules,
+      complianceSettings,
     }: DeployTokenRequest) => {
       // admin should be able to select the desired compliance module to include in the token
       let compliance = {
         modules: [] as `0x${string}`[],
         settings: [] as `0x${string}`[],
       };
+      //@TODO select with compliance modules
 
+      //@TODO make a function to build the settings for respective selected module
       // Sample compliance support using requireNFT (optional)
       if (nftAddress) {
         const requiresNftModuleCall = new ethers.Interface([
@@ -49,9 +53,15 @@ export function useDeployToken() {
         ONCHAINID: ethers.ZeroAddress as `0x${string}`, // Identity for the token
         irAgents: [currentDeployerAddress],
         tokenAgents: [currentDeployerAddress],
-        complianceModules: compliance.modules,
-        complianceSettings: compliance.settings,
+        // complianceModules: compliance.modules,
+        complianceModules,
+        // complianceSettings: compliance.settings,
+        complianceSettings,
       };
+
+      console.log("L63 tokenDetails ===", tokenDetails);
+
+      // return;
 
       const claimsDetails = {
         claimTopics: claims.topics,

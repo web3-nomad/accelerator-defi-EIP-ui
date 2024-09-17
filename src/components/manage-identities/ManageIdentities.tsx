@@ -32,13 +32,17 @@ import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { WalletInterface } from "@/services/wallets/walletInterface";
 import { WatchContractEventReturnType } from "@/services/contracts/watchContractEvent";
 
-const investorCountriesItems = [
+export enum CountryCodesISO {
+  US = 840,
+  NON_US = 0,
+}
+export const investorCountriesItems = [
   {
-    value: 840,
+    value: CountryCodesISO.US,
     label: "US",
   },
   {
-    value: 0,
+    value: CountryCodesISO.NON_US,
     label: "Non US",
   },
 ];
