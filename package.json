@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint --fix",
     "prepare": "husky",
-    "sync-contracts": "wagmi generate && node ./scripts/fix-imports.js && npm run lint",
+    "sync-contracts": "node ./scripts/download-json.js && wagmi generate && node ./scripts/fix-imports.js && npm run lint",
     "format": "prettier --write .",
     "lint-staged": "lint-staged",
     "type-check": "tsc --project tsconfig.json --pretty --noEmit && echo "
