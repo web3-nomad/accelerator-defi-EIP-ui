@@ -31,6 +31,7 @@ import {
 import { MenuSelect } from "@/components/MenuSelect";
 import { useCallback, useState } from "react";
 import { EvmAddress } from "@/types/types";
+import { GroupBase } from "react-select";
 
 export const complianceModulesList = [
   {
@@ -205,9 +206,10 @@ export default function DeployToken({ onClose = () => {} }) {
         <FormControl>
           <FormLabel>Select compliance module to add (optional)</FormLabel>
           <MenuSelect
-            buttonProps={{ style: { width: "50%" } }}
             label="Select compliance module"
-            data={complianceModulesList}
+            data={
+              complianceModulesList as unknown as GroupBase<string | number>[]
+            }
             onTokenSelect={handleComplianceModuleSelect}
           />
           <FormHelperText>

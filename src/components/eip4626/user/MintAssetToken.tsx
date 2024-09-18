@@ -22,10 +22,12 @@ import { AccountId } from "@hashgraph/sdk";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKeys } from "@/hooks/types";
 
-export function MintAssetToken({ vaultAssetSelected }: VaultMintTokenProps) {
+export function MintAssetToken({
+  vaultAssetSelected,
+  vaultAssetSelectedName,
+}: VaultMintTokenProps) {
   const queryClient = useQueryClient();
 
-  //@TODO add readTokenName to show vault asset token names
   const { data: deployedHtsTokensAddress } =
     useReadHtsTokenTokenAddress(vaultAssetSelected);
 
@@ -86,6 +88,7 @@ export function MintAssetToken({ vaultAssetSelected }: VaultMintTokenProps) {
       {deployedHtsTokensAddress && (
         <>
           <Text>HTS Token CA: {deployedHtsTokensAddress}</Text>
+          <Text>HTS Token name: {vaultAssetSelectedName}</Text>
           <Text>
             User balance of token:{" "}
             {`${formatBalance(tokenBalance, vaultAssetSelectedDecimals)}`}

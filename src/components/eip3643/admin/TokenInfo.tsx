@@ -12,6 +12,8 @@ import {
   Stack,
   VStack,
   FormHelperText,
+  Spinner,
+  Flex,
 } from "@chakra-ui/react";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { useMintToken } from "@/hooks/mutations/useMintToken";
@@ -34,7 +36,8 @@ export default function TokenInfo({
   tokenSelected: TokenNameItem;
 }) {
   const { accountEvm } = useWalletInterface();
-  const { data: tokenDecimals } = useReadTokenDecimals(tokenSelected.address);
+  const { data: tokenDecimals, isPending: tokenDecimalsPending } =
+    useReadTokenDecimals(tokenSelected.address);
   const { data, mutateAsync: mint, error, isPending } = useMintToken();
 
   //@TODO separate out mint form from token info
@@ -63,7 +66,11 @@ export default function TokenInfo({
     <>
       <Divider my={10} />
       {!tokenSelected && <Text> Token not selected </Text>}
-      {tokenSelected && (
+      {tokenSelected && tokenDecimalsPending ? (
+        <Flex justifyContent="center" alignItems="center">
+          <Spinner />
+        </Flex>
+      ) : (
         <>
           <Text>Token name: {tokenSelected.name}</Text>
           <Text>Token address: {tokenSelected.address}</Text>

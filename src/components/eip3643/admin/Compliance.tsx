@@ -12,6 +12,8 @@ import {
   Input,
   Text,
   VStack,
+  Flex,
+  Spinner,
 } from "@chakra-ui/react";
 import { TokenNameItem } from "@/types/types";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -20,11 +22,7 @@ import {
   hederaNftAddress,
   readModularComplianceGetModules,
   readTokenCompliance,
-  readTokenName,
-  watchModularComplianceModuleAddedEvent,
 } from "@/services/contracts/wagmiGenActions";
-import { useEffect, useState } from "react";
-import { WatchContractEventReturnType } from "viem";
 import { useFormik } from "formik";
 import { useAddRequiresNFTModule } from "@/hooks/mutations/useAddRequiresNFTModule";
 import { useCallModuleFunction } from "@/hooks/mutations/useCallModuleFunction";
@@ -37,13 +35,16 @@ export default function Compliance({
 }) {
   const queryClient = useQueryClient();
 
-  const { data: modularComplianceAddress } = useQuery({
+  const {
+    data: modularComplianceAddress,
+    isPending: isModularCompliancePending,
+  } = useQuery({
     enabled: !!tokenSelected?.address,
     queryKey: [QueryKeys.ReadTokenCompliance, tokenSelected?.address],
     queryFn: () => readTokenCompliance({}, tokenSelected?.address),
   });
 
-  const { data: addedModules } = useQuery({
+  const { data: addedModules, isPending: isAddedModulesPending } = useQuery({
     enabled: !!modularComplianceAddress,
     queryKey: [
       QueryKeys.ReadModularComplianceGetModules,
@@ -92,25 +93,28 @@ export default function Compliance({
   return (
     <>
       <Heading size={"md"}>Compliance</Heading>
-      <Text>
-        ModularCompliance address of current selected token:{" "}
-        {modularComplianceAddress}
-      </Text>
-      {/*//@TODO show the name of the module*/}
-      <Text>
-        Module added address:{" "}
-        {addedModules && addedModules.map((module) => module)}
-      </Text>
-      <Text>
-        Module added name:{" "}
-        {addedModules &&
-          addedModules.map(
-            (module) =>
-              complianceModulesList.find(
-                (moduleItem) => moduleItem.value == module,
-              )?.label,
-          )}
-      </Text>
+      {isAddedModulesPending || isModularCompliancePending ? (
+        <Flex justifyContent="center" alignItems="center">
+          <Spinner />
+        </Flex>
+      ) : (
+        <>
+          <Text>
+            ModularCompliance address of current selected token:{" "}
+            {modularComplianceAddress}
+          </Text>
+          <Text>
+            Modules added:{" "}
+            {addedModules &&
+              addedModules.map(
+                (module) =>
+                  complianceModulesList.find(
+                    (moduleItem) => moduleItem.value == module,
+                  )?.label,
+              )}
+          </Text>
+        </>
+      )}
 
       <Divider my={10} />
 

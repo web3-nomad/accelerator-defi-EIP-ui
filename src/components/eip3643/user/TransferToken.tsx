@@ -23,6 +23,7 @@ import { TokenNameItem, TransferTokenFromRequest } from "@/types/types";
 import { useAccountId } from "@/hooks/useAccountId";
 import { AccountIdResult } from "@/components/AccountIdResult";
 import { MenuSelect } from "@/components/MenuSelect";
+import { GroupBase } from "react-select";
 import { useReadTokenDecimals } from "@/hooks/eip4626/useReadTokenDecimals";
 import { formatBalance } from "@/services/util/helpers";
 
@@ -107,10 +108,10 @@ export default function TransferToken({
     }
   };
 
-  const handleAddressSelection = (value: string | number) => {
+  const handleAddressSelection = (value: string) => {
     form.setValues((prev) => ({
       ...prev,
-      toAddress: value?.toString(),
+      toAddress: value,
     }));
   };
 
@@ -132,23 +133,23 @@ export default function TransferToken({
 
           <FormControl isRequired>
             <FormLabel>Send to address</FormLabel>
-            <Flex mt="2" mb="3">
+            <Flex mt="2" mb="3" width="50%">
               <MenuSelect
-                buttonProps={{
-                  variant: "outline",
-                }}
-                data={[
-                  ...registeredIdentities.map((item) => ({
-                    label: item,
-                    value: item,
-                  })),
-                  ...(mostUsedAddressesValue || []).map((item) => ({
-                    label: item.address,
-                    value: item.address,
-                  })),
-                ]}
+                data={
+                  [
+                    ...registeredIdentities.map((identity) => ({
+                      label: identity,
+                      value: identity,
+                    })),
+                    ...(mostUsedAddressesValue || []).map((usedAddress) => ({
+                      label: usedAddress.address,
+                      value: usedAddress.address,
+                    })),
+                  ] as unknown as GroupBase<string | number>[]
+                }
                 label="Select address which was already in use"
                 onTokenSelect={handleAddressSelection}
+                selectedValue={form.values.toAddress}
               />
             </Flex>
             <Input

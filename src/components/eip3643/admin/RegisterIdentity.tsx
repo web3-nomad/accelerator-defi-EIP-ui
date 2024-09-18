@@ -27,6 +27,7 @@ import { useReadTokenIsAgent } from "@/hooks/eip3643/useReadTokenIsAgent";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { useReadTokenOwner } from "@/hooks/eip3643/useReadTokenOwner";
 import { useReadIdentityRegistryInvestorCountry } from "@/hooks/eip3643/useReadIdentityRegistryInvestorCountry";
+import { GroupBase } from "react-select";
 
 export default function RegisterIdentity({
   tokenSelected,
@@ -91,10 +92,9 @@ export default function RegisterIdentity({
     <>
       <Box mb={4}>
         <MenuSelect
-          buttonProps={{
-            variant: "outline",
-          }}
-          data={investorCountriesItems}
+          data={
+            investorCountriesItems as unknown as GroupBase<string | number>[]
+          }
           label="Select country"
           onTokenSelect={handleChangeIdentityCountry}
         />

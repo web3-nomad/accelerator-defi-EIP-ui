@@ -39,12 +39,13 @@ const Sidebar = () => {
         flexDirection="column"
       >
         <Flex flexDirection="column" alignItems="center" gap={3}>
-          {routes.map((route) => {
+          {routes.map((routeItem) => {
+            const isRouteActive = location.pathname.includes(routeItem.route);
             return (
               <SidebarOption
-                key={route.title}
-                {...route}
-                isActive={route.route === location.pathname}
+                {...routeItem}
+                key={routeItem.title}
+                isActive={isRouteActive}
               />
             );
           })}

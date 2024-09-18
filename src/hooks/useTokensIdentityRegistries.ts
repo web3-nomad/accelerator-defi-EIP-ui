@@ -21,7 +21,7 @@ export function useTokensIdentityRegistries(tokens?: TokenNameItem[]) {
             watchIdentityRegistryIdentityRegisteredEvent(
               {
                 onLogs: (data) => {
-                  setRegistriesAgents((prev: any) => {
+                  setRegistriesAgents((prev) => {
                     if (!prev) {
                       prev = {};
                     }

@@ -1,5 +1,6 @@
-import { Button, Divider, Stack, Text } from "@chakra-ui/react";
-import { useContext, useEffect, useState } from "react";
+import { Button, Divider, Stack, Text, Box } from "@chakra-ui/react";
+import { useContext, useEffect, useState, useMemo } from "react";
+import { GroupBase } from "react-select";
 
 import DeployToken from "@/components/eip3643/admin/DeployToken";
 import RegisterIdentity from "@/components/eip3643/admin/RegisterIdentity";
@@ -48,24 +49,29 @@ export default function Admin() {
     setTokenSelected(tokenItem);
   };
 
-  const tokensData = ownTokens.map((token) => ({
-    value: token.address,
-    label: `${token.name} ${token.address}`,
-  }));
+  const ownTokensData = useMemo(
+    () =>
+      ownTokens.map((token) => ({
+        value: token.address,
+        label: token.name,
+      })),
+    [ownTokens],
+  );
 
   return (
     <>
       {!isDeploy && (
         <Stack spacing={4} align="center">
-          <MenuSelect
-            buttonProps={{ style: { width: "50%" } }}
-            label="Select token for operation"
-            data={tokensData}
-            onTokenSelect={handleTokenSelect}
-          />
-          <Text>
-            Note: only tokens deployed by current wallet address are shown
-          </Text>
+          <Box width="50%">
+            <MenuSelect
+              label="Select token for operation"
+              data={ownTokensData as unknown as GroupBase<string | number>[]}
+              onTokenSelect={handleTokenSelect}
+            />
+            <Text>
+              Note: only tokens deployed by current wallet address are shown
+            </Text>
+          </Box>
           {!tokenSelected && (
             <>
               <Text>OR</Text>
