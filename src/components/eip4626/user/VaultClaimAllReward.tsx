@@ -6,6 +6,7 @@ import {
   Button,
   Heading,
   Text,
+  Divider,
 } from "@chakra-ui/react";
 import { useWriteHederaVaultClaimAllReward } from "@/hooks/eip4626/mutations/useWriteHederaVaultClaimAllReward";
 import { VaultInfoProps } from "@/types/types";
@@ -31,9 +32,16 @@ export function VaultClaimAllReward({ vaultAddress }: VaultInfoProps) {
     queryClient.invalidateQueries();
   };
 
+  if (!userRewards?.length) {
+    return <></>;
+  }
+
   return (
     <>
-      <Heading size={"sm"}>Your pending vault rewards:</Heading>
+      <Divider my={10} />
+      <Heading size={"sm"} mb="2">
+        Your pending vault rewards:
+      </Heading>
       {userRewards &&
         userRewards.map((rewardQueryResult, index) => (
           <Text key={index}>

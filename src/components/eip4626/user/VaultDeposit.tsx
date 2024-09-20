@@ -1,8 +1,4 @@
 import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Button,
   FormControl,
   FormHelperText,
@@ -22,6 +18,7 @@ import { formatBalance, formatNumberToBigint } from "@/services/util/helpers";
 import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
 import { useQueryClient } from "@tanstack/react-query";
 import { useReadHederaVaultPreviewDeposit } from "@/hooks/eip4626/useReadHederaVaultPreviewDeposit";
+import { VaultActionResults } from "./VaultActionResults";
 
 export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
   const queryClient = useQueryClient();
@@ -131,36 +128,12 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
           </HStack>
         </VStack>
       </form>
-
-      {approveResult && (
-        <Alert status="success">
-          <AlertIcon />
-          <AlertTitle>Approve success!</AlertTitle>
-          <AlertDescription>TxId: {approveResult}</AlertDescription>
-        </Alert>
-      )}
-      {approveError && (
-        <Alert status="error">
-          <AlertIcon />
-          <AlertTitle>Approve token error!</AlertTitle>
-          <AlertDescription>{approveError.toString()}</AlertDescription>
-        </Alert>
-      )}
-
-      {depositResult && (
-        <Alert status="success">
-          <AlertIcon />
-          <AlertTitle>Deposit success!</AlertTitle>
-          <AlertDescription>TxId: {depositResult}</AlertDescription>
-        </Alert>
-      )}
-      {depositError && (
-        <Alert status="error">
-          <AlertIcon />
-          <AlertTitle>Deposit token error!</AlertTitle>
-          <AlertDescription>{depositError.toString()}</AlertDescription>
-        </Alert>
-      )}
+      <VaultActionResults
+        approveError={approveError}
+        approveResult={approveResult}
+        depositError={depositError}
+        depositResult={depositResult}
+      />
     </>
   );
 }

@@ -1,4 +1,3 @@
-import { useReadHtsTokenTokenAddress } from "@/hooks/eip4626/useReadHtsTokenTokenAddress";
 import { useWriteHtsTokenAssociate } from "@/hooks/eip4626/mutations/useWriteHtsTokenAssociate";
 import {
   Alert,
@@ -7,6 +6,8 @@ import {
   AlertTitle,
   Button,
   Text,
+  Divider,
+  Flex,
 } from "@chakra-ui/react";
 import { EvmAddress, VaultMintTokenProps } from "@/types/types";
 import {
@@ -21,6 +22,7 @@ import { useEffect, useState } from "react";
 import { AccountId } from "@hashgraph/sdk";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKeys } from "@/hooks/types";
+import { useReadHtsTokenTokenAddress } from "@/hooks/eip4626/useReadHtsTokenTokenAddress";
 
 export function MintAssetToken({
   vaultAssetSelected,
@@ -86,59 +88,62 @@ export function MintAssetToken({
   return (
     <>
       {deployedHtsTokensAddress && (
-        <>
-          <Text>HTS Token CA: {deployedHtsTokensAddress}</Text>
+        <Flex direction="column" gap="2">
+          <Divider my={10} />
+          <Text fontWeight="600">HTS Token CA: {deployedHtsTokensAddress}</Text>
           <Text>HTS Token name: {vaultAssetSelectedName}</Text>
           <Text>
             User balance of token:{" "}
             {`${formatBalance(tokenBalance, vaultAssetSelectedDecimals)}`}
           </Text>
-          <Button
-            isLoading={isAssociatePending}
-            isDisabled={tokenHasAssociation}
-            onClick={() =>
-              associate(
-                {
-                  tokenAddress:
-                    deployedHtsTokensAddress?.toString() as EvmAddress,
-                },
-                {
-                  onSuccess: () => {
-                    queryClient.invalidateQueries({
-                      queryKey: [QueryKeys.ReadAccountTokens],
-                    });
+          <Flex direction="row" gap="2">
+            <Button
+              isLoading={isAssociatePending}
+              isDisabled={tokenHasAssociation}
+              onClick={() =>
+                associate(
+                  {
+                    tokenAddress:
+                      deployedHtsTokensAddress?.toString() as EvmAddress,
                   },
-                },
-              )
-            }
-          >
-            {tokenHasAssociation ? `Token already associated` : `Associate`}
-          </Button>
-          <Button
-            isLoading={isMintPending}
-            onClick={() =>
-              mint(
-                {
-                  tokenAddress: vaultAssetSelected,
-                  mintAmount: formatNumberToBigint(
-                    DEFAULT_TOKEN_MINT_AMOUNT,
-                    vaultAssetSelectedDecimals,
-                  ),
-                },
-                {
-                  onSuccess: () => {
-                    queryClient.invalidateQueries({
-                      queryKey: [QueryKeys.ReadBalanceOf],
-                    });
+                  {
+                    onSuccess: () => {
+                      queryClient.invalidateQueries({
+                        queryKey: [QueryKeys.ReadAccountTokens],
+                      });
+                    },
                   },
-                },
-              )
-            }
-          >
-            Mint {DEFAULT_TOKEN_MINT_AMOUNT} tokens
-          </Button>
-          <Text fontSize={12}>HTS Token Proxy CA: {vaultAssetSelected}</Text>
-        </>
+                )
+              }
+            >
+              {tokenHasAssociation ? `Token already associated` : `Associate`}
+            </Button>
+            <Button
+              isLoading={isMintPending}
+              onClick={() =>
+                mint(
+                  {
+                    tokenAddress: vaultAssetSelected,
+                    mintAmount: formatNumberToBigint(
+                      DEFAULT_TOKEN_MINT_AMOUNT,
+                      vaultAssetSelectedDecimals,
+                    ),
+                  },
+                  {
+                    onSuccess: () => {
+                      queryClient.invalidateQueries({
+                        queryKey: [QueryKeys.ReadBalanceOf],
+                      });
+                    },
+                  },
+                )
+              }
+            >
+              Mint {DEFAULT_TOKEN_MINT_AMOUNT} tokens
+            </Button>
+          </Flex>
+          <Text>HTS Token Proxy CA: {vaultAssetSelected}</Text>
+        </Flex>
       )}
       {associateResult && (
         <Alert status="success">

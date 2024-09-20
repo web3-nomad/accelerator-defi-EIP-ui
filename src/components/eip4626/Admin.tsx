@@ -40,7 +40,7 @@ export default function Admin() {
   return (
     <>
       {!isDeploy && (
-        <Stack align="center">
+        <Stack align="center" py="5">
           <Box width="50%">
             <MenuSelect
               label="Select vault for operation"

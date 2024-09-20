@@ -1,23 +1,33 @@
 import { useState, useContext } from "react";
-import { Divider, Stack, Text, Flex, Box } from "@chakra-ui/react";
-import { VaultWithdraw } from "@/components/eip4626/user/VaultWithdraw";
+import {
+  Divider,
+  Stack,
+  Text,
+  Box,
+  Link,
+  Flex,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
+  Heading,
+} from "@chakra-ui/react";
+import { GroupBase } from "react-select";
 import { VaultAssociate } from "@/components/eip4626/user/VaultAssociate";
 import { VaultClaimAllReward } from "@/components/eip4626/user/VaultClaimAllReward";
 import { VaultInfo } from "@/components/eip4626/user/VaultInfo";
-import { VaultDeposit } from "@/components/eip4626/user/VaultDeposit";
 import { Eip4626Context } from "@/contexts/Eip4626Context";
-import { VaultAddReward } from "@/components/eip4626/user/VaultAddReward";
 import { MintAssetToken } from "@/components/eip4626/user/MintAssetToken";
 import { useReadHederaVaultAssetQueries } from "@/hooks/eip4626/useReadHederaVaultAsset";
 import { EvmAddress } from "@/types/types";
 import { MenuSelect } from "@/components/MenuSelect";
-import { GroupBase } from "react-select";
+import { VaultAddReward } from "./user/VaultAddReward";
+import { VaultTabSection, vaultTabSections } from "./user/VaultTabSection";
 
 export default function User() {
   const [vaultSelected, setVaultSelected] = useState("" as EvmAddress);
-  const [vaultAssetSelected, setVaultAssetSelected] = useState(
-    "" as EvmAddress,
-  );
+  const [vaultAssetSelected] = useState("" as EvmAddress);
 
   const { deployedProxyHtsTokens, deployedHtsTokenNames } =
     useContext(Eip4626Context);
@@ -36,10 +46,37 @@ export default function User() {
     );
   });
 
+  const userVaultSectionTabs = {
+    vaultInfo: {
+      title: "Vault info",
+      _render: () => (
+        <VaultTabSection vaultSelected={vaultSelected}>
+          <VaultInfo vaultAddress={vaultSelected} />
+        </VaultTabSection>
+      ),
+    },
+    vaultPerformance: {
+      title: "Vault performance",
+      _render: () => (
+        <VaultTabSection vaultSelected={vaultSelected}>
+          <Flex direction="column" gap="2" pt="2">
+            <Heading fontWeight="800" size="md">
+              Manage vault rewards
+            </Heading>
+            <Divider my={2} />
+            <VaultAssociate vaultAddress={vaultSelected} />
+            <VaultClaimAllReward vaultAddress={vaultSelected} />
+            <VaultAddReward vaultAddress={vaultSelected} />
+          </Flex>
+        </VaultTabSection>
+      ),
+    },
+  };
+
   return (
     <>
-      {deployedProxyHtsTokens.length ? (
-        <Stack align="center">
+      <Stack align="center" py="5">
+        {deployedProxyHtsTokens.length ? (
           <Box width="50%">
             <MenuSelect
               label="Select vault asset for operation"
@@ -54,65 +91,68 @@ export default function User() {
               }}
             />
           </Box>
-        </Stack>
-      ) : (
-        <Text>No deployed HTS token addresses found</Text>
-      )}
-
-      <Divider my={10} />
-
-      <Stack>
+        ) : (
+          <Box>
+            <Text>No deployed HTS token addresses found</Text>
+          </Box>
+        )}
         <MintAssetToken
           vaultAssetSelected={vaultAssetSelected}
           vaultAssetSelectedName={deployedHtsTokenNames[vaultAssetSelected]}
         />
+
+        {!!vaultAssetSelected && (
+          <>
+            <Divider mt={8} />
+            {filteredVaultsForSelect?.length ? (
+              <Box width="50%">
+                <MenuSelect
+                  label="Select vault for operation"
+                  data={
+                    filteredVaultsForSelect.map((item) => ({
+                      value: item?.["args"]?.[0],
+                      label: `${item?.["args"]?.[1]} (${item?.["args"]?.[2]}) [${item?.["args"]?.[0]}]`,
+                    })) as unknown as GroupBase<string | number>[]
+                  }
+                  onTokenSelect={(value) => {
+                    const vaultItem = filteredVaultsForSelect.find(
+                      (itemSub) => itemSub?.["args"]?.[0] === value,
+                    );
+                    setVaultSelected(vaultItem?.["args"]?.[0]);
+                  }}
+                />
+              </Box>
+            ) : (
+              <Box>
+                <Text>
+                  Deploy new vault in <Link onClick={() => null}>Admin</Link>{" "}
+                  area
+                </Text>
+              </Box>
+            )}
+          </>
+        )}
       </Stack>
 
-      <Divider my={10} />
-
-      {vaultAssetSelected && (
-        <Stack align="center">
-          {filteredVaultsForSelect?.length ? (
-            <Box width="50%">
-              <MenuSelect
-                label="Select vault for operation"
-                data={
-                  filteredVaultsForSelect.map((item) => ({
-                    value: item?.["args"]?.[0],
-                    label: `${item?.["args"]?.[1]} (${item?.["args"]?.[2]}) [${item?.["args"]?.[0]}]`,
-                  })) as unknown as GroupBase<string | number>[]
-                }
-                onTokenSelect={(value) => {
-                  const vaultItem = filteredVaultsForSelect.find(
-                    (itemSub) => itemSub?.["args"]?.[0] === value,
-                  );
-                  setVaultSelected(vaultItem?.["args"]?.[0]);
-                }}
-              />
-            </Box>
-          ) : (
-            <Flex>
-              <Text>Deploy new vault in Admin area</Text>
-            </Flex>
-          )}
-        </Stack>
-      )}
-
-      {vaultSelected && (
+      {!!vaultSelected && (
         <>
-          <Divider my={10} />
-          <VaultInfo vaultAddress={vaultSelected} />
-          <Divider my={10} />
-          <VaultAssociate vaultAddress={vaultSelected} />
-          <Divider my={10} />
-          <VaultDeposit vaultAddress={vaultSelected} />
-          <Divider my={10} />
-          <VaultWithdraw vaultAddress={vaultSelected} />
-          <Divider my={10} />
-          <VaultClaimAllReward vaultAddress={vaultSelected} />
-          <Divider my={10} />
-          <VaultAddReward vaultAddress={vaultSelected} />
-          <Divider my={10} />
+          <Divider mt="8" />
+          <Tabs>
+            <TabList>
+              {vaultTabSections.map((tab) => (
+                <Tab key={tab}>
+                  {userVaultSectionTabs[tab as VaultTabSection].title}
+                </Tab>
+              ))}
+            </TabList>
+            <TabPanels>
+              {vaultTabSections.map((tab) => (
+                <TabPanel key={tab}>
+                  {userVaultSectionTabs[tab as VaultTabSection]._render()}
+                </TabPanel>
+              ))}
+            </TabPanels>
+          </Tabs>
         </>
       )}
     </>
