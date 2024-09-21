@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import {
   Box,
   Text,
@@ -15,16 +14,22 @@ import {
   AlertIcon,
 } from "@chakra-ui/react";
 import Icon from "@/components/Icon";
-import { useState, useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useDepositWithdrawFlow } from "@/hooks/useDepositWithdrawFlow";
 import { EvmAddress } from "@/types/types";
 import { VaultActionResults } from "@/components/eip4626/user/VaultActionResults";
 
+type Props = {
+  vaultAddress: EvmAddress;
+  toggleError: (isError: boolean) => void;
+  error: boolean;
+};
+
 export const VaultDepositWithdraw = ({
   vaultAddress,
-}: {
-  vaultAddress: EvmAddress;
-}) => {
+  toggleError,
+  error,
+}: Props) => {
   const {
     withdrawForm,
     depositForm,
@@ -36,20 +41,16 @@ export const VaultDepositWithdraw = ({
     vaultAssetUserBalance,
     approveToken,
   } = useDepositWithdrawFlow(vaultAddress);
+
   const maxAmounts = useMemo(
     () => ({
       deposit: vaultAssetUserBalance
-        ? parseFloat(vaultAssetUserBalance?.toString(8))
+        ? parseFloat(vaultAssetUserBalance?.toString())
         : 0,
-      withdraw: shareUserBalance
-        ? parseFloat(shareUserBalance?.toString(8))
-        : 0,
+      withdraw: shareUserBalance ? parseFloat(shareUserBalance?.toString()) : 0,
     }),
     [shareUserBalance, vaultAssetUserBalance],
   );
-  const [maxAmountError, setMaxAmountError] = useState(false);
-
-  console.log("amounts:", maxAmounts, vaultAssetUserBalance, shareUserBalance);
 
   const handleUpdateAmountWithPercent = (
     percentage: number,
@@ -63,9 +64,9 @@ export const VaultDepositWithdraw = ({
       form.setFieldValue("amount", calculatedAmount);
 
       if (calculatedAmount <= maxAmounts[isDeposit ? "deposit" : "withdraw"]) {
-        setMaxAmountError(false);
+        toggleError(false);
       } else {
-        setMaxAmountError(true);
+        toggleError(true);
       }
     }
   };
@@ -101,9 +102,9 @@ export const VaultDepositWithdraw = ({
                       calculatedAmount <=
                       maxAmounts[isDeposit ? "deposit" : "withdraw"]
                     ) {
-                      setMaxAmountError(false);
+                      toggleError(false);
                     } else {
-                      setMaxAmountError(true);
+                      toggleError(true);
                     }
 
                     return;
@@ -112,7 +113,7 @@ export const VaultDepositWithdraw = ({
                   form.setValues(() => ({
                     amount: 0,
                   }));
-                  setMaxAmountError(false);
+                  toggleError(false);
                 }}
               />
               <Box
@@ -141,7 +142,7 @@ export const VaultDepositWithdraw = ({
                 </Button>
               ))}
             </Flex>
-            {maxAmountError && (
+            {error && (
               <Alert status="error">
                 <AlertIcon />
                 <AlertDescription>
@@ -153,14 +154,14 @@ export const VaultDepositWithdraw = ({
               <Button
                 width="50%"
                 variant="outline"
-                isDisabled={maxAmountError || !form.values.amount}
+                isDisabled={error || !form.values.amount}
               >
                 confirm
               </Button>
               <Button
                 width="50%"
                 variant="outline"
-                isDisabled={maxAmountError || !form.values.amount}
+                isDisabled={error || !form.values.amount}
                 onClick={() => approveToken(form.values.amount, isDeposit)}
                 type="button"
               >

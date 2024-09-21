@@ -4,9 +4,7 @@ import {
   AlertIcon,
   AlertTitle,
   Button,
-  Heading,
   Text,
-  Divider,
 } from "@chakra-ui/react";
 import { useWriteHederaVaultClaimAllReward } from "@/hooks/eip4626/mutations/useWriteHederaVaultClaimAllReward";
 import { VaultInfoProps } from "@/types/types";
@@ -32,40 +30,36 @@ export function VaultClaimAllReward({ vaultAddress }: VaultInfoProps) {
     queryClient.invalidateQueries();
   };
 
-  if (!userRewards?.length) {
-    return <></>;
-  }
-
   return (
-    <>
-      <Divider my={10} />
-      <Heading size={"sm"} mb="2">
-        Your pending vault rewards:
-      </Heading>
-      {userRewards &&
-        userRewards.map((rewardQueryResult, index) => (
-          <Text key={index}>
+    !!userRewards?.length && (
+      <>
+        <Text fontWeight="800" fontSize={14}>
+          Your pending vault rewards:
+        </Text>
+        {userRewards.map((rewardQueryResult, index) => (
+          <Text key={index} fontSize={14}>
             {formatBalance(rewardQueryResult.data?.toString())}
           </Text>
         ))}
-      <Button onClick={() => claimCall()} isLoading={isClaimPending}>
-        Claim All Rewards
-      </Button>
+        <Button onClick={claimCall} isLoading={isClaimPending} width="40%">
+          Claim All Rewards
+        </Button>
 
-      {claimResult && (
-        <Alert status="success">
-          <AlertIcon />
-          <AlertTitle>Claim rewards success!</AlertTitle>
-          <AlertDescription>TxId: {claimResult}</AlertDescription>
-        </Alert>
-      )}
-      {claimError && (
-        <Alert status="error">
-          <AlertIcon />
-          <AlertTitle>Claim rewards error!</AlertTitle>
-          <AlertDescription>{claimError.toString()}</AlertDescription>
-        </Alert>
-      )}
-    </>
+        {claimResult && (
+          <Alert status="success">
+            <AlertIcon />
+            <AlertTitle>Claim rewards success!</AlertTitle>
+            <AlertDescription>TxId: {claimResult}</AlertDescription>
+          </Alert>
+        )}
+        {claimError && (
+          <Alert status="error">
+            <AlertIcon />
+            <AlertTitle>Claim rewards error!</AlertTitle>
+            <AlertDescription>{claimError.toString()}</AlertDescription>
+          </Alert>
+        )}
+      </>
+    )
   );
 }

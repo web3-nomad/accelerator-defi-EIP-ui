@@ -7,29 +7,24 @@ import { useReadHederaVaultUserContribution } from "@/hooks/eip4626/useReadHeder
 import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
 import { formatBalance, formatNumberToBigint } from "@/services/util/helpers";
 import { EvmAddress } from "@/types/types";
-import { readTokenSymbol } from "@/services/contracts/wagmiGenActions";
 import { useReadHederaVaultPreviewDeposit } from "./eip4626/useReadHederaVaultPreviewDeposit";
 import { useQueryClient } from "@tanstack/react-query";
 import { useFormik } from "formik";
-import { useEffect, useState } from "react";
 
 export const useDepositWithdrawFlow = (vaultAddress: EvmAddress) => {
   const queryClient = useQueryClient();
-  const [vaultAssetTokenSymbol, _set] = useState<string>();
 
-  const { data: vaultAssetAddress, error } =
-    useReadHederaVaultAsset(vaultAddress);
+  const { data: vaultAssetAddress } = useReadHederaVaultAsset(vaultAddress);
   const { data: vaultAssetUserBalance } = useReadBalanceOf(
     vaultAssetAddress as EvmAddress,
   );
-  console.log("vaultAssetAddress:", vaultAssetAddress, error);
-
   const { data: vaultShareAddress } = useReadHederaVaultShare(vaultAddress);
   const { data: shareUserBalance } = useReadBalanceOf(
     vaultShareAddress as EvmAddress,
   );
   const { data: userContribution } =
     useReadHederaVaultUserContribution(vaultAddress);
+
   const vaultBalanceFormatted = formatBalance(vaultAssetUserBalance);
 
   const {
@@ -111,14 +106,6 @@ export const useDepositWithdrawFlow = (vaultAddress: EvmAddress) => {
       vaultAddress,
     });
   };
-
-  useEffect(() => {
-    if (!!vaultAssetAddress) {
-      readTokenSymbol({}, vaultAssetAddress).then((res) => {
-        _set(res[0]);
-      });
-    }
-  }, [vaultAssetAddress]);
 
   return {
     approveToken,

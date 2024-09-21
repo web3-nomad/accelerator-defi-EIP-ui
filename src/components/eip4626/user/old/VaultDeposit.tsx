@@ -18,7 +18,7 @@ import { formatBalance, formatNumberToBigint } from "@/services/util/helpers";
 import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
 import { useQueryClient } from "@tanstack/react-query";
 import { useReadHederaVaultPreviewDeposit } from "@/hooks/eip4626/useReadHederaVaultPreviewDeposit";
-import { VaultActionResults } from "./VaultActionResults";
+import { VaultActionResults } from "@/components/eip4626/user/VaultActionResults";
 
 export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
   const queryClient = useQueryClient();
@@ -128,9 +128,8 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
           </HStack>
         </VStack>
       </form>
+
       <VaultActionResults
-        approveError={approveError}
-        approveResult={approveResult}
         depositError={depositError}
         depositResult={depositResult}
       />

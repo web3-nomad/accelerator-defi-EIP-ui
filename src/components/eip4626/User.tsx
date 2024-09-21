@@ -4,7 +4,6 @@ import {
   Stack,
   Text,
   Box,
-  Link,
   Flex,
   Tabs,
   TabList,
@@ -22,13 +21,19 @@ import { MintAssetToken } from "@/components/eip4626/user/MintAssetToken";
 import { useReadHederaVaultAssetQueries } from "@/hooks/eip4626/useReadHederaVaultAsset";
 import { EvmAddress } from "@/types/types";
 import { MenuSelect } from "@/components/MenuSelect";
-import { VaultAddReward } from "./user/VaultAddReward";
-import { VaultTabSection, vaultTabSections } from "./user/VaultTabSection";
+import { VaultAddReward } from "@/components/eip4626/user/VaultAddReward";
+import {
+  VaultTabSection,
+  vaultTabSections,
+} from "@/components/eip4626/user/VaultTabSection";
 
 export default function User() {
-  const [vaultSelected, setVaultSelected] = useState("" as EvmAddress);
-  const [vaultAssetSelected] = useState("" as EvmAddress);
-
+  const [vaultSelected, setVaultSelected] = useState<EvmAddress>(
+    "" as EvmAddress,
+  );
+  const [vaultAssetSelected, setVaultAssetSelected] = useState<EvmAddress>(
+    "" as EvmAddress,
+  );
   const { deployedProxyHtsTokens, deployedHtsTokenNames } =
     useContext(Eip4626Context);
   const { deployedVaults } = useContext(Eip4626Context);
@@ -56,14 +61,13 @@ export default function User() {
       ),
     },
     vaultPerformance: {
-      title: "Vault performance",
+      title: "Vault performance & rewards",
       _render: () => (
         <VaultTabSection vaultSelected={vaultSelected}>
           <Flex direction="column" gap="2" pt="2">
             <Heading fontWeight="800" size="md">
               Manage vault rewards
             </Heading>
-            <Divider my={2} />
             <VaultAssociate vaultAddress={vaultSelected} />
             <VaultClaimAllReward vaultAddress={vaultSelected} />
             <VaultAddReward vaultAddress={vaultSelected} />
@@ -71,11 +75,20 @@ export default function User() {
         </VaultTabSection>
       ),
     },
+    vaultMint: {
+      title: "Vault mint",
+      _render: () => (
+        <MintAssetToken
+          vaultAssetSelected={vaultAssetSelected}
+          vaultAssetSelectedName={deployedHtsTokenNames[vaultAssetSelected]}
+        />
+      ),
+    },
   };
 
   return (
     <>
-      <Stack align="center" py="5">
+      <Stack align="center" pt="5">
         {deployedProxyHtsTokens.length ? (
           <Box width="50%">
             <MenuSelect
@@ -86,24 +99,18 @@ export default function User() {
                   label: deployedHtsTokenNames[item],
                 })) as unknown as GroupBase<string | number>[]
               }
-              onTokenSelect={(value) => {
-                setVaultSelected(value as EvmAddress);
+              onTokenSelect={(address) => {
+                setVaultAssetSelected(address as EvmAddress);
               }}
             />
           </Box>
         ) : (
-          <Box>
-            <Text>No deployed HTS token addresses found</Text>
-          </Box>
+          <Text fontSize={14}>No deployed HTS token addresses found</Text>
         )}
-        <MintAssetToken
-          vaultAssetSelected={vaultAssetSelected}
-          vaultAssetSelectedName={deployedHtsTokenNames[vaultAssetSelected]}
-        />
 
         {!!vaultAssetSelected && (
           <>
-            <Divider mt={8} />
+            <Divider my={5} />
             {filteredVaultsForSelect?.length ? (
               <Box width="50%">
                 <MenuSelect
@@ -115,7 +122,7 @@ export default function User() {
                     })) as unknown as GroupBase<string | number>[]
                   }
                   onTokenSelect={(value) => {
-                    const vaultItem = filteredVaultsForSelect.find(
+                    const vaultItem = deployedVaults.find(
                       (itemSub) => itemSub?.["args"]?.[0] === value,
                     );
                     setVaultSelected(vaultItem?.["args"]?.[0]);
@@ -123,12 +130,9 @@ export default function User() {
                 />
               </Box>
             ) : (
-              <Box>
-                <Text>
-                  Deploy new vault in <Link onClick={() => null}>Admin</Link>{" "}
-                  area
-                </Text>
-              </Box>
+              <Text fontSize={14} fontWeight="600">
+                You need to deploy new vault in Admin Area
+              </Text>
             )}
           </>
         )}
@@ -136,7 +140,7 @@ export default function User() {
 
       {!!vaultSelected && (
         <>
-          <Divider mt="8" />
+          <Divider my={5} />
           <Tabs>
             <TabList>
               {vaultTabSections.map((tab) => (

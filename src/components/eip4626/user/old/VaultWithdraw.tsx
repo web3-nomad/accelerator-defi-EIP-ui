@@ -1,10 +1,6 @@
 import { useFormik } from "formik";
 import { EvmAddress, VaultInfoProps } from "@/types/types";
 import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
   Button,
   FormControl,
   FormHelperText,
@@ -22,6 +18,7 @@ import { formatBalance, formatNumberToBigint } from "@/services/util/helpers";
 import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
 import { useQueryClient } from "@tanstack/react-query";
 import { useReadHederaVaultUserContribution } from "@/hooks/eip4626/useReadHederaVaultUserContribution";
+import { VaultActionResults } from "@/components/eip4626/user/VaultActionResults";
 
 export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
   const queryClient = useQueryClient();
@@ -138,35 +135,10 @@ export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
         </VStack>
       </form>
 
-      {approveResult && (
-        <Alert status="success">
-          <AlertIcon />
-          <AlertTitle>Approve success!</AlertTitle>
-          <AlertDescription>TxId: {approveResult}</AlertDescription>
-        </Alert>
-      )}
-      {approveError && (
-        <Alert status="error">
-          <AlertIcon />
-          <AlertTitle>Approve token error!</AlertTitle>
-          <AlertDescription>{approveError.toString()}</AlertDescription>
-        </Alert>
-      )}
-
-      {withdrawResult && (
-        <Alert status="success">
-          <AlertIcon />
-          <AlertTitle>Withdraw success!</AlertTitle>
-          <AlertDescription>TxId: {withdrawResult}</AlertDescription>
-        </Alert>
-      )}
-      {withdrawError && (
-        <Alert status="error">
-          <AlertIcon />
-          <AlertTitle>Withdraw token error!</AlertTitle>
-          <AlertDescription>{withdrawError.toString()}</AlertDescription>
-        </Alert>
-      )}
+      <VaultActionResults
+        approveError={approveError}
+        approveResult={approveResult}
+      />
     </>
   );
 }

@@ -34,7 +34,6 @@ const vaultInfoBlockPlaceholders = {
 };
 
 export function VaultInfo({ vaultAddress }: VaultInfoProps) {
-  //@TODO refresh queries after depo/withdraw
   const { data: vaultAssetAddress } = useReadHederaVaultAsset(vaultAddress);
   const { data: vaultAssetTotalAssets } =
     useReadHederaVaultTotalAssets(vaultAddress);
@@ -43,9 +42,9 @@ export function VaultInfo({ vaultAddress }: VaultInfoProps) {
   const { data: vaultShareAddress } = useReadHederaVaultShare(vaultAddress);
   const { data: vaultFeeConfig } = useReadHederaVaultFeeConfig(vaultAddress);
 
-  let vaultFeeReceiver: string = "0x232323";
-  let vaultFeeTokenAddress: string = "0x232323";
-  let vaultFeePercentage: string = "20";
+  let vaultFeeReceiver: string = "";
+  let vaultFeeTokenAddress: string = "";
+  let vaultFeePercentage: string = "";
   let vaultFeePercentageFormatted: number;
 
   if (vaultFeeConfig) {
@@ -89,14 +88,51 @@ export function VaultInfo({ vaultAddress }: VaultInfoProps) {
       );
     }
 
+    if (blockKey === "vaultFees") {
+      return (
+        <>
+          {vaultFeeReceiver && (
+            <Flex direction="row" gap="1" justify="space-between">
+              <Text fontSize={14} fontWeight="800" width="45%">
+                Vault fee receiver address
+              </Text>
+              <Text fontSize={14} width="64%">
+                {vaultFeeReceiver}
+              </Text>
+            </Flex>
+          )}
+          {vaultFeePercentageFormatted && (
+            <Flex direction="row" gap="1" justify="space-between">
+              <Text fontSize={14} fontWeight="800" width="45%">
+                Vault fee percentage
+              </Text>
+              <Text fontSize={14} width="64%">
+                {vaultFeePercentageFormatted}%
+              </Text>
+            </Flex>
+          )}
+          {vaultFeeTokenAddress && (
+            <Flex direction="row" gap="1" justify="space-between">
+              <Text fontSize={14} fontWeight="800" width="45%">
+                Vault fee token address
+              </Text>
+              <Text fontSize={14} width="64%">
+                {vaultFeeTokenAddress}
+              </Text>
+            </Flex>
+          )}
+        </>
+      );
+    }
+
     return (
-      <Flex direction="row" gap="1">
-        <Text fontSize={15} fontWeight="800" width="45%">
+      <Flex direction="row" gap="1" justify="space-between">
+        <Text fontSize={14} fontWeight="800" width="45%">
           {vaultInfoBlockPlaceholders[blockKey]}
         </Text>
-        <Flex direction="column" width="55%">
-          <Text fontSize={15}>{_value}</Text>
-        </Flex>
+        <Text fontSize={14} width="64%">
+          {_value}
+        </Text>
       </Flex>
     );
   };
