@@ -4,7 +4,6 @@ export type DeployTokenRequest = {
   name: string;
   symbol: string;
   decimals: number;
-  nftAddress?: EvmAddress;
   complianceModules: EvmAddress[];
   complianceSettings: EvmAddress[];
 };

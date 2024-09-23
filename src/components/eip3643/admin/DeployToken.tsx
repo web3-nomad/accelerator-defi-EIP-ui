@@ -29,9 +29,10 @@ import {
   transferLimitOneHundredModuleAddress,
 } from "@/services/contracts/wagmiGenActions";
 import { MenuSelect } from "@/components/MenuSelect";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { EvmAddress } from "@/types/types";
 import { GroupBase } from "react-select";
+import { ethers } from "ethers";
 
 export const complianceModulesList = [
   {
@@ -86,7 +87,6 @@ export default function DeployToken({ onClose = () => {} }) {
       name,
       symbol,
       decimals,
-      nftAddress,
       complianceModules,
       complianceSettings,
     }) => {
@@ -94,18 +94,26 @@ export default function DeployToken({ onClose = () => {} }) {
       //prevent submit if not filled
 
       //@TODO add support of several modules per token
-      //@TODO generate settings here, not in the hook inside
 
       deployToken({
         name,
         symbol,
         decimals,
-        nftAddress: nftAddress as EvmAddress,
         complianceModules,
         complianceSettings,
       });
     },
   });
+
+  useEffect(() => {
+    if (form.values.nftAddress && ethers.isAddress(form.values.nftAddress)) {
+      const requiresNftModuleCall = new ethers.Interface([
+        "function requireNFT(address _nftAddress)",
+      ]).encodeFunctionData("requireNFT", [form.values.nftAddress]);
+      form.setFieldValue("complianceSettings", [requiresNftModuleCall]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.values.nftAddress]);
 
   const [complianceModuleSelected, setComplianceModuleSelected] = useState("");
   const handleComplianceModuleSelect = (value: string) => {
@@ -135,7 +143,7 @@ export default function DeployToken({ onClose = () => {} }) {
                   form.setFieldValue("nftAddress", hederaNftAddress);
                 }}
               >
-                Use demo NFT address
+                Fill with demo NFT address
               </Button>
             </FormHelperText>
             <FormHelperText>

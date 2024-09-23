@@ -155,7 +155,7 @@ export default function Compliance({
               }
               isDisabled={!form.values.nftAddress}
             >
-              Deploy
+              Add RequiresNFTModule with NFT address
             </Button>
           </FormControl>
 
