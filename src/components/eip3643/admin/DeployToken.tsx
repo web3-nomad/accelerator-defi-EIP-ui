@@ -78,7 +78,7 @@ export default function DeployToken({ onClose = () => {} }) {
       name: "",
       symbol: "",
       decimals: 18,
-      nftAddress: "", //
+      nftAddress: "",
       complianceModules: [] as EvmAddress[],
       complianceSettings: [] as EvmAddress[],
     },
@@ -109,7 +109,6 @@ export default function DeployToken({ onClose = () => {} }) {
 
   const [complianceModuleSelected, setComplianceModuleSelected] = useState("");
   const handleComplianceModuleSelect = (value: string) => {
-    console.log("L90 value ===", value); //this is addy
     setComplianceModuleSelected(value);
     form.setValues((prev) => ({
       ...prev,
@@ -118,19 +117,7 @@ export default function DeployToken({ onClose = () => {} }) {
     }));
   };
 
-  // const handleAddressSelection = (value: string | number) => {
-  //   form.setValues((prev) => ({
-  //     ...prev,
-  //     toAddress: value?.toString(),
-  //   }));
-  // };
-
   const showComplianceModule = useCallback(() => {
-    console.log("L127 showComplianceModule RUN ===");
-    console.log(
-      "L128 showComplianceModule selected module ===",
-      complianceModuleSelected,
-    );
     switch (complianceModuleSelected) {
       case requiresNftModuleAddress:
         return (
