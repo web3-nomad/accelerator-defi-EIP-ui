@@ -19,13 +19,20 @@ import { useFormik } from "formik";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { useTransferToken } from "@/hooks/mutations/useTransferToken";
 import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
-import { TokenNameItem, TransferTokenFromRequest } from "@/types/types";
+import {
+  EvmAddress,
+  TokenNameItem,
+  TransferTokenFromRequest,
+} from "@/types/types";
 import { useAccountId } from "@/hooks/useAccountId";
 import { AccountIdResult } from "@/components/AccountIdResult";
 import { MenuSelect } from "@/components/MenuSelect";
 import { GroupBase } from "react-select";
 import { useReadTokenDecimals } from "@/hooks/eip4626/useReadTokenDecimals";
-import { formatBalance } from "@/services/util/helpers";
+import {
+  formatUnitsWithDecimals,
+  parseUnitsWithDecimals,
+} from "@/services/util/helpers";
 
 type StoredAddressItem = {
   address: string;
@@ -36,39 +43,47 @@ export default function TransferToken({
   tokenSelected,
   registeredIdentities = [],
 }: {
-  tokenSelected: TokenNameItem | null;
+  tokenSelected: TokenNameItem;
   registeredIdentities?: string[];
 }) {
   const { accountEvm } = useWalletInterface();
-  const { error, isPending, mutateAsync: transferToken } = useTransferToken();
+  const {
+    data: transferResult,
+    error,
+    isPending,
+    mutateAsync: transferToken,
+  } = useTransferToken();
+  const { data: tokenDecimals } = useReadTokenDecimals(tokenSelected?.address);
   const [mostUsedAddressesValue, setValue] =
     useLocalStorage<StoredAddressItem[]>("mostUsedAddresses");
 
   const form = useFormik({
     initialValues: {
       toAddress: "",
-      amount: 0,
+      amount: "",
     },
     onSubmit: ({ toAddress, amount }) => {
-      const amountConverted = BigInt(amount);
-      updateMostUsedAddresses(toAddress);
+      const amountConverted = parseUnitsWithDecimals(amount, tokenDecimals);
+
       transferToken({
         tokenAddress: tokenSelected?.address,
-        toAddress: (hederaEVMAccount || toAddress) as `0x${string}`,
+        toAddress: (hederaEVMAccount || toAddress) as EvmAddress,
         amount: amountConverted,
       } as TransferTokenFromRequest);
+
+      updateMostUsedAddresses(toAddress);
     },
   });
 
   const { data: tokenBalance, error: tokenBalanceError } = useReadBalanceOf(
-    tokenSelected?.address as `0x${string}`,
+    tokenSelected?.address,
   );
 
   const { data: tokenSelectedDecimals } = useReadTokenDecimals(
     tokenSelected?.address,
   );
 
-  const tokenSelectedBalance = formatBalance(
+  const tokenSelectedBalance = formatUnitsWithDecimals(
     tokenBalance,
     tokenSelectedDecimals,
   );
@@ -190,6 +205,13 @@ export default function TransferToken({
         error={hederaAccountIdError}
         transformed={hederaEVMAccount}
       />
+      {transferResult && (
+        <Alert status="success" mt="4">
+          <AlertIcon />
+          <AlertTitle>Transfer token success!</AlertTitle>
+          <AlertDescription>TxId: {transferResult}</AlertDescription>
+        </Alert>
+      )}
       {error && (
         <Alert status="error" mt="4">
           <AlertIcon />
@@ -199,10 +221,10 @@ export default function TransferToken({
             <VStack>
               <Flex>Potential reasons: </Flex>
               <Flex>
-                - no sender or recipient identity present in the identity
+                - no sender or recipient identity present in the identity token
                 registry
               </Flex>
-              <Flex>- sender or recipient fails compliance requirements</Flex>
+              <Flex>- request fails the compliance requirements</Flex>
             </VStack>
           </AlertDescription>
         </Alert>
