@@ -17,6 +17,7 @@ export function useReadIdentityRegistryInvestorCountry(
         },
         registryAddress,
       ),
+    enabled: !!accountAddress && !!registryAddress,
     select: (data) => {
       return (
         investorCountriesItems.find((item) => item.value === Number(data))

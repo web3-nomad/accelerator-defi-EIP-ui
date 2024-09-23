@@ -3,10 +3,11 @@ import { isNil } from "lodash";
 import { VAULT_TOKEN_PRECISION_VALUE } from "@/config/constants";
 import BigNumber from "bignumber.js";
 import { formatUnits, parseUnits } from "viem";
+import { EvmAddress } from "@/types/types";
 
 export function convertAccountIdToSolidityAddress(
   accountId: AccountId,
-): `0x${string}` {
+): EvmAddress {
   const accountIdString =
     accountId.evmAddress !== null
       ? accountId.evmAddress.toString()
@@ -28,7 +29,7 @@ export function formatRawTxId(txIdRaw: string) {
 }
 
 /**
- * @deprecated - switch to formatUnitsWithDecimals
+ * @deprecated - switch to parseUnitsWithDecimals
  * @param initialValue
  * @param precision
  */

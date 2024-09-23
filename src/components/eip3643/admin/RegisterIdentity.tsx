@@ -125,30 +125,29 @@ export default function RegisterIdentity({
 
       <FormControl>
         <FormHelperText>
-          <b>Using Identity:</b> {currentIdentityAddress}
+          <b>User Identity address:</b> {currentIdentityAddress}
         </FormHelperText>
         <FormHelperText>
-          <b>Using Identity Registry:</b> {registry}
+          <b>Token Identity Registry address:</b> {registry}
         </FormHelperText>
         <FormHelperText>
-          <b>User is token Owner:</b> {String(isCurrentUserATokenOwner)}
+          <b>User Identity is added to Registry:</b>{" "}
+          {String(isIdentityAddedToRegistry)}
+        </FormHelperText>
+        <FormHelperText>
+          <b>User has Token Owner role:</b> {String(isCurrentUserATokenOwner)}
         </FormHelperText>
         <FormHelperText>
           <b>User has Agent role:</b> {String(isAgent)}
+        </FormHelperText>
+        <FormHelperText>
+          <b>User can add identity to registry:</b> {String(isAgent)}
         </FormHelperText>
         <FormHelperText>
           <b>User identity country:</b> {countryStored}
         </FormHelperText>
       </FormControl>
 
-      <Divider my={10} />
-
-      <Heading size={"md"}>Wallet addresses with registered identities</Heading>
-      <OrderedList>
-        {registryAgents.map((item) => (
-          <ListItem key={item}>{item}</ListItem>
-        ))}
-      </OrderedList>
       {registryAgents.length === 0 && <Text>No identities found</Text>}
       {error && (
         <Alert status="error">
@@ -164,6 +163,15 @@ export default function RegisterIdentity({
           <AlertDescription>TxId: {data}</AlertDescription>
         </Alert>
       )}
+
+      <Divider my={10} />
+
+      <Heading size={"md"}>Wallet addresses with registered identities</Heading>
+      <OrderedList>
+        {registryAgents.map((item) => (
+          <ListItem key={item}>{item}</ListItem>
+        ))}
+      </OrderedList>
     </>
   );
 }

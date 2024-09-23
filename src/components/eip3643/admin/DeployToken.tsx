@@ -43,7 +43,7 @@ export const complianceModulesList = [
     value: onlyUsaModuleAddress,
   },
   {
-    label: "Transfer limit of 100 tokens",
+    label: "Transfer limit of 100 tokens max",
     value: transferLimitOneHundredModuleAddress,
   },
   {
@@ -93,13 +93,14 @@ export default function DeployToken({ onClose = () => {} }) {
       //@TODO add validation for not filled fields of selected compl module - nft address, percentages etc
       //prevent submit if not filled
 
-      console.log("L56 onsubmit ===", complianceModules, complianceSettings);
+      //@TODO add support of several modules per token
+      //@TODO generate settings here, not in the hook inside
 
       deployToken({
         name,
         symbol,
         decimals,
-        nftAddress: nftAddress as `0x${string}`,
+        nftAddress: nftAddress as EvmAddress,
         complianceModules,
         complianceSettings,
       });
@@ -112,7 +113,7 @@ export default function DeployToken({ onClose = () => {} }) {
     setComplianceModuleSelected(value);
     form.setValues((prev) => ({
       ...prev,
-      complianceModules: [value as EvmAddress],
+      complianceModules: value ? [value as EvmAddress] : [],
       complianceSettings: [],
     }));
   };
@@ -159,6 +160,7 @@ export default function DeployToken({ onClose = () => {} }) {
         );
 
       case onlyUsaModuleAddress:
+      case transferLimitOneHundredModuleAddress:
         return null;
     }
   }, [complianceModuleSelected, form]);
