@@ -22,14 +22,11 @@ import { useReadHederaVaultAssetQueries } from "@/hooks/eip4626/useReadHederaVau
 import { EvmAddress } from "@/types/types";
 import { MenuSelect } from "@/components/MenuSelect";
 import { VaultAddReward } from "@/components/eip4626/user/VaultAddReward";
-import {
-  VaultTabSection,
-  vaultTabSections,
-} from "@/components/eip4626/user/VaultTabSection";
+import { VaultTabSection } from "@/components/eip4626/user/VaultTabSection";
 
 export default function User() {
   const [vaultSelected, setVaultSelected] = useState<EvmAddress>(
-    "" as EvmAddress,
+    "0xe95E635753a8A233cB736c5CB0dF181Bb865a90b" as EvmAddress,
   );
   const [vaultAssetSelected, setVaultAssetSelected] = useState<EvmAddress>(
     "" as EvmAddress,
@@ -50,41 +47,6 @@ export default function User() {
       (subItem) => subItem?.data?.vaultAddress === item?.["args"]?.[0],
     );
   });
-
-  const userVaultSectionTabs = {
-    vaultInfo: {
-      title: "Vault info",
-      _render: () => (
-        <VaultTabSection vaultSelected={vaultSelected}>
-          <VaultInfo vaultAddress={vaultSelected} />
-        </VaultTabSection>
-      ),
-    },
-    vaultPerformance: {
-      title: "Vault performance & rewards",
-      _render: () => (
-        <VaultTabSection vaultSelected={vaultSelected}>
-          <Flex direction="column" gap="2" pt="2">
-            <Heading fontWeight="800" size="md">
-              Manage vault rewards
-            </Heading>
-            <VaultAssociate vaultAddress={vaultSelected} />
-            <VaultClaimAllReward vaultAddress={vaultSelected} />
-            <VaultAddReward vaultAddress={vaultSelected} />
-          </Flex>
-        </VaultTabSection>
-      ),
-    },
-    vaultMint: {
-      title: "Vault mint",
-      _render: () => (
-        <MintAssetToken
-          vaultAssetSelected={vaultAssetSelected}
-          vaultAssetSelectedName={deployedHtsTokenNames[vaultAssetSelected]}
-        />
-      ),
-    },
-  };
 
   return (
     <>
@@ -108,7 +70,7 @@ export default function User() {
           <Text fontSize={14}>No deployed HTS token addresses found</Text>
         )}
 
-        {!!vaultAssetSelected && (
+        {vaultAssetSelected && (
           <>
             <Divider my={5} />
             {filteredVaultsForSelect?.length ? (
@@ -138,23 +100,41 @@ export default function User() {
         )}
       </Stack>
 
-      {!!vaultSelected && (
+      {vaultSelected && (
         <>
           <Divider my={5} />
           <Tabs>
             <TabList>
-              {vaultTabSections.map((tab) => (
-                <Tab key={tab}>
-                  {userVaultSectionTabs[tab as VaultTabSection].title}
-                </Tab>
-              ))}
+              <Tab>Vault info</Tab>
+              <Tab>Vault performance & rewards</Tab>
+              <Tab>Vault mint</Tab>
             </TabList>
             <TabPanels>
-              {vaultTabSections.map((tab) => (
-                <TabPanel key={tab}>
-                  {userVaultSectionTabs[tab as VaultTabSection]._render()}
-                </TabPanel>
-              ))}
+              <TabPanel>
+                <VaultTabSection vaultSelected={vaultSelected}>
+                  <VaultInfo vaultAddress={vaultSelected} />
+                </VaultTabSection>
+              </TabPanel>
+              <TabPanel>
+                <VaultTabSection vaultSelected={vaultSelected}>
+                  <Flex direction="column" gap="2" pt="2">
+                    <Heading fontWeight="800" size="md">
+                      Manage vault rewards
+                    </Heading>
+                    <VaultAssociate vaultAddress={vaultSelected} />
+                    <VaultClaimAllReward vaultAddress={vaultSelected} />
+                    <VaultAddReward vaultAddress={vaultSelected} />
+                  </Flex>
+                </VaultTabSection>
+              </TabPanel>
+              <TabPanel>
+                <MintAssetToken
+                  vaultAssetSelected={vaultAssetSelected}
+                  vaultAssetSelectedName={
+                    deployedHtsTokenNames[vaultAssetSelected]
+                  }
+                />
+              </TabPanel>
             </TabPanels>
           </Tabs>
         </>

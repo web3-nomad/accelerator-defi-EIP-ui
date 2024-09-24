@@ -31,7 +31,7 @@ export function VaultClaimAllReward({ vaultAddress }: VaultInfoProps) {
   };
 
   return (
-    !!userRewards?.length && (
+    userRewards?.length && (
       <>
         <Text fontWeight="800" fontSize={14}>
           Your pending vault rewards:

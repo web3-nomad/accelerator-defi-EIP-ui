@@ -10,8 +10,8 @@ export function VaultAssociate({ vaultAddress }: VaultInfoProps) {
   const { data: vaultShareAddress } = useReadHederaVaultShare(vaultAddress);
 
   return (
-    !!vaultAssetAddress &&
-    !!vaultShareAddress && (
+    vaultAssetAddress &&
+    vaultShareAddress && (
       <>
         <Divider my={2} />
         <Heading size="sm" fontWeight="800" backgroundColor="ButtonFace" p="2">
