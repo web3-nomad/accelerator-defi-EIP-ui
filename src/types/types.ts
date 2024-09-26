@@ -1,5 +1,3 @@
-import { CountryCodesISO } from "@/components/manage-identities/ManageIdentities";
-
 export type DeployTokenRequest = {
   name: string;
   symbol: string;
@@ -17,6 +15,11 @@ export type MintTokenRequest = {
 export type CreateIdentityRequest = {
   address: `0x${string}`;
 };
+
+export enum CountryCodesISO {
+  US = 840,
+  NON_US = 0,
+}
 
 export type AddIdentityToRegistryRequest = {
   address: EvmAddress;

@@ -7,5 +7,6 @@ export function useReadTokenOwner(tokenAddress: EvmAddress) {
   return useQuery({
     queryKey: [QueryKeys.ReadTokenOwner, tokenAddress],
     queryFn: () => readTokenOwner({ args: [] }, tokenAddress),
+    enabled: !!tokenAddress,
   });
 }

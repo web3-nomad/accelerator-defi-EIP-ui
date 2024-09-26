@@ -15,14 +15,11 @@ import {
 } from "@chakra-ui/react";
 import { useContext, useMemo, useState } from "react";
 import { useRegisterIdentity } from "@/hooks/mutations/useRegisterIdentity";
-import { EvmAddress, TokenNameItem } from "@/types/types";
+import { CountryCodesISO, EvmAddress, TokenNameItem } from "@/types/types";
 import { Eip3643Context } from "@/contexts/Eip3643Context";
 import { useTokenIdentityRegistry } from "@/hooks/useTokenIdentityRegistry";
 import { MenuSelect } from "@/components/MenuSelect";
-import {
-  CountryCodesISO,
-  investorCountriesItems,
-} from "@/components/manage-identities/ManageIdentities";
+import { investorCountriesItems } from "@/components/manage-identities/ManageIdentities";
 import { useReadTokenIsAgent } from "@/hooks/eip3643/useReadTokenIsAgent";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { useReadTokenOwner } from "@/hooks/eip3643/useReadTokenOwner";

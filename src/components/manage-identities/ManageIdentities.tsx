@@ -28,6 +28,7 @@ import { useContext, useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { ethers } from "ethers";
 import {
+  CountryCodesISO,
   EvmAddress,
   TokenNameItem,
   UpdateIdentityCountryProps,
@@ -51,10 +52,6 @@ import { WalletInterface } from "@/services/wallets/walletInterface";
 import { WatchContractEventReturnType } from "@/services/contracts/watchContractEvent";
 import { GroupBase } from "react-select";
 
-export enum CountryCodesISO {
-  US = 840,
-  NON_US = 0,
-}
 export const investorCountriesItems = [
   {
     value: CountryCodesISO.US,

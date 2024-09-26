@@ -11,8 +11,8 @@ export enum QueryKeys {
   ReadAccountTokens = "readAccountTokens",
   ReadTokenDecimals = "readTokenDecimals",
   ReadTokenIsAgent = "readTokenIsAgent",
-  ReadTokenOwner = "ReadTokenIsAgent",
-  ReadIdentityRegistryInvestorCountry = "ReadIdentityRegistryInvestorCountry",
+  ReadTokenOwner = "readTokenOwner",
+  ReadIdentityRegistryInvestorCountry = "readIdentityRegistryInvestorCountry",
 }
 
 export enum QueryKeysEIP4626 {
