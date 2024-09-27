@@ -1,5 +1,3 @@
-import { readIdentityRegistryInvestorCountry } from "@/services/contracts/wagmiGenActions";
-
 export enum QueryKeys {
   ContractCallResults = "contractCallResults",
   ReadErc20BalanceOf = "readErc20BalanceOf",
