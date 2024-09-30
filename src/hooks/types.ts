@@ -7,6 +7,10 @@ export enum QueryKeys {
   ReadModularComplianceGetModules = "readModularComplianceGetModules",
   ReadHtsTokenTokenAddress = "readHtsTokenTokenAddress",
   ReadAccountTokens = "readAccountTokens",
+  ReadTokenDecimals = "readTokenDecimals",
+  ReadTokenIsAgent = "readTokenIsAgent",
+  ReadTokenOwner = "readTokenOwner",
+  ReadIdentityRegistryInvestorCountry = "readIdentityRegistryInvestorCountry",
 }
 
 export enum QueryKeysEIP4626 {

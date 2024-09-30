@@ -29,6 +29,7 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
   const { data: vaultAssetUserBalance, error: vaultAssetUserBalanceError } =
     useReadBalanceOf(vaultAssetAddress as EvmAddress);
 
+  //@TODO dynamic decimals
   const balanceFormatted = formatBalance(vaultAssetUserBalance);
 
   const {

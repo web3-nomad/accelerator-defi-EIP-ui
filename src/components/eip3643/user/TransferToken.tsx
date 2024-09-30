@@ -19,11 +19,20 @@ import { useFormik } from "formik";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { useTransferToken } from "@/hooks/mutations/useTransferToken";
 import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
-import { TokenNameItem, TransferTokenFromRequest } from "@/types/types";
+import {
+  EvmAddress,
+  TokenNameItem,
+  TransferTokenFromRequest,
+} from "@/types/types";
 import { useAccountId } from "@/hooks/useAccountId";
 import { AccountIdResult } from "@/components/AccountIdResult";
 import { MenuSelect } from "@/components/MenuSelect";
 import { GroupBase } from "react-select";
+import { useReadTokenDecimals } from "@/hooks/eip4626/useReadTokenDecimals";
+import {
+  formatUnitsWithDecimals,
+  parseUnitsWithDecimals,
+} from "@/services/util/helpers";
 
 type StoredAddressItem = {
   address: string;
@@ -34,32 +43,49 @@ export default function TransferToken({
   tokenSelected,
   registeredIdentities = [],
 }: {
-  tokenSelected: TokenNameItem | null;
+  tokenSelected: TokenNameItem;
   registeredIdentities?: string[];
 }) {
   const { accountEvm } = useWalletInterface();
-  const { error, isPending, mutateAsync: transferToken } = useTransferToken();
+  const {
+    data: transferResult,
+    error,
+    isPending,
+    mutateAsync: transferToken,
+  } = useTransferToken();
+  const { data: tokenDecimals } = useReadTokenDecimals(tokenSelected?.address);
   const [mostUsedAddressesValue, setValue] =
     useLocalStorage<StoredAddressItem[]>("mostUsedAddresses");
 
   const form = useFormik({
     initialValues: {
       toAddress: "",
-      amount: 0,
+      amount: "",
     },
     onSubmit: ({ toAddress, amount }) => {
-      const amountConverted = BigInt(amount);
-      updateMostUsedAddresses(toAddress);
+      const amountConverted = parseUnitsWithDecimals(amount, tokenDecimals);
+
       transferToken({
         tokenAddress: tokenSelected?.address,
-        toAddress: (hederaEVMAccount || toAddress) as `0x${string}`,
+        toAddress: (hederaEVMAccount || toAddress) as EvmAddress,
         amount: amountConverted,
       } as TransferTokenFromRequest);
+
+      updateMostUsedAddresses(toAddress);
     },
   });
 
   const { data: tokenBalance, error: tokenBalanceError } = useReadBalanceOf(
-    tokenSelected?.address as `0x${string}`,
+    tokenSelected?.address,
+  );
+
+  const { data: tokenSelectedDecimals } = useReadTokenDecimals(
+    tokenSelected?.address,
+  );
+
+  const tokenSelectedBalance = formatUnitsWithDecimals(
+    tokenBalance,
+    tokenSelectedDecimals,
   );
 
   const { hederaAccountIdError, hederaEVMAccount } = useAccountId(
@@ -111,7 +137,7 @@ export default function TransferToken({
         <VStack gap={2} alignItems="flex-start">
           <FormControl isRequired>
             <FormHelperText>
-              Balance of token: {`${tokenBalance}`}
+              Balance of token: {`${tokenSelectedBalance}`}
             </FormHelperText>
             {tokenBalanceError && (
               <FormHelperText color={"red"}>
@@ -179,15 +205,27 @@ export default function TransferToken({
         error={hederaAccountIdError}
         transformed={hederaEVMAccount}
       />
+      {transferResult && (
+        <Alert status="success" mt="4">
+          <AlertIcon />
+          <AlertTitle>Transfer token success!</AlertTitle>
+          <AlertDescription>TxId: {transferResult}</AlertDescription>
+        </Alert>
+      )}
       {error && (
         <Alert status="error" mt="4">
           <AlertIcon />
           <AlertTitle>Transfer token error!</AlertTitle>
+          <AlertDescription>{error.toString()}</AlertDescription>
           <AlertDescription>
-            {error.toString()}
-            Potential reasons: - no sender or recipient identity present in the
-            identity registry - sender or recipient does not have KYC NFT
-            present
+            <VStack>
+              <Flex>Potential reasons: </Flex>
+              <Flex>
+                - no sender or recipient identity present in the identity token
+                registry
+              </Flex>
+              <Flex>- request fails the compliance requirements</Flex>
+            </VStack>
           </AlertDescription>
         </Alert>
       )}
