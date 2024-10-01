@@ -10,7 +10,13 @@ type Props = {
   data: GroupBase<string | number>[];
   styles?: StylesConfig;
   onTokenSelect: (value: string) => void;
-  selectedValue?: string | number;
+  selectedValue?:
+    | string
+    | number
+    | {
+        value: number;
+        label: string;
+      };
   loadingInProgress?: boolean;
 };
 
@@ -29,6 +35,7 @@ export const MenuSelect = (props: Props) => {
           width: "100%",
         }),
       }}
+      defaultValue={props.selectedValue}
       {...(props.selectedValue && {
         value: props.selectedValue,
       })}

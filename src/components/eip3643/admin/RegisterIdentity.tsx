@@ -32,7 +32,12 @@ export default function RegisterIdentity({
     isPending,
   } = useRegisterIdentity();
 
-  const { registry, registryAgents } = useTokenIdentityRegistry(tokenSelected);
+  const { registry, registryIdentities } =
+    useTokenIdentityRegistry(tokenSelected);
+
+  const registryIdentitiesWallets = registryIdentities.map(
+    (identity) => identity.walletAddr as string,
+  );
 
   if (!tokenSelected) return null;
 
@@ -41,7 +46,7 @@ export default function RegisterIdentity({
       <Button
         isDisabled={
           !currentIdentityAddress ||
-          registryAgents.includes(currentIdentityWallet)
+          registryIdentitiesWallets.includes(currentIdentityWallet)
         }
         isLoading={isPending}
         size={"md"}
@@ -55,7 +60,7 @@ export default function RegisterIdentity({
       >
         Add Identity to Registry{" "}
         {(!currentIdentityAddress ||
-          registryAgents.includes(currentIdentityWallet)) &&
+          registryIdentitiesWallets.includes(currentIdentityWallet)) &&
           "[Already added]"}
       </Button>
       <FormControl>
@@ -69,11 +74,13 @@ export default function RegisterIdentity({
       <Divider my={10} />
       <Heading size={"md"}>Wallet addresses with registered identities</Heading>
       <OrderedList>
-        {registryAgents.map((item) => (
+        {registryIdentitiesWallets.map((item) => (
           <ListItem key={item}>{item}</ListItem>
         ))}
       </OrderedList>
-      {registryAgents.length === 0 && <Text>No identities found</Text>}
+      {registryIdentitiesWallets.length === 0 && (
+        <Text>No identities found</Text>
+      )}
       {error && (
         <Alert status="error">
           <AlertIcon />
