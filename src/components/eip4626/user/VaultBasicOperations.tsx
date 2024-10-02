@@ -7,14 +7,16 @@ import {
   TabPanel,
 } from "@chakra-ui/react";
 import { EvmAddress } from "@/types/types";
-import { VaultDepositForm } from "./VaultDepositForm";
-import { VaultWithdrawForm } from "./VaultWithdrawForm";
+import { VaultDeposit } from "@/components/eip4626/user/VaultDeposit";
+import { VaultWithdraw } from "@/components/eip4626/user/VaultWithdraw";
 
-type Props = {
+type VaultBasicOperationsProps = {
   vaultAddress: EvmAddress;
 };
 
-export const VaultBasicOperations = ({ vaultAddress }: Props) => {
+export const VaultBasicOperations = ({
+  vaultAddress,
+}: VaultBasicOperationsProps) => {
   return (
     <Tabs>
       <TabList gap="5">
@@ -27,10 +29,10 @@ export const VaultBasicOperations = ({ vaultAddress }: Props) => {
       </TabList>
       <TabPanels>
         <TabPanel>
-          <VaultWithdrawForm vaultAddress={vaultAddress} />
+          <VaultWithdraw vaultAddress={vaultAddress} />
         </TabPanel>
         <TabPanel>
-          <VaultDepositForm vaultAddress={vaultAddress} />
+          <VaultDeposit vaultAddress={vaultAddress} />
         </TabPanel>
       </TabPanels>
     </Tabs>

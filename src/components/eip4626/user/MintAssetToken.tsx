@@ -14,7 +14,7 @@ import { AccountId } from "@hashgraph/sdk";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKeys } from "@/hooks/types";
 import { useReadHtsTokenTokenAddress } from "@/hooks/eip4626/useReadHtsTokenTokenAddress";
-import { TransactionResult } from "@/components/TransactionResult";
+import { ActionName, TransactionResult } from "@/components/TransactionResult";
 
 export function MintAssetToken({
   vaultAssetSelected,
@@ -144,12 +144,12 @@ export function MintAssetToken({
       )}
 
       <TransactionResult
-        actionType="Associate"
+        actionName={ActionName.Associate}
         transactionResult={associateResult}
         transactionError={associateError}
       />
       <TransactionResult
-        actionType="Mint"
+        actionName={ActionName.Mint}
         transactionResult={mintResult}
         transactionError={mintError}
       />

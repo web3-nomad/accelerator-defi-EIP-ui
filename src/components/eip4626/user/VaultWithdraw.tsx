@@ -8,7 +8,7 @@ import {
   AlertIcon,
 } from "@chakra-ui/react";
 import Icon from "@/components/Icon";
-import { TransactionResult } from "@/components/TransactionResult";
+import { ActionName, TransactionResult } from "@/components/TransactionResult";
 import { EvmAddress } from "@/types/types";
 import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
 import { useWriteHederaVaultWithdraw } from "@/hooks/eip4626/mutations/useWriteHederaVaultWithdraw";
@@ -18,11 +18,11 @@ import { useFormik } from "formik";
 import { useState, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
-type Props = {
+type VaultWithdrawProps = {
   vaultAddress: EvmAddress;
 };
 
-export const VaultWithdrawForm = ({ vaultAddress }: Props) => {
+export const VaultWithdraw = ({ vaultAddress }: VaultWithdrawProps) => {
   const queryClient = useQueryClient();
   const { shareUserBalance, vaultShareAddress, vaultAssetAddress } =
     useVaultProperties(vaultAddress);
@@ -58,14 +58,12 @@ export const VaultWithdrawForm = ({ vaultAddress }: Props) => {
     },
   });
 
-  const approveToken = (amount: number, isDeposit = false) => {
+  const approveToken = (amount: number) => {
     const amountConverted = formatNumberToBigint(amount);
 
     approve({
       tokenAmount: amountConverted,
-      tokenAddress: (isDeposit
-        ? vaultAssetAddress
-        : vaultShareAddress) as EvmAddress,
+      tokenAddress: vaultShareAddress as EvmAddress,
       vaultAddress,
     });
   };
@@ -194,12 +192,12 @@ export const VaultWithdrawForm = ({ vaultAddress }: Props) => {
       </form>
 
       <TransactionResult
-        actionType="Withdraw"
+        actionName={ActionName.Withdraw}
         transactionResult={withdrawResult}
         transactionError={withdrawError}
       />
       <TransactionResult
-        actionType="Approve"
+        actionName={ActionName.Approve}
         transactionResult={approveResult}
         transactionError={approveError}
       />

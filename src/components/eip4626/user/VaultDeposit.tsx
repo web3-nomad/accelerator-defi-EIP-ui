@@ -10,7 +10,7 @@ import {
 import { useQueryClient } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import Icon from "@/components/Icon";
-import { TransactionResult } from "@/components/TransactionResult";
+import { ActionName, TransactionResult } from "@/components/TransactionResult";
 import { EvmAddress } from "@/types/types";
 import { useState, useMemo } from "react";
 import { useVaultProperties } from "@/hooks/useVaultProperties";
@@ -19,11 +19,11 @@ import { useWriteHederaVaultDeposit } from "@/hooks/eip4626/mutations/useWriteHe
 import { useReadHederaVaultPreviewDeposit } from "@/hooks/eip4626/useReadHederaVaultPreviewDeposit";
 import { formatBalance, formatNumberToBigint } from "@/services/util/helpers";
 
-type Props = {
+type VaultDepositProps = {
   vaultAddress: EvmAddress;
 };
 
-export const VaultDepositForm = ({ vaultAddress }: Props) => {
+export const VaultDeposit = ({ vaultAddress }: VaultDepositProps) => {
   const queryClient = useQueryClient();
 
   const {
@@ -60,23 +60,12 @@ export const VaultDepositForm = ({ vaultAddress }: Props) => {
     },
   });
 
-  const { data: previewDepositData } = useReadHederaVaultPreviewDeposit(
-    vaultAddress,
-    depositForm.values.amount,
-  );
-
-  const previewDepositDataFormatted = formatBalance(
-    previewDepositData?.toString(),
-  );
-
-  const approveToken = (amount: number, isDeposit = false) => {
+  const approveToken = (amount: number) => {
     const amountConverted = formatNumberToBigint(amount);
 
     approve({
       tokenAmount: amountConverted,
-      tokenAddress: (isDeposit
-        ? vaultAssetAddress
-        : vaultShareAddress) as EvmAddress,
+      tokenAddress: vaultAssetAddress as EvmAddress,
       vaultAddress,
     });
   };
@@ -206,12 +195,12 @@ export const VaultDepositForm = ({ vaultAddress }: Props) => {
       </form>
 
       <TransactionResult
-        actionType="Deposit"
+        actionName={ActionName.Deposit}
         transactionResult={depositResult}
         transactionError={depositError}
       />
       <TransactionResult
-        actionType="Approve"
+        actionName={ActionName.Approve}
         transactionResult={approveResult}
         transactionError={approveError}
       />

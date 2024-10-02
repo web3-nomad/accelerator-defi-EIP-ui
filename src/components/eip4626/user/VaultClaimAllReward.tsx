@@ -10,6 +10,7 @@ import { useWriteHederaVaultClaimAllReward } from "@/hooks/eip4626/mutations/use
 import { VaultInfoProps } from "@/types/types";
 import { useReadHederaVaultGetUserReward } from "@/hooks/eip4626/useReadHederaVaultGetUserReward";
 import { formatBalance } from "@/services/util/helpers";
+import { ActionName, TransactionResult } from "@/components/TransactionResult";
 import { useQueryClient } from "@tanstack/react-query";
 
 export function VaultClaimAllReward({ vaultAddress }: VaultInfoProps) {
@@ -45,20 +46,11 @@ export function VaultClaimAllReward({ vaultAddress }: VaultInfoProps) {
           Claim All Rewards
         </Button>
 
-        {claimResult && (
-          <Alert status="success">
-            <AlertIcon />
-            <AlertTitle>Claim rewards success!</AlertTitle>
-            <AlertDescription>TxId: {claimResult}</AlertDescription>
-          </Alert>
-        )}
-        {claimError && (
-          <Alert status="error">
-            <AlertIcon />
-            <AlertTitle>Claim rewards error!</AlertTitle>
-            <AlertDescription>{claimError.toString()}</AlertDescription>
-          </Alert>
-        )}
+        <TransactionResult
+          actionName={ActionName.Claim}
+          transactionError={claimError}
+          transactionResult={claimResult}
+        />
       </>
     )
   );
