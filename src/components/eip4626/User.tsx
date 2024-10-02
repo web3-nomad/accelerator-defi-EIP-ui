@@ -25,9 +25,7 @@ import { VaultAddReward } from "@/components/eip4626/user/VaultAddReward";
 import { VaultTabSection } from "@/components/eip4626/user/VaultTabSection";
 
 export default function User() {
-  const [vaultSelected, setVaultSelected] = useState<EvmAddress>(
-    "0xe95E635753a8A233cB736c5CB0dF181Bb865a90b" as EvmAddress,
-  );
+  const [vaultSelected, setVaultSelected] = useState<EvmAddress>();
   const [vaultAssetSelected, setVaultAssetSelected] = useState<EvmAddress>(
     "" as EvmAddress,
   );
