@@ -12,11 +12,13 @@ import { ActionName, TransactionResult } from "@/components/TransactionResult";
 import { EvmAddress } from "@/types/types";
 import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
 import { useWriteHederaVaultWithdraw } from "@/hooks/eip4626/mutations/useWriteHederaVaultWithdraw";
-import { useVaultProperties } from "@/hooks/useVaultProperties";
-import { formatNumberToBigint } from "@/services/util/helpers";
+import { formatBalance, formatNumberToBigint } from "@/services/util/helpers";
+import BigNumber from "bignumber.js";
 import { useFormik } from "formik";
 import { useState, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useReadHederaVaultShare } from "@/hooks/eip4626/useReadHederaVaultShare";
+import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
 
 type VaultWithdrawProps = {
   vaultAddress: EvmAddress;
@@ -24,8 +26,11 @@ type VaultWithdrawProps = {
 
 export const VaultWithdraw = ({ vaultAddress }: VaultWithdrawProps) => {
   const queryClient = useQueryClient();
-  const { shareUserBalance, vaultShareAddress, vaultAssetAddress } =
-    useVaultProperties(vaultAddress);
+
+  const { data: vaultShareAddress } = useReadHederaVaultShare(vaultAddress);
+  const { data: shareUserBalance } = useReadBalanceOf(
+    vaultShareAddress as EvmAddress,
+  );
 
   const {
     data: withdrawResult,
@@ -68,6 +73,11 @@ export const VaultWithdraw = ({ vaultAddress }: VaultWithdrawProps) => {
     });
   };
 
+  const maxAmount = useMemo(
+    () => Number(formatBalance(shareUserBalance)),
+    [shareUserBalance],
+  );
+
   const handleUpdateAmountWithPercent = (percentage: number | string) => {
     const calculatedAmount =
       typeof percentage === "number"
@@ -84,11 +94,6 @@ export const VaultWithdraw = ({ vaultAddress }: VaultWithdrawProps) => {
       }
     }
   };
-
-  const maxAmount = useMemo(
-    () => (shareUserBalance ? parseFloat(shareUserBalance?.toString()) : 0),
-    [shareUserBalance],
-  );
 
   const [maxAmountError, setMaxAmountError] = useState(false);
 
@@ -115,7 +120,9 @@ export const VaultWithdraw = ({ vaultAddress }: VaultWithdrawProps) => {
             <Input
               value={withdrawForm.values?.amount}
               onChange={(e) => {
-                const calculatedAmount = parseFloat(e.target.value);
+                const calculatedAmount = new BigNumber(
+                  e.target.value,
+                ).toNumber();
 
                 if (calculatedAmount || calculatedAmount === 0) {
                   withdrawForm.setValues(() => ({
@@ -141,8 +148,8 @@ export const VaultWithdraw = ({ vaultAddress }: VaultWithdrawProps) => {
               width="70px"
               height="40px"
               borderRadius={6}
-              borderWidth={1.3}
-              borderColor="#000"
+              borderWidth={1}
+              borderColor="lightGray"
               alignItems="center"
               justifyContent="center"
             >

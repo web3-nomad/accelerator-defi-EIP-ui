@@ -93,7 +93,7 @@ export default function CreateIdentityFactory() {
             type="submit"
             isLoading={isPending}
           >
-            Create identity {!!currentIdentityAddress && "[Already created]"}
+            Create identity {!!currentIdentityAddress && "[Already created] ✅"}
           </Button>
           <AccountIdResult
             error={hederaAccountIdError}

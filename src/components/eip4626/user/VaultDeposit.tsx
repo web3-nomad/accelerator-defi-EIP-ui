@@ -13,11 +13,11 @@ import Icon from "@/components/Icon";
 import { ActionName, TransactionResult } from "@/components/TransactionResult";
 import { EvmAddress } from "@/types/types";
 import { useState, useMemo } from "react";
-import { useVaultProperties } from "@/hooks/useVaultProperties";
 import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
 import { useWriteHederaVaultDeposit } from "@/hooks/eip4626/mutations/useWriteHederaVaultDeposit";
-import { useReadHederaVaultPreviewDeposit } from "@/hooks/eip4626/useReadHederaVaultPreviewDeposit";
 import { formatBalance, formatNumberToBigint } from "@/services/util/helpers";
+import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
+import { useReadHederaVaultAsset } from "@/hooks/eip4626/useReadHederaVaultAsset";
 
 type VaultDepositProps = {
   vaultAddress: EvmAddress;
@@ -38,8 +38,10 @@ export const VaultDeposit = ({ vaultAddress }: VaultDepositProps) => {
     error: approveError,
   } = useWriteHederaVaultApprove();
 
-  const { vaultAssetUserBalance, vaultAssetAddress, vaultShareAddress } =
-    useVaultProperties(vaultAddress);
+  const { data: vaultAssetAddress } = useReadHederaVaultAsset(vaultAddress);
+  const { data: vaultAssetUserBalance } = useReadBalanceOf(
+    vaultAssetAddress as EvmAddress,
+  );
 
   const depositForm = useFormik({
     initialValues: {
@@ -70,6 +72,11 @@ export const VaultDeposit = ({ vaultAddress }: VaultDepositProps) => {
     });
   };
 
+  const maxAmount = useMemo(
+    () => Number(formatBalance(vaultAssetUserBalance)),
+    [vaultAssetUserBalance],
+  );
+
   const handleUpdateAmountWithPercent = (percentage: number | string) => {
     const calculatedAmount =
       typeof percentage === "number"
@@ -86,12 +93,6 @@ export const VaultDeposit = ({ vaultAddress }: VaultDepositProps) => {
       }
     }
   };
-
-  const maxAmount = useMemo(
-    () =>
-      vaultAssetUserBalance ? parseFloat(vaultAssetUserBalance?.toString()) : 0,
-    [vaultAssetUserBalance],
-  );
 
   const [maxAmountError, setMaxAmountError] = useState(false);
 
@@ -144,8 +145,8 @@ export const VaultDeposit = ({ vaultAddress }: VaultDepositProps) => {
               width="70px"
               height="40px"
               borderRadius={6}
-              borderWidth={1.3}
-              borderColor="#000"
+              borderWidth={1}
+              borderColor="lightGray"
               alignItems="center"
               justifyContent="center"
             >

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { TokenNameItem } from "@/types/types";
+import { EvmAddress, TokenNameItem } from "@/types/types";
 import { WatchContractEventReturnType } from "@/services/contracts/watchContractEvent";
 import {
   readTokenIdentityRegistry,
@@ -31,7 +31,7 @@ export function useTokenIdentityRegistry(tokenSelected?: TokenNameItem) {
                 });
               },
             },
-            res[0] as `0x${string}`,
+            res[0] as EvmAddress,
           );
         },
       );

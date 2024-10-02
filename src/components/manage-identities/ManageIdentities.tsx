@@ -28,6 +28,7 @@ import { useContext, useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { ethers } from "ethers";
 import {
+  CountryCodesISO,
   EvmAddress,
   TokenNameItem,
   UpdateIdentityCountryProps,
@@ -51,13 +52,13 @@ import { WalletInterface } from "@/services/wallets/walletInterface";
 import { WatchContractEventReturnType } from "@/services/contracts/watchContractEvent";
 import { GroupBase } from "react-select";
 
-const investorCountriesItems = [
+export const investorCountriesItems = [
   {
-    value: 840,
+    value: CountryCodesISO.US,
     label: "US",
   },
   {
-    value: 0,
+    value: CountryCodesISO.NON_US,
     label: "Non US",
   },
 ];
@@ -279,7 +280,7 @@ export function ManageIdentities() {
               }) as any);
             },
           },
-          registry as `0x${string}`,
+          registry as EvmAddress,
         );
       return () => {
         unsubAgentsAdded();
@@ -317,7 +318,7 @@ export function ManageIdentities() {
       <ModalContent width="80%" pt="8">
         <ModalHeader>
           <Text fontSize={16} fontWeight="800" align="center">
-            Manage identity {selectedIdentity}
+            Manage identity for user address {selectedIdentity}
           </Text>
         </ModalHeader>
         <ModalCloseButton />
@@ -384,8 +385,8 @@ export function ManageIdentities() {
             </Flex>
             <Alert status="success" mt="2">
               <AlertDescription fontSize="13">
-                Somebody who can perform update / delete operations on{" "}
-                {"identity"} wallet.
+                User which can perform update / delete operations on{" "}
+                {"identity"} entity.
               </AlertDescription>
             </Alert>
             {!!addedAgents && (
@@ -471,13 +472,13 @@ export function ManageIdentities() {
           {registryAgents?.length ? (
             <Flex direction="column">
               <Text fontSize={20} fontWeight="800" mb="4">
-                Token Identities
+                User Identities in Registry
               </Text>
               <Table>
                 <Thead>
                   {registryAgents.map((agent) => (
                     <Tr key={agent}>
-                      {["token", "actions"].map((column) => (
+                      {["user address", "actions"].map((column) => (
                         <Th key={column}>
                           <Text fontWeight="800">{column}</Text>
                         </Th>

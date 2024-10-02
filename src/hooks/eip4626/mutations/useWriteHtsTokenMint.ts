@@ -4,7 +4,7 @@ import { HtsTokenMintRequest } from "@/types/types";
 import { writeHtsTokenMint } from "@/services/contracts/wagmiGenActions";
 import { WalletInterface } from "@/services/wallets/walletInterface";
 
-export const DEFAULT_TOKEN_MINT_AMOUNT = 100;
+export const DEFAULT_TOKEN_MINT_AMOUNT = 1000;
 
 export function useWriteHtsTokenMint() {
   const { walletInterface } = useWalletInterface();

@@ -18,9 +18,7 @@ import { MenuSelect } from "@/components/MenuSelect";
 
 export default function Admin() {
   const [isDeploy, setIsDeploy] = useState(false);
-  const [tokenSelected, setTokenSelected] = useState(
-    null as TokenNameItem | null,
-  );
+  const [tokenSelected, setTokenSelected] = useState<TokenNameItem>();
   const [ownTokens, setOwnTokens] = useState([] as Array<TokenNameItem>);
   const { accountEvm } = useWalletInterface();
   const { deployedTokens } = useContext(Eip3643Context);
@@ -48,7 +46,7 @@ export default function Admin() {
 
   const handleTokenSelect = (value: string | number) => {
     const tokenItem = ownTokens.find((itemSub) => itemSub.address === value);
-    setTokenSelected(tokenItem || null);
+    setTokenSelected(tokenItem);
   };
 
   const ownTokensData = useMemo(
@@ -70,6 +68,9 @@ export default function Admin() {
               data={ownTokensData as unknown as GroupBase<string | number>[]}
               onTokenSelect={handleTokenSelect}
             />
+            <Text>
+              Note: only tokens deployed by current wallet address are shown
+            </Text>
           </Box>
           {!tokenSelected && (
             <>
