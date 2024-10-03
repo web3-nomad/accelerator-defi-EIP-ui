@@ -7,6 +7,7 @@ export function useReadHederaVaultAsset(vaultAddress: EvmAddress) {
   return useQuery({
     queryKey: [QueryKeysEIP4626.ReadHederaVaultAsset, vaultAddress],
     queryFn: () => readHederaVaultAsset({}, vaultAddress),
+    enabled: !!vaultAddress,
   });
 }
 

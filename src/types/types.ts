@@ -102,3 +102,12 @@ export type VaultMintTokenProps = {
   vaultAssetSelected: EvmAddress;
   vaultAssetSelectedName: string;
 };
+
+export enum TxActionName {
+  Deposit = "Deposit",
+  Withdraw = "Withdraw",
+  Approve = "Approve",
+  Associate = "Associate",
+  Mint = "Mint",
+  Claim = "Claim",
+}

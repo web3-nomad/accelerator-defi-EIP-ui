@@ -1,14 +1,6 @@
-import { useReadHtsTokenTokenAddress } from "@/hooks/eip4626/useReadHtsTokenTokenAddress";
 import { useWriteHtsTokenAssociate } from "@/hooks/eip4626/mutations/useWriteHtsTokenAssociate";
-import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  Button,
-  Text,
-} from "@chakra-ui/react";
-import { EvmAddress, VaultMintTokenProps } from "@/types/types";
+import { Button, Text, Heading, Flex, Divider } from "@chakra-ui/react";
+import { EvmAddress, TxActionName, VaultMintTokenProps } from "@/types/types";
 import {
   DEFAULT_TOKEN_MINT_AMOUNT,
   useWriteHtsTokenMint,
@@ -21,6 +13,8 @@ import { useEffect, useState } from "react";
 import { AccountId } from "@hashgraph/sdk";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKeys } from "@/hooks/types";
+import { useReadHtsTokenTokenAddress } from "@/hooks/eip4626/useReadHtsTokenTokenAddress";
+import { TransactionResult } from "@/components/TransactionResult";
 
 export function MintAssetToken({
   vaultAssetSelected,
@@ -49,7 +43,7 @@ export function MintAssetToken({
     isPending: isMintPending,
   } = useWriteHtsTokenMint();
 
-  const { data: tokenBalance, error: tokenBalanceError } = useReadBalanceOf(
+  const { data: tokenBalance } = useReadBalanceOf(
     deployedHtsTokensAddress as EvmAddress,
   );
 
@@ -86,89 +80,79 @@ export function MintAssetToken({
   return (
     <>
       {deployedHtsTokensAddress && (
-        <>
-          <Text>HTS Token CA: {deployedHtsTokensAddress}</Text>
-          <Text>HTS Token name: {vaultAssetSelectedName}</Text>
-          <Text>
+        <Flex direction="column" gap="2" mt="2">
+          <Heading fontWeight="800" size="md">
+            Vault mint tokens
+          </Heading>
+          <Divider my={2} />
+          <Text fontWeight="600" fontSize={14}>
+            HTS Token CA: {deployedHtsTokensAddress}
+          </Text>
+          <Text fontSize={14}>HTS Token name: {vaultAssetSelectedName}</Text>
+          <Text fontSize={14}>
             User balance of token:{" "}
             {`${formatBalance(tokenBalance, vaultAssetSelectedDecimals)}`}
           </Text>
-          <Button
-            isLoading={isAssociatePending}
-            isDisabled={tokenHasAssociation}
-            onClick={() =>
-              associate(
-                {
-                  tokenAddress:
-                    deployedHtsTokensAddress?.toString() as EvmAddress,
-                },
-                {
-                  onSuccess: () => {
-                    queryClient.invalidateQueries({
-                      queryKey: [QueryKeys.ReadAccountTokens],
-                    });
+          <Text fontSize={14}>HTS Token Proxy CA: {vaultAssetSelected}</Text>
+          <Flex direction="row" gap="2">
+            <Button
+              isLoading={isAssociatePending}
+              isDisabled={tokenHasAssociation}
+              onClick={() =>
+                associate(
+                  {
+                    tokenAddress:
+                      deployedHtsTokensAddress?.toString() as EvmAddress,
                   },
-                },
-              )
-            }
-          >
-            {tokenHasAssociation ? `Token already associated` : `Associate`}
-          </Button>
-          <Button
-            isLoading={isMintPending}
-            onClick={() =>
-              mint(
-                {
-                  tokenAddress: vaultAssetSelected,
-                  mintAmount: formatNumberToBigint(
-                    DEFAULT_TOKEN_MINT_AMOUNT,
-                    vaultAssetSelectedDecimals,
-                  ),
-                },
-                {
-                  onSuccess: () => {
-                    queryClient.invalidateQueries({
-                      queryKey: [QueryKeys.ReadBalanceOf],
-                    });
+                  {
+                    onSuccess: () => {
+                      queryClient.invalidateQueries({
+                        queryKey: [QueryKeys.ReadAccountTokens],
+                      });
+                    },
                   },
-                },
-              )
-            }
-          >
-            Mint {DEFAULT_TOKEN_MINT_AMOUNT} tokens
-          </Button>
-          <Text fontSize={12}>HTS Token Proxy CA: {vaultAssetSelected}</Text>
-        </>
-      )}
-      {associateResult && (
-        <Alert status="success">
-          <AlertIcon />
-          <AlertTitle>Associate success!</AlertTitle>
-          <AlertDescription>TxId: {associateResult}</AlertDescription>
-        </Alert>
-      )}
-      {associateError && (
-        <Alert status="error">
-          <AlertIcon />
-          <AlertTitle>Associate token error!</AlertTitle>
-          <AlertDescription>{associateError.toString()}</AlertDescription>
-        </Alert>
+                )
+              }
+            >
+              {tokenHasAssociation ? `Token already associated` : `Associate`}
+            </Button>
+            <Button
+              isLoading={isMintPending}
+              onClick={() =>
+                mint(
+                  {
+                    tokenAddress: vaultAssetSelected,
+                    mintAmount: formatNumberToBigint(
+                      DEFAULT_TOKEN_MINT_AMOUNT,
+                      vaultAssetSelectedDecimals,
+                    ),
+                  },
+                  {
+                    onSuccess: () => {
+                      queryClient.invalidateQueries({
+                        queryKey: [QueryKeys.ReadBalanceOf],
+                      });
+                    },
+                  },
+                )
+              }
+            >
+              Mint {DEFAULT_TOKEN_MINT_AMOUNT} tokens
+            </Button>
+          </Flex>
+        </Flex>
       )}
 
-      {mintResult && (
-        <Alert status="success">
-          <AlertIcon />
-          <AlertTitle>Mint success!</AlertTitle>
-          <AlertDescription>TxId: {mintResult}</AlertDescription>
-        </Alert>
-      )}
-      {mintError && (
-        <Alert status="error">
-          <AlertIcon />
-          <AlertTitle>Mint token error!</AlertTitle>
-          <AlertDescription>{mintError.toString()}</AlertDescription>
-        </Alert>
-      )}
+      <TransactionResult
+        actionName={TxActionName.Associate}
+        transactionResult={associateResult}
+        transactionError={associateError}
+      />
+      <TransactionResult
+        actionName={TxActionName.Mint}
+        transactionResult={mintResult}
+        transactionError={mintError}
+      />
     </>
   );
 }
