@@ -1,3 +1,4 @@
+import { EvmAddress, TxActionName } from "@/types/types";
 import {
   Alert,
   AlertDescription,
@@ -6,29 +7,16 @@ import {
   Flex,
 } from "@chakra-ui/react";
 
-export enum ActionName {
-  Deposit = "Deposit",
-  Withdraw = "Withdraw",
-  Approve = "Approve",
-  Associate = "Associate",
-  Mint = "Mint",
-  Claim = "Claim",
-}
-
-const getAlertTitle = (isSuccess = true, actionType?: ActionName) => {
-  return `${actionType} ${isSuccess ? "success" : "error"}`;
-};
-
-export const TransactionResult = ({
+export function TransactionResult({
   actionName,
   transactionResult,
   transactionError,
 }: {
-  actionName: ActionName | undefined;
-  transactionResult: `0x${string}` | undefined;
-  transactionError: Error | null | undefined;
-}) => {
-  if (!actionName || !(transactionResult && transactionError)) {
+  actionName: TxActionName | string;
+  transactionResult: EvmAddress | undefined;
+  transactionError: Error | null;
+}) {
+  if (!actionName || !(transactionResult || transactionError)) {
     return null;
   }
 
@@ -37,17 +25,17 @@ export const TransactionResult = ({
       {transactionResult && (
         <Alert status="success">
           <AlertIcon />
-          <AlertTitle>{getAlertTitle(true, actionName)}</AlertTitle>
+          <AlertTitle>{`${actionName} success`}</AlertTitle>
           <AlertDescription>TxId: {transactionResult}</AlertDescription>
         </Alert>
       )}
       {transactionError && (
         <Alert status="error">
           <AlertIcon />
-          <AlertTitle>{getAlertTitle(false, actionName)}</AlertTitle>
+          <AlertTitle>{`${actionName} error`}</AlertTitle>
           <AlertDescription>{transactionError.toString()}</AlertDescription>
         </Alert>
       )}
     </Flex>
   );
-};
+}

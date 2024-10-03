@@ -2,16 +2,15 @@ import { Box, Flex } from "@chakra-ui/react";
 import { VaultBasicOperations } from "./VaultBasicOperations";
 import type { EvmAddress } from "@/types/types";
 
-export type VaultTabSection = "vaultPerformance" | "vaultInfo" | "vaultMint";
-
-export const vaultTabSections = ["vaultMint", "vaultInfo", "vaultPerformance"];
-
-type Props = {
+type VaultTabSectionProps = {
   vaultSelected: EvmAddress;
   children: React.ReactElement;
 };
 
-export const VaultTabSection = ({ vaultSelected, children }: Props) => {
+export function VaultTabSection({
+  vaultSelected,
+  children,
+}: VaultTabSectionProps) {
   return (
     <Flex direction="row" width="100%" gap="4">
       <Box width="64%" pb="2" pr="4">
@@ -22,4 +21,4 @@ export const VaultTabSection = ({ vaultSelected, children }: Props) => {
       </Box>
     </Flex>
   );
-};
+}

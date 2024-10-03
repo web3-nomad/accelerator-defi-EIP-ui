@@ -9,14 +9,6 @@ import { useReadHederaVaultFeeConfig } from "@/hooks/eip4626/useReadHederaVaultF
 import { VaultInfoContainer } from "./VaultInfoContainer";
 import React from "react";
 
-export type VaultInfoBlock =
-  | "vaultAddress"
-  | "vaultAssetAddress"
-  | "vaultShareAddress"
-  | "rewardAssets"
-  | "totalAssets"
-  | "vaultFees";
-
 export function VaultInfo({ vaultAddress }: VaultInfoProps) {
   const { data: vaultAssetAddress } = useReadHederaVaultAsset(vaultAddress);
   const { data: vaultAssetTotalAssets } =
@@ -47,23 +39,36 @@ export function VaultInfo({ vaultAddress }: VaultInfoProps) {
         Vault general info/stats
       </Heading>
       <Divider my={2} />
-      <VaultInfoContainer blockType="vaultAddress">
+      <VaultInfoContainer
+        blockType="vaultAddress"
+        blockTitle="Selected vault address"
+      >
         <>{vaultAddress}</>
       </VaultInfoContainer>
-      <VaultInfoContainer blockType="vaultAssetAddress">
+      <VaultInfoContainer
+        blockType="vaultAssetAddress"
+        blockTitle="Selected vault asset address"
+      >
         <>{vaultAssetAddress}</>
       </VaultInfoContainer>
-      <VaultInfoContainer blockType="vaultShareAddress">
+      <VaultInfoContainer
+        blockType="vaultShareAddress"
+        blockTitle="Selected vault share address"
+      >
         <>{vaultShareAddress}</>
       </VaultInfoContainer>
-      <VaultInfoContainer blockType="rewardAssets">
+      <VaultInfoContainer
+        blockType="rewardAssets"
+        blockTitle="Selected reward address"
+      >
         <>{rewardAssets?.map((asset) => <Text key={asset}>{asset}</Text>)}</>
       </VaultInfoContainer>
-      <VaultInfoContainer blockType="totalAssets">
+      <VaultInfoContainer blockType="totalAssets" blockTitle="Total assets">
         <>{formatBalance(vaultAssetTotalAssets?.toString())}</>
       </VaultInfoContainer>
       <VaultInfoContainer
         blockType="vaultFees"
+        blockTitle="Vault fees"
         fees={{
           vaultFeePercentageFormatted,
           vaultFeeReceiver,

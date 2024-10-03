@@ -1,6 +1,6 @@
 import { useWriteHtsTokenAssociate } from "@/hooks/eip4626/mutations/useWriteHtsTokenAssociate";
 import { Button, Text, Heading, Flex, Divider } from "@chakra-ui/react";
-import { EvmAddress, VaultMintTokenProps } from "@/types/types";
+import { EvmAddress, TxActionName, VaultMintTokenProps } from "@/types/types";
 import {
   DEFAULT_TOKEN_MINT_AMOUNT,
   useWriteHtsTokenMint,
@@ -14,7 +14,7 @@ import { AccountId } from "@hashgraph/sdk";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKeys } from "@/hooks/types";
 import { useReadHtsTokenTokenAddress } from "@/hooks/eip4626/useReadHtsTokenTokenAddress";
-import { ActionName, TransactionResult } from "@/components/TransactionResult";
+import { TransactionResult } from "@/components/TransactionResult";
 
 export function MintAssetToken({
   vaultAssetSelected,
@@ -144,12 +144,12 @@ export function MintAssetToken({
       )}
 
       <TransactionResult
-        actionName={ActionName.Associate}
+        actionName={TxActionName.Associate}
         transactionResult={associateResult}
         transactionError={associateError}
       />
       <TransactionResult
-        actionName={ActionName.Mint}
+        actionName={TxActionName.Mint}
         transactionResult={mintResult}
         transactionError={mintError}
       />

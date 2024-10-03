@@ -8,8 +8,8 @@ import {
   AlertIcon,
 } from "@chakra-ui/react";
 import Icon from "@/components/Icon";
-import { ActionName, TransactionResult } from "@/components/TransactionResult";
-import { EvmAddress } from "@/types/types";
+import { TransactionResult } from "@/components/TransactionResult";
+import { EvmAddress, TxActionName } from "@/types/types";
 import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
 import { useWriteHederaVaultWithdraw } from "@/hooks/eip4626/mutations/useWriteHederaVaultWithdraw";
 import { formatBalance, formatNumberToBigint } from "@/services/util/helpers";
@@ -24,7 +24,7 @@ type VaultWithdrawProps = {
   vaultAddress: EvmAddress;
 };
 
-export const VaultWithdraw = ({ vaultAddress }: VaultWithdrawProps) => {
+export function VaultWithdraw({ vaultAddress }: VaultWithdrawProps) {
   const queryClient = useQueryClient();
 
   const { data: vaultShareAddress } = useReadHederaVaultShare(vaultAddress);
@@ -78,11 +78,8 @@ export const VaultWithdraw = ({ vaultAddress }: VaultWithdrawProps) => {
     [shareUserBalance],
   );
 
-  const handleUpdateAmountWithPercent = (percentage: number | string) => {
-    const calculatedAmount =
-      typeof percentage === "number"
-        ? (maxAmount * percentage) / 100
-        : maxAmount;
+  const handleUpdateAmountWithPercent = (percentage: number) => {
+    const calculatedAmount = (maxAmount * percentage) / 100;
 
     if (calculatedAmount) {
       withdrawForm.setFieldValue("amount", calculatedAmount);
@@ -93,6 +90,25 @@ export const VaultWithdraw = ({ vaultAddress }: VaultWithdrawProps) => {
         setMaxAmountError(true);
       }
     }
+  };
+
+  const handleAmountChange = (e: { target: { value: string } }) => {
+    const calculatedAmount = new BigNumber(e.target.value).toNumber();
+
+    if (calculatedAmount || calculatedAmount === 0) {
+      withdrawForm.setFieldValue("amount", calculatedAmount);
+
+      if (calculatedAmount <= maxAmount) {
+        setMaxAmountError(false);
+      } else {
+        setMaxAmountError(true);
+      }
+
+      return;
+    }
+
+    withdrawForm.setFieldValue("amount", 0);
+    setMaxAmountError(false);
   };
 
   const [maxAmountError, setMaxAmountError] = useState(false);
@@ -119,30 +135,7 @@ export const VaultWithdraw = ({ vaultAddress }: VaultWithdrawProps) => {
           <Flex width="100%" justifyContent="space-between" gap="1">
             <Input
               value={withdrawForm.values?.amount}
-              onChange={(e) => {
-                const calculatedAmount = new BigNumber(
-                  e.target.value,
-                ).toNumber();
-
-                if (calculatedAmount || calculatedAmount === 0) {
-                  withdrawForm.setValues(() => ({
-                    amount: calculatedAmount,
-                  }));
-
-                  if (calculatedAmount <= maxAmount) {
-                    setMaxAmountError(false);
-                  } else {
-                    setMaxAmountError(true);
-                  }
-
-                  return;
-                }
-
-                withdrawForm.setValues(() => ({
-                  amount: 0,
-                }));
-                setMaxAmountError(false);
-              }}
+              onChange={handleAmountChange}
             />
             <Flex
               width="70px"
@@ -157,7 +150,7 @@ export const VaultWithdraw = ({ vaultAddress }: VaultWithdrawProps) => {
             </Flex>
           </Flex>
           <Flex width="100%" justifyContent="space-between" gap="2">
-            {[25, 50, 75, "max"].map((percentage) => (
+            {[25, 50, 75, 100].map((percentage) => (
               <Button
                 key={percentage}
                 width="100%"
@@ -199,15 +192,15 @@ export const VaultWithdraw = ({ vaultAddress }: VaultWithdrawProps) => {
       </form>
 
       <TransactionResult
-        actionName={ActionName.Withdraw}
+        actionName={TxActionName.Withdraw}
         transactionResult={withdrawResult}
         transactionError={withdrawError}
       />
       <TransactionResult
-        actionName={ActionName.Approve}
+        actionName={TxActionName.Approve}
         transactionResult={approveResult}
         transactionError={approveError}
       />
     </>
   );
-};
+}

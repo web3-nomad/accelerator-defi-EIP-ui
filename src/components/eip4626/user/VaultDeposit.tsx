@@ -9,9 +9,10 @@ import {
 } from "@chakra-ui/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useFormik } from "formik";
+import BigNumber from "bignumber.js";
 import Icon from "@/components/Icon";
-import { ActionName, TransactionResult } from "@/components/TransactionResult";
-import { EvmAddress } from "@/types/types";
+import { TransactionResult } from "@/components/TransactionResult";
+import { EvmAddress, TxActionName } from "@/types/types";
 import { useState, useMemo } from "react";
 import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
 import { useWriteHederaVaultDeposit } from "@/hooks/eip4626/mutations/useWriteHederaVaultDeposit";
@@ -23,7 +24,7 @@ type VaultDepositProps = {
   vaultAddress: EvmAddress;
 };
 
-export const VaultDeposit = ({ vaultAddress }: VaultDepositProps) => {
+export function VaultDeposit({ vaultAddress }: VaultDepositProps) {
   const queryClient = useQueryClient();
 
   const {
@@ -77,11 +78,8 @@ export const VaultDeposit = ({ vaultAddress }: VaultDepositProps) => {
     [vaultAssetUserBalance],
   );
 
-  const handleUpdateAmountWithPercent = (percentage: number | string) => {
-    const calculatedAmount =
-      typeof percentage === "number"
-        ? (maxAmount * percentage) / 100
-        : maxAmount;
+  const handleUpdateAmountWithPercent = (percentage: number) => {
+    const calculatedAmount = (maxAmount * percentage) / 100;
 
     if (calculatedAmount) {
       depositForm.setFieldValue("amount", calculatedAmount);
@@ -92,6 +90,25 @@ export const VaultDeposit = ({ vaultAddress }: VaultDepositProps) => {
         setMaxAmountError(true);
       }
     }
+  };
+
+  const handleAmountChange = (e: { target: { value: string } }) => {
+    const calculatedAmount = new BigNumber(e.target.value).toNumber();
+
+    if (calculatedAmount || calculatedAmount === 0) {
+      depositForm.setFieldValue("amount", calculatedAmount);
+
+      if (calculatedAmount <= maxAmount) {
+        setMaxAmountError(false);
+      } else {
+        setMaxAmountError(true);
+      }
+
+      return;
+    }
+
+    depositForm.setFieldValue("amount", 0);
+    setMaxAmountError(false);
   };
 
   const [maxAmountError, setMaxAmountError] = useState(false);
@@ -118,28 +135,7 @@ export const VaultDeposit = ({ vaultAddress }: VaultDepositProps) => {
           <Flex width="100%" justifyContent="space-between" gap="1">
             <Input
               value={depositForm.values?.amount}
-              onChange={(e) => {
-                const calculatedAmount = parseFloat(e.target.value);
-
-                if (calculatedAmount || calculatedAmount === 0) {
-                  depositForm.setValues(() => ({
-                    amount: calculatedAmount,
-                  }));
-
-                  if (calculatedAmount <= maxAmount) {
-                    setMaxAmountError(false);
-                  } else {
-                    setMaxAmountError(true);
-                  }
-
-                  return;
-                }
-
-                depositForm.setValues(() => ({
-                  amount: 0,
-                }));
-                setMaxAmountError(false);
-              }}
+              onChange={handleAmountChange}
             />
             <Flex
               width="70px"
@@ -154,7 +150,7 @@ export const VaultDeposit = ({ vaultAddress }: VaultDepositProps) => {
             </Flex>
           </Flex>
           <Flex width="100%" justifyContent="space-between" gap="2">
-            {[25, 50, 75, "max"].map((percentage) => (
+            {[25, 50, 75, 100].map((percentage) => (
               <Button
                 key={percentage}
                 width="100%"
@@ -196,15 +192,15 @@ export const VaultDeposit = ({ vaultAddress }: VaultDepositProps) => {
       </form>
 
       <TransactionResult
-        actionName={ActionName.Deposit}
+        actionName={TxActionName.Deposit}
         transactionResult={depositResult}
         transactionError={depositError}
       />
       <TransactionResult
-        actionName={ActionName.Approve}
+        actionName={TxActionName.Approve}
         transactionResult={approveResult}
         transactionError={approveError}
       />
     </>
   );
-};
+}
