@@ -7,25 +7,24 @@ import {
   AlertDescription,
 } from "@chakra-ui/react";
 import { GroupBase } from "react-select";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { ethers } from "ethers";
+import { useQueryClient } from "@tanstack/react-query";
 import { EvmAddress } from "@/types/types";
+import { QueryKeys } from "@/hooks/types";
 import { MenuSelect } from "@/components/MenuSelect";
 import {
   writeIdentityRegistryAddAgent,
-  watchIdentityRegistryAgentAddedEvent,
-  watchIdentityRegistryAgentRemovedEvent,
   writeIdentityRegistryRemoveAgent,
 } from "@/services/contracts/wagmiGenActions";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { WalletInterface } from "@/services/wallets/walletInterface";
-import { WatchContractEventReturnType } from "@/services/contracts/watchContractEvent";
+import { useTokenIdentityRegistryAgents } from "@/hooks/useTokenIdentityRegistryAgents";
 
 type Props = {
   setUpdateTxResult: (res?: string) => void;
   setUpdateTxError: (err?: string) => void;
-  isOpen: boolean;
   onClose: () => void;
   registry?: EvmAddress;
 };
@@ -34,13 +33,13 @@ export const ManageAgents = ({
   setUpdateTxResult,
   setUpdateTxError,
   registry,
-  isOpen,
   onClose,
 }: Props) => {
-  const [addedAgents, setAddedAgents] = useState<Array<string>>([]);
   const [selectedAgent, setSelectedAgent] = useState<EvmAddress>();
   const [newUserAgentAddress, setNewUserAgentAddress] = useState<string>();
   const { walletInterface } = useWalletInterface();
+  const { filteredAgents } = useTokenIdentityRegistryAgents(registry);
+  const queryClient = useQueryClient();
 
   const {
     mutateAsync: mutateIdentityRegistryRemoveAgent,
@@ -74,6 +73,11 @@ export const ManageAgents = ({
         const txHash = await mutateIdentityRegistryAddAgent();
         setUpdateTxResult(txHash);
         setUpdateTxError(undefined);
+        setTimeout(() => {
+          queryClient.invalidateQueries({
+            queryKey: [QueryKeys.ReadAgentInRegistry],
+          });
+        }, 1000);
       } catch (err: any) {
         setUpdateTxResult(undefined);
         setUpdateTxError(err);
@@ -95,6 +99,11 @@ export const ManageAgents = ({
       const txHash = await mutateIdentityRegistryRemoveAgent();
       setUpdateTxResult(txHash);
       setUpdateTxError(undefined);
+      setTimeout(() => {
+        queryClient.invalidateQueries({
+          queryKey: [QueryKeys.ReadAgentInRegistry],
+        });
+      }, 1000);
     } catch (err: any) {
       setUpdateTxResult(undefined);
       setUpdateTxError(err);
@@ -102,50 +111,6 @@ export const ManageAgents = ({
     onClose();
     setSelectedAgent(undefined);
   };
-
-  useEffect(() => {
-    if (registry && isOpen) {
-      setAddedAgents([]);
-      const unsubAgentsAdded: WatchContractEventReturnType =
-        watchIdentityRegistryAgentAddedEvent(
-          {
-            onLogs: (data) => {
-              setAddedAgents(((prev: any) => {
-                return [...prev, ...data.map((log: any) => log.args[0])];
-              }) as any);
-            },
-          },
-          registry as `0x${string}`,
-        );
-      return () => {
-        unsubAgentsAdded();
-      };
-    }
-  }, [registry, isOpen]);
-
-  useEffect(() => {
-    if (addedAgents?.length && registry && isOpen) {
-      const unsubAgentsRemoved: WatchContractEventReturnType =
-        watchIdentityRegistryAgentRemovedEvent(
-          {
-            onLogs: (data) => {
-              const agents = data.map((log: any) => log.args[0]);
-
-              if (agents.find((agent) => addedAgents.includes(agent))) {
-                setAddedAgents((prev) =>
-                  prev.filter((agent) => !agents.includes(agent)),
-                );
-              }
-            },
-          },
-          registry as `0x${string}`,
-        );
-
-      return () => {
-        unsubAgentsRemoved();
-      };
-    }
-  }, [addedAgents, registry, isOpen]);
 
   return (
     <>
@@ -171,11 +136,11 @@ export const ManageAgents = ({
             wallet.
           </AlertDescription>
         </Alert>
-        {!!addedAgents && (
+        {!!filteredAgents && (
           <Flex direction="column" mt="7">
             <MenuSelect
               data={
-                addedAgents.map((agent) => ({
+                filteredAgents.map((agent) => ({
                   value: agent,
                   label: agent,
                 })) as unknown as GroupBase<string | number>[]

@@ -109,7 +109,6 @@ export const ManageRegistry = ({ isAgents }: { isAgents: boolean }) => {
             {isAgents ? (
               <ManageAgents
                 onClose={onClose}
-                isOpen={isOpen}
                 setUpdateTxError={setUpdateTxError}
                 setUpdateTxResult={setUpdateTxResult}
                 registry={registry}

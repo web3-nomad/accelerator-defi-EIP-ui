@@ -8,6 +8,7 @@ export enum QueryKeys {
   ReadHtsTokenTokenAddress = "readHtsTokenTokenAddress",
   ReadAccountTokens = "readAccountTokens",
   ReadIdentityRegistryInvestorCountry = "readIdentityRegistryInvestorCountry",
+  ReadAgentInRegistry = "readAgentInRegistry",
 }
 
 export enum QueryKeysEIP4626 {
