@@ -45,7 +45,7 @@ export default function RegisterIdentity({
   const { registry, registryIdentities } =
     useTokenIdentityRegistry(tokenSelected);
 
-  const registryIdentityAddresses = registryIdentities.map(
+  const registryIdentitiesAddresses = registryIdentities.map(
     (identity) => identity.walletAddr,
   );
 
@@ -61,11 +61,15 @@ export default function RegisterIdentity({
     () =>
       Boolean(
         currentIdentityAddress &&
-          registryIdentityAddresses.includes(
+          registryIdentitiesAddresses.includes(
             currentIdentityWallet as EvmAddress,
           ),
       ),
-    [currentIdentityAddress, registryIdentityAddresses, currentIdentityWallet],
+    [
+      currentIdentityAddress,
+      registryIdentitiesAddresses,
+      currentIdentityWallet,
+    ],
   );
 
   const { data: isAgent } = useReadTokenIsAgent(
@@ -152,7 +156,7 @@ export default function RegisterIdentity({
         </FormHelperText>
       </FormControl>
 
-      {registryIdentityAddresses.length === 0 && (
+      {registryIdentitiesAddresses.length === 0 && (
         <Text>No identities found</Text>
       )}
       {error && (
@@ -174,8 +178,8 @@ export default function RegisterIdentity({
 
       <Heading size={"md"}>Wallet addresses with registered identities</Heading>
       <OrderedList>
-        {registryIdentityAddresses.map((address) => (
-          <ListItem key={address}>{address}</ListItem>
+        {registryIdentitiesAddresses.map((item) => (
+          <ListItem key={item}>{item}</ListItem>
         ))}
       </OrderedList>
     </>
