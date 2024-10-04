@@ -31,6 +31,21 @@ const contracts: Contracts = [
     address: "0x0000000000000000000000000000000000387719", // Dummy address, will be overridden on every call
     url: `https://raw.githubusercontent.com/hashgraph/hedera-accelerator-defi-eip/main/data/abis/ERC20.json`,
   },
+  {
+    name: "OnlyUsaModule",
+    address: "0xDaBdA04476928f0beeFA428721eD2a7E0E6Eb07a",
+    url: `https://raw.githubusercontent.com/hashgraph/hedera-accelerator-defi-eip/79c4de63bf9bd4ce0b32939d404b4e674a3d49c6/data/abis/OnlyUsaModule.json`,
+  },
+  {
+    name: "MaxTenPercentOwnershipModule",
+    address: "0xb4224765b8d201D536d56Ce84654d687c26B3B7b",
+    url: `https://raw.githubusercontent.com/hashgraph/hedera-accelerator-defi-eip/79c4de63bf9bd4ce0b32939d404b4e674a3d49c6/data/abis/MaxTenPercentOwnershipModule.json`,
+  },
+  {
+    name: "TransferLimitOneHundredModule",
+    address: "0xF29a8A633018984A19315D1080975FA793118076",
+    url: `https://raw.githubusercontent.com/hashgraph/hedera-accelerator-defi-eip/79c4de63bf9bd4ce0b32939d404b4e674a3d49c6/data/abis/TransferLimitOneHundredModule.json`,
+  },
 ];
 
 for (const key in rawJson) {

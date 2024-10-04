@@ -12,14 +12,17 @@ export function useRegisterIdentity() {
       address,
       identity,
       registry,
+      country,
     }: AddIdentityToRegistryRequest) => {
-      //@TODO country code selector (if needed)
-      const COUNTRY = 840; // ISO United States country code (see: https://www.iso.org/obp/ui/#search)
       return writeIdentityRegistryRegisterIdentity(
         walletInterface as WalletInterface,
-        { args: [address, identity, COUNTRY] },
+        { args: [address, identity, country] },
         registry,
       );
+    },
+    onSuccess: () => {
+      //@TODO find a way to refresh data for related watchContractEvent listener
+      //we would like to refresh registryAgents list here
     },
   });
 }

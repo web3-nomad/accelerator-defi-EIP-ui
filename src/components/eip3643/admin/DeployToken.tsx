@@ -19,7 +19,51 @@ import {
   AlertDescription,
   FormHelperText,
 } from "@chakra-ui/react";
-import { hederaNftAddress } from "@/services/contracts/wagmiGenActions";
+import {
+  countryAllowModuleAddress,
+  hederaNftAddress,
+  maxOwnershipByCountryModuleAddress,
+  maxTenPercentOwnershipModuleAddress,
+  onlyUsaModuleAddress,
+  requiresNftModuleAddress,
+  transferLimitOneHundredModuleAddress,
+} from "@/services/contracts/wagmiGenActions";
+import { MenuSelect } from "@/components/MenuSelect";
+import { useCallback, useEffect, useState } from "react";
+import { EvmAddress } from "@/types/types";
+import { GroupBase } from "react-select";
+import { ethers } from "ethers";
+
+export const complianceModulesList = [
+  {
+    label: "None",
+    value: "",
+  },
+  {
+    label: "Only USA identities allowed",
+    value: onlyUsaModuleAddress,
+  },
+  {
+    label: "Transfer limit of 100 tokens max",
+    value: transferLimitOneHundredModuleAddress,
+  },
+  {
+    label: "Max 10% of token supply ownership",
+    value: maxTenPercentOwnershipModuleAddress,
+  },
+  {
+    label: "Requires NFT to be present",
+    value: requiresNftModuleAddress,
+  },
+  {
+    label: "Only identities from allowed countries list",
+    value: countryAllowModuleAddress,
+  },
+  {
+    label: "Max % of token supply ownership by identity country",
+    value: maxOwnershipByCountryModuleAddress,
+  },
+];
 
 export default function DeployToken({ onClose = () => {} }) {
   const {
@@ -36,16 +80,85 @@ export default function DeployToken({ onClose = () => {} }) {
       symbol: "",
       decimals: 18,
       nftAddress: "",
+      complianceModules: [] as EvmAddress[],
+      complianceSettings: [] as EvmAddress[],
     },
-    onSubmit: ({ name, symbol, decimals, nftAddress }) => {
+    onSubmit: ({
+      name,
+      symbol,
+      decimals,
+      complianceModules,
+      complianceSettings,
+    }) => {
+      //@TODO add validation for not filled fields of selected compl module - nft address, percentages etc
+      //prevent submit if not filled
+
+      //@TODO add support of several modules per token
+
       deployToken({
         name,
         symbol,
         decimals,
-        nftAddress: nftAddress as `0x${string}`,
+        complianceModules,
+        complianceSettings,
       });
     },
   });
+
+  useEffect(() => {
+    if (form.values.nftAddress && ethers.isAddress(form.values.nftAddress)) {
+      const requiresNftModuleCall = new ethers.Interface([
+        "function requireNFT(address _nftAddress)",
+      ]).encodeFunctionData("requireNFT", [form.values.nftAddress]);
+      form.setFieldValue("complianceSettings", [requiresNftModuleCall]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.values.nftAddress]);
+
+  const [complianceModuleSelected, setComplianceModuleSelected] = useState("");
+  const handleComplianceModuleSelect = (value: string) => {
+    setComplianceModuleSelected(value);
+    form.setValues((prev) => ({
+      ...prev,
+      complianceModules: value ? [value as EvmAddress] : [],
+      complianceSettings: [],
+    }));
+  };
+
+  const showComplianceModule = useCallback(() => {
+    switch (complianceModuleSelected) {
+      case requiresNftModuleAddress:
+        return (
+          <FormControl>
+            <FormLabel>NFT address for compliance module (optional)</FormLabel>
+            <Input
+              name="nftAddress"
+              variant="outline"
+              value={form.values.nftAddress}
+              onChange={form.handleChange}
+            />
+            <FormHelperText>
+              <Button
+                onClick={() => {
+                  form.setFieldValue("nftAddress", hederaNftAddress);
+                }}
+              >
+                Fill with demo NFT address
+              </Button>
+            </FormHelperText>
+            <FormHelperText>
+              If entered, it will be required for the token operators to have an
+              NFT of the provided address. If empty, compliance functionality
+              will be ignored.
+            </FormHelperText>
+          </FormControl>
+        );
+
+      case onlyUsaModuleAddress:
+      case transferLimitOneHundredModuleAddress:
+        return null;
+    }
+  }, [complianceModuleSelected, form]);
 
   return (
     <form onSubmit={form.handleSubmit}>
@@ -86,29 +199,28 @@ export default function DeployToken({ onClose = () => {} }) {
             </NumberInputStepper>
           </NumberInput>
         </FormControl>
+
         <FormControl>
-          <FormLabel>NFT address for compliance module (optional)</FormLabel>
-          <Input
-            name="nftAddress"
-            variant="outline"
-            value={form.values.nftAddress}
-            onChange={form.handleChange}
+          <FormLabel>Select compliance module to add (optional)</FormLabel>
+          <MenuSelect
+            label="Select compliance module"
+            data={
+              complianceModulesList as unknown as GroupBase<string | number>[]
+            }
+            onTokenSelect={handleComplianceModuleSelect}
           />
           <FormHelperText>
-            <Button
-              onClick={() => {
-                form.setFieldValue("nftAddress", hederaNftAddress);
-              }}
-            >
-              Use demo NFT
-            </Button>
-          </FormHelperText>
-          <FormHelperText>
-            If entered, it will be required for the token operators to have an
-            NFT of the provided address. If empty, compliance functionality will
-            be ignored.
+            Selected compliance module:{" "}
+            {!form.values.complianceModules.length
+              ? "None"
+              : complianceModulesList.find(
+                  (module) => module.value === form.values.complianceModules[0],
+                )?.label}
           </FormHelperText>
         </FormControl>
+
+        {showComplianceModule()}
+
         {!deployResult && (
           <Stack spacing={4} direction="row" align="center">
             <Button type="submit" isLoading={isPending}>

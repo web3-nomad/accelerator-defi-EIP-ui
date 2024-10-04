@@ -14,7 +14,7 @@ import { WalletInterface } from "@/services/wallets/walletInterface";
 import { GroupBase } from "react-select";
 import { useReadIdentityRegistryInvestorCountry } from "@/hooks/useReadIdentityRegistryInvestorCountry";
 
-const investorCountriesItems = [
+export const investorCountriesItems = [
   {
     value: 840,
     label: "US",

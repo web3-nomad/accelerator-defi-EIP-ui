@@ -42,7 +42,7 @@ export function useTokenIdentityRegistry(tokenSelected?: TokenNameItem) {
                 });
               },
             },
-            res[0] as `0x${string}`,
+            res[0] as EvmAddress,
           );
         },
       );

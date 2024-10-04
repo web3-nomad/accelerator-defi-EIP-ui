@@ -26,6 +26,7 @@ import {
 import { useFormik } from "formik";
 import { useAddRequiresNFTModule } from "@/hooks/mutations/useAddRequiresNFTModule";
 import { useCallModuleFunction } from "@/hooks/mutations/useCallModuleFunction";
+import { complianceModulesList } from "@/components/eip3643/admin/DeployToken";
 
 export default function Compliance({
   tokenSelected,
@@ -104,7 +105,13 @@ export default function Compliance({
           </Text>
           <Text>
             Modules added:{" "}
-            {addedModules && addedModules.map((module) => module)}
+            {addedModules &&
+              addedModules.map(
+                (module) =>
+                  complianceModulesList.find(
+                    (moduleItem) => moduleItem.value == module,
+                  )?.label,
+              )}
           </Text>
         </>
       )}
@@ -130,7 +137,7 @@ export default function Compliance({
                   form.setFieldValue("nftAddress", hederaNftAddress);
                 }}
               >
-                Use demo NFT
+                Fill with demo NFT address
               </Button>
             </FormHelperText>
             <FormHelperText>
@@ -148,7 +155,7 @@ export default function Compliance({
               }
               isDisabled={!form.values.nftAddress}
             >
-              Deploy
+              Add RequiresNFTModule with NFT address
             </Button>
           </FormControl>
 

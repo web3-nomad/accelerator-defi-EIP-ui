@@ -2,10 +2,12 @@ import { AccountId } from "@hashgraph/sdk";
 import { isNil } from "lodash";
 import { VAULT_TOKEN_PRECISION_VALUE } from "@/config/constants";
 import BigNumber from "bignumber.js";
+import { formatUnits, parseUnits } from "viem";
+import { EvmAddress } from "@/types/types";
 
 export function convertAccountIdToSolidityAddress(
   accountId: AccountId,
-): `0x${string}` {
+): EvmAddress {
   const accountIdString =
     accountId.evmAddress !== null
       ? accountId.evmAddress.toString()
@@ -26,6 +28,11 @@ export function formatRawTxId(txIdRaw: string) {
   return res;
 }
 
+/**
+ * @deprecated - switch to parseUnitsWithDecimals
+ * @param initialValue
+ * @param precision
+ */
 export function formatBalance(
   initialValue: any,
   precision = VAULT_TOKEN_PRECISION_VALUE,
@@ -35,9 +42,23 @@ export function formatBalance(
     : 0;
 }
 
+/**
+ * @deprecated - switch to formatUnitsWithDecimals
+ * @param amount
+ * @param precision
+ */
 export function formatNumberToBigint(
-  amount: number,
+  amount: BigNumber.Value,
   precision = VAULT_TOKEN_PRECISION_VALUE,
 ) {
   return BigInt(BigNumber(amount).shiftedBy(precision).toString());
+}
+
+//@TODO add decimals usage everywhere
+export function parseUnitsWithDecimals(value: string, decimals: number) {
+  return parseUnits(value, decimals);
+}
+
+export function formatUnitsWithDecimals(value: bigint, decimals: number) {
+  return formatUnits(value, decimals);
 }

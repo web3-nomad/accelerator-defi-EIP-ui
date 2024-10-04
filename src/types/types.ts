@@ -2,12 +2,13 @@ export type DeployTokenRequest = {
   name: string;
   symbol: string;
   decimals: number;
-  nftAddress?: `0x${string}`;
+  complianceModules: EvmAddress[];
+  complianceSettings: EvmAddress[];
 };
 
 export type MintTokenRequest = {
   address: `0x${string}`;
-  value: string;
+  amount: bigint;
   token: `0x${string}`;
 };
 
@@ -15,10 +16,16 @@ export type CreateIdentityRequest = {
   address: `0x${string}`;
 };
 
+export enum CountryCodesISO {
+  US = 840,
+  NON_US = 0,
+}
+
 export type AddIdentityToRegistryRequest = {
-  address: `0x${string}`;
-  identity: `0x${string}`;
-  registry: `0x${string}`;
+  address: EvmAddress;
+  identity: EvmAddress;
+  registry: EvmAddress;
+  country: CountryCodesISO;
 };
 
 export type TokenNameItem = {

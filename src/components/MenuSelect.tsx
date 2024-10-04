@@ -35,7 +35,6 @@ export const MenuSelect = (props: Props) => {
           width: "100%",
         }),
       }}
-      defaultValue={props.selectedValue}
       {...(props.selectedValue && {
         value: props.selectedValue,
       })}
