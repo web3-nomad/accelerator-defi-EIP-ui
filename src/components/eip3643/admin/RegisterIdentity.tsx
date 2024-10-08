@@ -134,15 +134,21 @@ export default function RegisterIdentity({
         <FormHelperText>
           <b>User has Token Owner role:</b> {String(isCurrentUserATokenOwner)}
         </FormHelperText>
+
+        {/*//@TODO this is not correct after making user an agent, why?*/}
+        {/*User has Agent role: false*/}
+        {/*User can add identity to registry: false*/}
         <FormHelperText>
           <b>User has Agent role:</b> {String(isAgent)}
         </FormHelperText>
         <FormHelperText>
           <b>User can add identity to registry:</b> {String(isAgent)}
         </FormHelperText>
-        <FormHelperText>
-          <b>User identity country:</b> {countryStored}
-        </FormHelperText>
+        {isIdentityAddedToRegistry && (
+          <FormHelperText>
+            <b>User identity country:</b> {countryStored}
+          </FormHelperText>
+        )}
       </FormControl>
 
       {registryAgents.length === 0 && <Text>No identities found</Text>}

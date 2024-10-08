@@ -14,6 +14,7 @@ import {
   FormHelperText,
   Spinner,
   Flex,
+  Heading,
 } from "@chakra-ui/react";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { useMintToken } from "@/hooks/mutations/useMintToken";
@@ -72,11 +73,14 @@ export default function TokenInfo({
         </Flex>
       ) : (
         <>
+          <Heading size={"md"}>Token information</Heading>
           <Text>Token name: {tokenSelected.name}</Text>
           <Text>Token address: {tokenSelected.address}</Text>
           <Text>Token decimals: {tokenDecimals}</Text>
+
           <Divider my={10} />
 
+          <Heading size={"md"}>Mint token</Heading>
           <form onSubmit={form.handleSubmit}>
             <VStack gap={2} alignItems="flex-start">
               <FormControl isRequired>

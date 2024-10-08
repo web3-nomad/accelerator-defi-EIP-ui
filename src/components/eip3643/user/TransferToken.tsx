@@ -33,6 +33,7 @@ import {
   formatUnitsWithDecimals,
   parseUnitsWithDecimals,
 } from "@/services/util/helpers";
+import { useReadTokenTotalSupply } from "@/hooks/eip3643/useReadTokenTotalSupply";
 
 type StoredAddressItem = {
   address: string;
@@ -92,6 +93,14 @@ export default function TransferToken({
     form.values.toAddress,
   );
 
+  const { data: tokenTotalSupply, error: tokenTotalSupplyError } =
+    useReadTokenTotalSupply(tokenSelected?.address);
+
+  const tokenSelectedSupply = formatUnitsWithDecimals(
+    tokenTotalSupply,
+    tokenSelectedDecimals,
+  );
+
   const updateMostUsedAddresses = (value: string) => {
     const _value = [...(mostUsedAddressesValue || [])];
 
@@ -135,13 +144,22 @@ export default function TransferToken({
       <Heading size={"sm"}>Transfer token</Heading>
       <form onSubmit={form.handleSubmit}>
         <VStack gap={2} alignItems="flex-start">
-          <FormControl isRequired>
+          <FormControl>
             <FormHelperText>
               Balance of token: {`${tokenSelectedBalance}`}
             </FormHelperText>
             {tokenBalanceError && (
               <FormHelperText color={"red"}>
                 Error fetching balance of token: {tokenSelected?.address}
+              </FormHelperText>
+            )}
+
+            <FormHelperText>
+              Total supply of token: {`${tokenSelectedSupply}`}
+            </FormHelperText>
+            {tokenTotalSupplyError && (
+              <FormHelperText color={"red"}>
+                Error fetching total supply of token: {tokenSelected?.address}
               </FormHelperText>
             )}
           </FormControl>
