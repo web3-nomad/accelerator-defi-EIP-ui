@@ -11,7 +11,7 @@ import {
 import { WatchContractEventReturnType } from "viem";
 import NoWalletConnected from "@/components/NoWalletConnected";
 import NFT from "@/components/eip3643/NFT";
-import { ManageIdentities } from "@/components/manage-identities/ManageIdentities";
+import { ManageRegistry } from "@/components/manage-registry/ManageRegistry";
 
 export default function EIP3643() {
   const { accountId } = useWalletInterface();
@@ -50,6 +50,7 @@ export default function EIP3643() {
           <Tab>Admin Area</Tab>
           <Tab>Manage demo NFT</Tab>
           <Tab>Manage identities</Tab>
+          <Tab>Manage agents</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
@@ -62,7 +63,10 @@ export default function EIP3643() {
             <NFT />
           </TabPanel>
           <TabPanel>
-            <ManageIdentities />
+            <ManageRegistry isAgents={false} />
+          </TabPanel>
+          <TabPanel>
+            <ManageRegistry isAgents />
           </TabPanel>
         </TabPanels>
       </Tabs>

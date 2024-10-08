@@ -10,7 +10,13 @@ type Props = {
   data: GroupBase<string | number>[];
   styles?: StylesConfig;
   onTokenSelect: (value: string) => void;
-  selectedValue?: string | number;
+  selectedValue?:
+    | string
+    | number
+    | {
+        value: number;
+        label: string;
+      };
   loadingInProgress?: boolean;
 };
 

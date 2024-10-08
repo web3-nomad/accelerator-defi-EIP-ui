@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { EvmAddress, TokenNameItem } from "@/types/types";
+import { TokenNameItem, EvmAddress } from "@/types/types";
 import { WatchContractEventReturnType } from "@/services/contracts/watchContractEvent";
 import {
   readTokenIdentityRegistry,
@@ -7,26 +7,38 @@ import {
 } from "@/services/contracts/wagmiGenActions";
 
 export function useTokenIdentityRegistry(tokenSelected?: TokenNameItem) {
-  const [registry, setRegistry] = useState("");
-  const [registryAgents, setRegistryAgents] = useState<string[]>([]);
+  const [registry, setRegistry] = useState<EvmAddress>();
+  const [registryIdentities, setRegistryIdentities] = useState<
+    { identityAddress: EvmAddress; walletAddress: EvmAddress }[]
+  >([]);
 
   useEffect(() => {
     let unsub: WatchContractEventReturnType | null = null;
 
     tokenSelected &&
       readTokenIdentityRegistry({ args: [] }, tokenSelected.address).then(
-        (res) => {
+        (res: any) => {
           setRegistry(res[0]);
-          setRegistryAgents([]);
+          setRegistryIdentities([]);
           unsub = watchIdentityRegistryIdentityRegisteredEvent(
             {
               onLogs: (data) => {
-                setRegistryAgents((prev: any) => {
+                setRegistryIdentities((prev) => {
                   return [
                     ...prev,
                     ...data
-                      .map((item: any) => item.args[0])
-                      .filter((item) => !prev.includes(item)),
+                      .map((item: any) => ({
+                        walletAddress: item.args[0],
+                        identityAddress: item.args[1],
+                      }))
+                      .filter(
+                        (item) =>
+                          !prev.find(
+                            (itemExists) =>
+                              itemExists.identityAddress ===
+                              item.identityAddress,
+                          ),
+                      ),
                   ];
                 });
               },
@@ -40,5 +52,5 @@ export function useTokenIdentityRegistry(tokenSelected?: TokenNameItem) {
     };
   }, [tokenSelected]);
 
-  return { registryAgents, registry };
+  return { registryIdentities, registry };
 }
