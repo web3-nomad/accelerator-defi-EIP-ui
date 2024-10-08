@@ -9,7 +9,11 @@ export function useReadIdentityRegistryInvestorCountry(
   registryAddress: EvmAddress,
 ) {
   return useQuery({
-    queryKey: [QueryKeys.ReadIdentityRegistryInvestorCountry],
+    queryKey: [
+      QueryKeys.ReadIdentityRegistryInvestorCountry,
+      registryAddress,
+      accountAddress,
+    ],
     queryFn: () =>
       readIdentityRegistryInvestorCountry(
         {

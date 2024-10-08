@@ -12,7 +12,7 @@ import {
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { WalletInterface } from "@/services/wallets/walletInterface";
 import { GroupBase } from "react-select";
-import { useReadIdentityRegistryInvestorCountry } from "@/hooks/useReadIdentityRegistryInvestorCountry";
+import { useReadIdentityRegistryInvestorCountry } from "@/hooks/eip3643/useReadIdentityRegistryInvestorCountry";
 
 export const investorCountriesItems = [
   {
@@ -25,25 +25,24 @@ export const investorCountriesItems = [
   },
 ];
 
-type Props = {
+type ManageIdentitiesProps = {
   setUpdateTxResult: (res?: string) => void;
   setUpdateTxError: (err?: string) => void;
-  isOpen: boolean;
   onClose: () => void;
   registry?: EvmAddress;
   selectedIdentity?: {
-    walletAddr: EvmAddress;
-    identityAddr: EvmAddress;
+    walletAddress: EvmAddress;
+    identityAddress: EvmAddress;
   };
 };
 
-export const ManageIdentities = ({
+export function ManageIdentities({
   setUpdateTxError,
   setUpdateTxResult,
   registry,
   selectedIdentity,
   onClose,
-}: Props) => {
+}: ManageIdentitiesProps) {
   const [selectedCountryValue, setSelectedCountryValue] = useState<{
     value: number;
     label: string;
@@ -51,8 +50,8 @@ export const ManageIdentities = ({
   const [newIdentityAddress, setNewIdentityAddress] = useState<string>();
   const { data: identityRegistryInvestorCountry } =
     useReadIdentityRegistryInvestorCountry(
-      registry,
-      selectedIdentity?.walletAddr,
+      registry as EvmAddress,
+      selectedIdentity?.walletAddress as EvmAddress,
     );
   const { walletInterface } = useWalletInterface();
 
@@ -63,7 +62,7 @@ export const ManageIdentities = ({
     mutationFn: async () => {
       return writeIdentityRegistryDeleteIdentity(
         walletInterface as WalletInterface,
-        { args: [selectedIdentity?.walletAddr as EvmAddress] },
+        { args: [selectedIdentity?.walletAddress as EvmAddress] },
         registry as EvmAddress,
       );
     },
@@ -76,7 +75,7 @@ export const ManageIdentities = ({
     mutationFn: async ({ country }: UpdateIdentityCountryProps) => {
       return writeIdentityRegistryUpdateCountry(
         walletInterface as WalletInterface,
-        { args: [selectedIdentity?.walletAddr as EvmAddress, country] },
+        { args: [selectedIdentity?.walletAddress as EvmAddress, country] },
         registry as EvmAddress,
       );
     },
@@ -91,7 +90,7 @@ export const ManageIdentities = ({
         walletInterface as WalletInterface,
         {
           args: [
-            selectedIdentity?.walletAddr as EvmAddress,
+            selectedIdentity?.walletAddress as EvmAddress,
             newIdentityAddress as EvmAddress,
           ],
         },
@@ -210,4 +209,4 @@ export const ManageIdentities = ({
       </Flex>
     </Flex>
   );
-};
+}

@@ -9,7 +9,7 @@ import {
 export function useTokenIdentityRegistry(tokenSelected?: TokenNameItem) {
   const [registry, setRegistry] = useState<EvmAddress>();
   const [registryIdentities, setRegistryIdentities] = useState<
-    { identityAddr: EvmAddress; walletAddr: EvmAddress }[]
+    { identityAddress: EvmAddress; walletAddress: EvmAddress }[]
   >([]);
 
   useEffect(() => {
@@ -28,14 +28,15 @@ export function useTokenIdentityRegistry(tokenSelected?: TokenNameItem) {
                     ...prev,
                     ...data
                       .map((item: any) => ({
-                        walletAddr: item.args[0],
-                        identityAddr: item.args[1],
+                        walletAddress: item.args[0],
+                        identityAddress: item.args[1],
                       }))
                       .filter(
                         (item) =>
                           !prev.find(
                             (itemExists) =>
-                              itemExists.identityAddr === item.identityAddr,
+                              itemExists.identityAddress ===
+                              item.identityAddress,
                           ),
                       ),
                   ];

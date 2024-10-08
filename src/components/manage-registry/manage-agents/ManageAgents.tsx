@@ -22,19 +22,19 @@ import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { WalletInterface } from "@/services/wallets/walletInterface";
 import { useTokenIdentityRegistryAgents } from "@/hooks/useTokenIdentityRegistryAgents";
 
-type Props = {
+type ManageAgentsProps = {
   setUpdateTxResult: (res?: string) => void;
   setUpdateTxError: (err?: string) => void;
   onClose: () => void;
   registry?: EvmAddress;
 };
 
-export const ManageAgents = ({
+export function ManageAgents({
   setUpdateTxResult,
   setUpdateTxError,
   registry,
   onClose,
-}: Props) => {
+}: ManageAgentsProps) {
   const [selectedAgent, setSelectedAgent] = useState<EvmAddress>();
   const [newUserAgentAddress, setNewUserAgentAddress] = useState<string>();
   const { walletInterface } = useWalletInterface();
@@ -168,4 +168,4 @@ export const ManageAgents = ({
       </Flex>
     </>
   );
-};
+}

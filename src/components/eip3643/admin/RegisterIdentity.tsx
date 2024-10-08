@@ -46,7 +46,7 @@ export default function RegisterIdentity({
     useTokenIdentityRegistry(tokenSelected);
 
   const registryIdentitiesAddresses = registryIdentities.map(
-    (identity) => identity.walletAddr,
+    (identity) => identity.walletAddress,
   );
 
   const [selectedCountry, setSelectedCountry] = useState<CountryCodesISO>(

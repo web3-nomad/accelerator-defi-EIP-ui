@@ -39,8 +39,8 @@ import { ManageIdentities } from "./manage-identities/ManageIdentities";
 export const ManageRegistry = ({ isAgents }: { isAgents: boolean }) => {
   const [ownTokens, setOwnTokens] = useState<Array<TokenNameItem>>([]);
   const [selectedIdentity, setSelectedIdentity] = useState<{
-    walletAddr: EvmAddress;
-    identityAddr: EvmAddress;
+    walletAddress: EvmAddress;
+    identityAddress: EvmAddress;
   }>();
   const [selectedToken, setSelectedToken] = useState<TokenNameItem>();
   const { registry, registryIdentities } =
@@ -74,8 +74,8 @@ export const ManageRegistry = ({ isAgents }: { isAgents: boolean }) => {
   }, [accountEvm, deployedTokens, setOwnTokens]);
 
   const onEditIdentityRegistry = (identityRegistry: {
-    walletAddr: EvmAddress;
-    identityAddr: EvmAddress;
+    walletAddress: EvmAddress;
+    identityAddress: EvmAddress;
   }) => {
     onOpen();
     setSelectedIdentity(identityRegistry);
@@ -88,7 +88,7 @@ export const ManageRegistry = ({ isAgents }: { isAgents: boolean }) => {
   };
 
   const selectedRegistryIdentity = registryIdentities.find(
-    (identity) => identity.walletAddr === selectedIdentity?.walletAddr,
+    (identity) => identity.walletAddress === selectedIdentity?.walletAddress,
   );
 
   return (
@@ -101,7 +101,7 @@ export const ManageRegistry = ({ isAgents }: { isAgents: boolean }) => {
               Manage identity agents {"\b"}
             </Text>
             <Text fontSize={14} align="center">
-              Identity address: {selectedRegistryIdentity?.identityAddr}
+              Identity address: {selectedRegistryIdentity?.identityAddress}
             </Text>
           </ModalHeader>
           <ModalCloseButton />
@@ -116,7 +116,6 @@ export const ManageRegistry = ({ isAgents }: { isAgents: boolean }) => {
             ) : (
               <ManageIdentities
                 onClose={onClose}
-                isOpen={isOpen}
                 setUpdateTxError={setUpdateTxError}
                 setUpdateTxResult={setUpdateTxResult}
                 registry={registry}
@@ -169,7 +168,7 @@ export const ManageRegistry = ({ isAgents }: { isAgents: boolean }) => {
               <Table>
                 <Thead>
                   {registryIdentities.map((identityRegistry) => (
-                    <Tr key={identityRegistry.walletAddr}>
+                    <Tr key={identityRegistry.walletAddress}>
                       {["identity", "actions"].map((column) => (
                         <Th key={column}>
                           <Text fontWeight="800">{column}</Text>
@@ -180,10 +179,10 @@ export const ManageRegistry = ({ isAgents }: { isAgents: boolean }) => {
                 </Thead>
                 <Tbody>
                   {registryIdentities.map((identityRegistry) => (
-                    <Tr key={identityRegistry.identityAddr}>
+                    <Tr key={identityRegistry.identityAddress}>
                       <Td>
                         <Text fontSize={14}>
-                          {identityRegistry.identityAddr}
+                          {identityRegistry.identityAddress}
                         </Text>
                       </Td>
                       <Td>

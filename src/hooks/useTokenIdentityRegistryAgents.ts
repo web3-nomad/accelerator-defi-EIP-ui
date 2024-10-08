@@ -3,28 +3,30 @@ import {
   watchIdentityRegistryAgentAddedEvent,
 } from "@/services/contracts/wagmiGenActions";
 import { EvmAddress } from "@/types/types";
+import { removeEvmAddressesDuplicates } from "@/services/util/helpers";
 import { useQueries } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { WatchContractEventReturnType } from "viem";
 import { QueryKeys } from "./types";
 
 export function useTokenIdentityRegistryAgents(registry?: EvmAddress) {
-  const [agents, setAgents] = useState<Array<string>>([]);
   const [uniqueAgents, setUniqueAgents] = useState<Array<string>>([]);
 
   useEffect(() => {
     if (registry) {
-      setAgents([]);
+      setUniqueAgents([]);
       const unsubAgentsAdded: WatchContractEventReturnType =
         watchIdentityRegistryAgentAddedEvent(
           {
             onLogs: (data) => {
-              setAgents(((prev: any) => {
-                return [...prev, ...data.map((log: any) => log.args[0])];
-              }) as any);
+              const newAgents = data.map((log: any) => log.args[0]);
+
+              setUniqueAgents((prev) =>
+                removeEvmAddressesDuplicates([...prev, ...newAgents]),
+              );
             },
           },
-          registry as `0x${string}`,
+          registry as EvmAddress,
         );
       return () => {
         unsubAgentsAdded();
@@ -32,21 +34,7 @@ export function useTokenIdentityRegistryAgents(registry?: EvmAddress) {
     }
   }, [registry]);
 
-  useEffect(() => {
-    if (agents?.length) {
-      setUniqueAgents(
-        agents.reduce((acc: Array<string>, item) => {
-          if (!acc.includes(item)) {
-            return [...acc, item];
-          }
-
-          return acc;
-        }, []),
-      );
-    }
-  }, [agents]);
-
-  const agentsQueryResult = useQueries({
+  const filteredAgentsQueryResult = useQueries({
     queries: uniqueAgents.map((agent) => ({
       queryKey: [QueryKeys.ReadAgentInRegistry, agent],
       enabled: !!registry,
@@ -63,14 +51,15 @@ export function useTokenIdentityRegistryAgents(registry?: EvmAddress) {
       },
       staleTime: Infinity,
     })),
+    combine: (result) => {
+      return result
+        .filter(
+          (agent) =>
+            !!(agent.data?.isAgent as unknown as { "0": boolean })?.["0"],
+        )
+        .map((agent) => agent.data?.agent);
+    },
   });
 
-  return {
-    filteredAgents: agentsQueryResult
-      .filter(
-        (agent) =>
-          !!(agent.data?.isAgent as unknown as { "0": boolean })?.["0"],
-      )
-      .map((agent) => agent.data?.agent),
-  };
+  return { filteredAgents: filteredAgentsQueryResult };
 }
