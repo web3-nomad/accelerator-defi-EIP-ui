@@ -98,22 +98,34 @@ export default function Compliance({
           <Spinner />
         </Flex>
       ) : (
-        <>
+        <VStack alignItems={"start"}>
           <Text>
             ModularCompliance address of current selected token:{" "}
             {modularComplianceAddress}
-          </Text>
-          <Text>
-            Modules added:{" "}
-            {addedModules &&
-              addedModules.map(
-                (module) =>
-                  complianceModulesList.find(
-                    (moduleItem) => moduleItem.value == module,
-                  )?.label,
-              )}
-          </Text>
-        </>
+          </Text>{" "}
+          <Text>Compliance modules added: </Text>
+          {addedModules &&
+            addedModules.map((module) => {
+              const moduleFound = complianceModulesList.find(
+                (moduleItem) => moduleItem.value == module,
+              );
+
+              if (moduleFound) {
+                return (
+                  <VStack key="module-not-found">
+                    <Text>Module name: {moduleFound?.label}</Text>
+                    <Text>Module address: {moduleFound?.value} </Text>
+                  </VStack>
+                );
+              } else {
+                return (
+                  <Text key="module-not-found">
+                    ⚠️ Module address is outdated: {module}
+                  </Text>
+                );
+              }
+            })}
+        </VStack>
       )}
 
       <Divider my={10} />

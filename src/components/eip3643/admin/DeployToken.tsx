@@ -18,6 +18,8 @@ import {
   AlertTitle,
   AlertDescription,
   FormHelperText,
+  RadioGroup,
+  Radio,
 } from "@chakra-ui/react";
 import {
   countryAllowModuleAddress,
@@ -30,7 +32,7 @@ import {
 } from "@/services/contracts/wagmiGenActions";
 import { MenuSelect } from "@/components/MenuSelect";
 import { useCallback, useEffect, useState } from "react";
-import { EvmAddress } from "@/types/types";
+import { CountryCodesISO, EvmAddress } from "@/types/types";
 import { GroupBase } from "react-select";
 import { ethers } from "ethers";
 
@@ -66,6 +68,9 @@ export const complianceModulesList = [
 ];
 
 export default function DeployToken({ onClose = () => {} }) {
+  const [complianceModuleSelected, setComplianceModuleSelected] = useState("");
+  const [complianceError, setComplianceError] = useState("");
+
   const {
     error,
     isPending,
@@ -80,6 +85,9 @@ export default function DeployToken({ onClose = () => {} }) {
       symbol: "",
       decimals: 18,
       nftAddress: "",
+      maxOwnershipCountryCode: CountryCodesISO.US.toString(),
+      maxOwnershipCountryLocalPercentage: 0,
+      maxOwnershipCountryNonLocalPercentage: 0,
       complianceModules: [] as EvmAddress[],
       complianceSettings: [] as EvmAddress[],
     },
@@ -106,16 +114,49 @@ export default function DeployToken({ onClose = () => {} }) {
   });
 
   useEffect(() => {
-    if (form.values.nftAddress && ethers.isAddress(form.values.nftAddress)) {
-      const requiresNftModuleCall = new ethers.Interface([
-        "function requireNFT(address _nftAddress)",
-      ]).encodeFunctionData("requireNFT", [form.values.nftAddress]);
-      form.setFieldValue("complianceSettings", [requiresNftModuleCall]);
+    if (complianceModuleSelected === requiresNftModuleAddress) {
+      if (form.values.nftAddress && ethers.isAddress(form.values.nftAddress)) {
+        const requiresNftModuleCall = new ethers.Interface([
+          "function requireNFT(address _nftAddress)",
+        ]).encodeFunctionData("requireNFT", [form.values.nftAddress]);
+        form.setFieldValue("complianceSettings", [requiresNftModuleCall]);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form.values.nftAddress]);
 
-  const [complianceModuleSelected, setComplianceModuleSelected] = useState("");
+  useEffect(() => {
+    if (complianceModuleSelected === maxOwnershipByCountryModuleAddress) {
+      try {
+        const maxOwnershipCountryModuleCall = new ethers.Interface([
+          "function setMaxPercentage(uint16 _country, uint16 _maxLocal, uint16 _maxNonlocal)",
+        ]).encodeFunctionData("setMaxPercentage", [
+          Number(form.values.maxOwnershipCountryCode),
+          Number(form.values.maxOwnershipCountryLocalPercentage),
+          Number(form.values.maxOwnershipCountryNonLocalPercentage),
+        ]);
+
+        form.setFieldValue("complianceSettings", [
+          maxOwnershipCountryModuleCall,
+        ]);
+
+        setComplianceError("");
+      } catch (e) {
+        console.error(e);
+        setComplianceError(
+          "There was an issue with encoding params for maxOwnershipCountryModule",
+        );
+      }
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    form.values.maxOwnershipCountryCode,
+    form.values.maxOwnershipCountryLocalPercentage,
+    form.values.maxOwnershipCountryNonLocalPercentage,
+    complianceModuleSelected,
+  ]);
+
   const handleComplianceModuleSelect = (value: string) => {
     setComplianceModuleSelected(value);
     form.setValues((prev) => ({
@@ -154,11 +195,112 @@ export default function DeployToken({ onClose = () => {} }) {
           </FormControl>
         );
 
+      case maxOwnershipByCountryModuleAddress:
+        return (
+          <>
+            <FormControl pt={10}>
+              <FormLabel>
+                Select identity residency to be considered local
+              </FormLabel>
+              <RadioGroup
+                onChange={(value) => {
+                  form.setFieldValue("maxOwnershipCountryCode", value);
+                }}
+                value={form.values.maxOwnershipCountryCode}
+              >
+                <Stack direction="row">
+                  <Radio value={CountryCodesISO.US.toString()}>US</Radio>
+                  <Radio value={CountryCodesISO.NON_US.toString()}>
+                    Non US
+                  </Radio>
+                </Stack>
+              </RadioGroup>
+            </FormControl>
+
+            <FormControl pt={5}>
+              <FormLabel>
+                Max percentage of tokens owned by a local identity
+              </FormLabel>
+              <NumberInput
+                name="maxOwnershipCountryLocalPercentage"
+                variant="outline"
+                value={form.values.maxOwnershipCountryLocalPercentage}
+                min={0}
+                max={10000}
+                precision={0}
+                onChange={(value) =>
+                  form.setFieldValue(
+                    "maxOwnershipCountryLocalPercentage",
+                    value,
+                  )
+                }
+              >
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+
+              <FormHelperText>
+                Set value in basis points (e.g. 185 = 1.85%))
+              </FormHelperText>
+              <FormHelperText>
+                Current value in % is:{" "}
+                {form.values.maxOwnershipCountryLocalPercentage / 100}%
+              </FormHelperText>
+            </FormControl>
+
+            <FormControl pt={5}>
+              <FormLabel>
+                Max percentage of tokens owned by a non-local identity
+              </FormLabel>
+              <NumberInput
+                name="maxOwnershipCountryLocalPercentage"
+                variant="outline"
+                value={form.values.maxOwnershipCountryNonLocalPercentage}
+                min={0}
+                max={10000}
+                precision={0}
+                onChange={(value) =>
+                  form.setFieldValue(
+                    "maxOwnershipCountryNonLocalPercentage",
+                    value,
+                  )
+                }
+              >
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+
+              <FormHelperText>
+                Set value in basis points (e.g. 185 = 1.85%))
+              </FormHelperText>
+              <FormHelperText>
+                Current value in % is:{" "}
+                {form.values.maxOwnershipCountryNonLocalPercentage / 100}%
+              </FormHelperText>
+            </FormControl>
+
+            {complianceError && (
+              <Alert status="error">
+                <AlertIcon />
+                <AlertTitle>compliance module error!</AlertTitle>
+                <AlertDescription>{complianceError}</AlertDescription>
+              </Alert>
+            )}
+          </>
+        );
+
       case onlyUsaModuleAddress:
       case transferLimitOneHundredModuleAddress:
+      case maxTenPercentOwnershipModuleAddress:
         return null;
     }
-  }, [complianceModuleSelected, form]);
+  }, [complianceModuleSelected, complianceError, form]);
 
   return (
     <form onSubmit={form.handleSubmit}>
@@ -222,7 +364,7 @@ export default function DeployToken({ onClose = () => {} }) {
         {showComplianceModule()}
 
         {!deployResult && (
-          <Stack spacing={4} direction="row" align="center">
+          <Stack spacing={4} direction="row" align="center" pt={5}>
             <Button type="submit" isLoading={isPending}>
               Deploy
             </Button>
