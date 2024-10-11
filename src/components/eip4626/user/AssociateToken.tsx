@@ -12,8 +12,8 @@ export function AssociateToken({ tokenAddress }: AssociateTokenProps) {
   };
 
   return (
-    <>
-      <Button onClick={() => associateCall()}>Associate token</Button>
-    </>
+    <Button width="40%" onClick={associateCall}>
+      Associate token
+    </Button>
   );
 }

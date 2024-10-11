@@ -15,6 +15,7 @@ import {
   NumberInputField,
   VStack,
   Text,
+  Divider,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
 import { useQueryClient } from "@tanstack/react-query";
@@ -78,7 +79,10 @@ export function VaultAddReward({ vaultAddress }: VaultInfoProps) {
 
   return (
     <>
-      <Heading size={"sm"}>Add reward to vault</Heading>
+      <Divider my={2} />
+      <Heading size="sm" fontWeight="800" backgroundColor="ButtonFace" p="2">
+        Add reward to vault
+      </Heading>
       <Text>
         Note: vault needs to have assets deposited before adding the rewards
       </Text>

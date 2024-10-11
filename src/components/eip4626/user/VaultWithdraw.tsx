@@ -1,50 +1,50 @@
-import { useFormik } from "formik";
-import { EvmAddress, VaultInfoProps } from "@/types/types";
 import {
+  Text,
+  Flex,
+  Input,
+  Button,
   Alert,
   AlertDescription,
   AlertIcon,
-  AlertTitle,
-  Button,
-  FormControl,
-  FormHelperText,
-  FormLabel,
-  Heading,
-  HStack,
-  NumberInput,
-  NumberInputField,
-  VStack,
 } from "@chakra-ui/react";
-import { useReadHederaVaultShare } from "@/hooks/eip4626/useReadHederaVaultShare";
-import { useWriteHederaVaultWithdraw } from "@/hooks/eip4626/mutations/useWriteHederaVaultWithdraw";
-import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
-import { formatBalance, formatNumberToBigint } from "@/services/util/helpers";
+import Icon from "@/components/Icon";
+import { TransactionResult } from "@/components/TransactionResult";
+import { EvmAddress, TxActionName } from "@/types/types";
 import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
+import { useWriteHederaVaultWithdraw } from "@/hooks/eip4626/mutations/useWriteHederaVaultWithdraw";
+import { formatBalance, formatNumberToBigint } from "@/services/util/helpers";
+import BigNumber from "bignumber.js";
+import { useFormik } from "formik";
+import { useState, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useReadHederaVaultUserContribution } from "@/hooks/eip4626/useReadHederaVaultUserContribution";
+import { useReadHederaVaultShare } from "@/hooks/eip4626/useReadHederaVaultShare";
+import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
 
-export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
+type VaultWithdrawProps = {
+  vaultAddress: EvmAddress;
+};
+
+export function VaultWithdraw({ vaultAddress }: VaultWithdrawProps) {
   const queryClient = useQueryClient();
+
   const { data: vaultShareAddress } = useReadHederaVaultShare(vaultAddress);
-  const { data: shareUserBalance, error: shareUserBalanceError } =
-    useReadBalanceOf(vaultShareAddress as EvmAddress);
-  const balanceFormatted = formatBalance(shareUserBalance);
+  const { data: shareUserBalance } = useReadBalanceOf(
+    vaultShareAddress as EvmAddress,
+  );
 
   const {
     data: withdrawResult,
     mutateAsync: withdraw,
     error: withdrawError,
-    isPending: isWithdrawPending,
   } = useWriteHederaVaultWithdraw();
 
   const {
     data: approveResult,
     mutateAsync: approve,
     error: approveError,
-    isPending: isApprovePending,
   } = useWriteHederaVaultApprove();
 
-  const form = useFormik({
+  const withdrawForm = useFormik({
     initialValues: {
       amount: 0,
     },
@@ -73,100 +73,134 @@ export function VaultWithdraw({ vaultAddress }: VaultInfoProps) {
     });
   };
 
-  //@TODO call not working for small amounts with decimals
-  // const { data: previewWithdrawData } = useReadHederaVaultPreviewWithdraw(
-  //   vaultAddress,
-  //   form.values.amount,
-  // );
+  const maxAmount = useMemo(
+    () => Number(formatBalance(shareUserBalance)),
+    [shareUserBalance],
+  );
 
-  const { data: userContribution } =
-    useReadHederaVaultUserContribution(vaultAddress);
+  const handleUpdateAmountWithPercent = (percentage: number) => {
+    const calculatedAmount = (maxAmount * percentage) / 100;
+
+    if (calculatedAmount) {
+      withdrawForm.setFieldValue("amount", calculatedAmount);
+
+      if (calculatedAmount <= maxAmount) {
+        setMaxAmountError(false);
+      } else {
+        setMaxAmountError(true);
+      }
+    }
+  };
+
+  const handleAmountChange = (e: { target: { value: string } }) => {
+    const calculatedAmount = new BigNumber(e.target.value).toNumber();
+
+    if (calculatedAmount || calculatedAmount === 0) {
+      withdrawForm.setFieldValue("amount", calculatedAmount);
+
+      if (calculatedAmount <= maxAmount) {
+        setMaxAmountError(false);
+      } else {
+        setMaxAmountError(true);
+      }
+
+      return;
+    }
+
+    withdrawForm.setFieldValue("amount", 0);
+    setMaxAmountError(false);
+  };
+
+  const [maxAmountError, setMaxAmountError] = useState(false);
 
   return (
     <>
-      <Heading size={"sm"}>Withdraw asset from vault</Heading>
-
-      <form onSubmit={form.handleSubmit}>
-        <VStack gap={2} alignItems="flex-start">
-          <FormControl isRequired>
-            <FormLabel>Amount of asset to withdraw</FormLabel>
-            <NumberInput
-              name="amount"
-              variant="outline"
-              value={form.values.amount}
-              clampValueOnBlur={false}
-              onChange={(val) => form.setFieldValue("amount", val)}
+      <form onSubmit={withdrawForm.handleSubmit}>
+        <Flex direction="column" gap="4">
+          <Flex
+            direction="row"
+            width="100%"
+            pt="2"
+            pb="2"
+            justifyContent="space-between"
+          >
+            <Text fontWeight="800" fontSize={14}>
+              Withdraw Amount{": "}
+              {withdrawForm.values?.amount}
+            </Text>
+            <Text fontWeight="600" fontSize={14}>
+              Max: {maxAmount}
+            </Text>
+          </Flex>
+          <Flex width="100%" justifyContent="space-between" gap="1">
+            <Input
+              value={withdrawForm.values?.amount}
+              onChange={handleAmountChange}
+            />
+            <Flex
+              width="70px"
+              height="40px"
+              borderRadius={6}
+              borderWidth={1}
+              borderColor="lightGray"
+              alignItems="center"
+              justifyContent="center"
             >
-              <NumberInputField />
-            </NumberInput>
-
-            <FormHelperText>
-              User asset token contribution to the vault:{" "}
-              {userContribution ? `${formatBalance(userContribution[0])}` : 0}
-            </FormHelperText>
-            <FormHelperText>
-              User balance of vault share token: {`${balanceFormatted}`}
-            </FormHelperText>
-
-            {/*<FormHelperText>*/}
-            {/*  Amount of vault share token will be burned:{" "}*/}
-            {/*  {previewWithdrawData?.toString()}*/}
-            {/*</FormHelperText>*/}
-
-            {shareUserBalanceError && (
-              <FormHelperText color={"red"}>
-                Error fetching balance of vault share token: {vaultShareAddress}
-              </FormHelperText>
-            )}
-            {shareUserBalanceError && (
-              <FormHelperText
-                color={"red"}
-              >{`${shareUserBalanceError}`}</FormHelperText>
-            )}
-          </FormControl>
-          <HStack>
+              <Icon name="Boat" />
+            </Flex>
+          </Flex>
+          <Flex width="100%" justifyContent="space-between" gap="2">
+            {[25, 50, 75, 100].map((percentage) => (
+              <Button
+                key={percentage}
+                width="100%"
+                onClick={() => handleUpdateAmountWithPercent(percentage)}
+              >
+                <Text fontWeight="600">
+                  {typeof percentage === "number"
+                    ? percentage + "%"
+                    : percentage}
+                </Text>
+              </Button>
+            ))}
+          </Flex>
+          {maxAmountError && (
+            <Alert status="error">
+              <AlertIcon />
+              <AlertDescription>Token allowance is too low.</AlertDescription>
+            </Alert>
+          )}
+          <Flex direction="row" justifyContent="space-between" gap="5">
             <Button
-              onClick={() => approveToken(form.values.amount)}
-              isLoading={isApprovePending}
+              width="50%"
+              variant="outline"
+              isDisabled={maxAmountError || !withdrawForm.values.amount}
             >
-              Approve
+              confirm
             </Button>
-            <Button type="submit" isLoading={isWithdrawPending}>
-              Withdraw
+            <Button
+              width="50%"
+              variant="outline"
+              isDisabled={maxAmountError || !withdrawForm.values.amount}
+              onClick={() => approveToken(withdrawForm.values.amount)}
+              type="button"
+            >
+              approve
             </Button>
-          </HStack>
-        </VStack>
+          </Flex>
+        </Flex>
       </form>
 
-      {approveResult && (
-        <Alert status="success">
-          <AlertIcon />
-          <AlertTitle>Approve success!</AlertTitle>
-          <AlertDescription>TxId: {approveResult}</AlertDescription>
-        </Alert>
-      )}
-      {approveError && (
-        <Alert status="error">
-          <AlertIcon />
-          <AlertTitle>Approve token error!</AlertTitle>
-          <AlertDescription>{approveError.toString()}</AlertDescription>
-        </Alert>
-      )}
-
-      {withdrawResult && (
-        <Alert status="success">
-          <AlertIcon />
-          <AlertTitle>Withdraw success!</AlertTitle>
-          <AlertDescription>TxId: {withdrawResult}</AlertDescription>
-        </Alert>
-      )}
-      {withdrawError && (
-        <Alert status="error">
-          <AlertIcon />
-          <AlertTitle>Withdraw token error!</AlertTitle>
-          <AlertDescription>{withdrawError.toString()}</AlertDescription>
-        </Alert>
-      )}
+      <TransactionResult
+        actionName={TxActionName.Withdraw}
+        transactionResult={withdrawResult}
+        transactionError={withdrawError}
+      />
+      <TransactionResult
+        actionName={TxActionName.Approve}
+        transactionResult={approveResult}
+        transactionError={approveError}
+      />
     </>
   );
 }

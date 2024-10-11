@@ -1,52 +1,50 @@
 import {
+  Text,
+  Flex,
+  Input,
+  Button,
   Alert,
   AlertDescription,
   AlertIcon,
-  AlertTitle,
-  Button,
-  FormControl,
-  FormHelperText,
-  FormLabel,
-  Heading,
-  HStack,
-  NumberInput,
-  NumberInputField,
-  VStack,
 } from "@chakra-ui/react";
-import { useFormik } from "formik";
-import { EvmAddress, VaultInfoProps } from "@/types/types";
-import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
-import { useWriteHederaVaultDeposit } from "@/hooks/eip4626/mutations/useWriteHederaVaultDeposit";
-import { useReadHederaVaultAsset } from "@/hooks/eip4626/useReadHederaVaultAsset";
-import { formatBalance, formatNumberToBigint } from "@/services/util/helpers";
-import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
 import { useQueryClient } from "@tanstack/react-query";
-import { useReadHederaVaultPreviewDeposit } from "@/hooks/eip4626/useReadHederaVaultPreviewDeposit";
+import { useFormik } from "formik";
+import BigNumber from "bignumber.js";
+import Icon from "@/components/Icon";
+import { TransactionResult } from "@/components/TransactionResult";
+import { EvmAddress, TxActionName } from "@/types/types";
+import { useState, useMemo } from "react";
+import { useWriteHederaVaultApprove } from "@/hooks/eip4626/mutations/useWriteHederaVaultApprove";
+import { useWriteHederaVaultDeposit } from "@/hooks/eip4626/mutations/useWriteHederaVaultDeposit";
+import { formatBalance, formatNumberToBigint } from "@/services/util/helpers";
+import { useReadBalanceOf } from "@/hooks/useReadBalanceOf";
+import { useReadHederaVaultAsset } from "@/hooks/eip4626/useReadHederaVaultAsset";
 
-export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
+type VaultDepositProps = {
+  vaultAddress: EvmAddress;
+};
+
+export function VaultDeposit({ vaultAddress }: VaultDepositProps) {
   const queryClient = useQueryClient();
-  const { data: vaultAssetAddress } = useReadHederaVaultAsset(vaultAddress);
-  const { data: vaultAssetUserBalance, error: vaultAssetUserBalanceError } =
-    useReadBalanceOf(vaultAssetAddress as EvmAddress);
-
-  //@TODO dynamic decimals
-  const balanceFormatted = formatBalance(vaultAssetUserBalance);
 
   const {
     data: depositResult,
     mutateAsync: deposit,
     error: depositError,
-    isPending: isDepositPending,
   } = useWriteHederaVaultDeposit();
 
   const {
     data: approveResult,
     mutateAsync: approve,
     error: approveError,
-    isPending: isApprovePending,
   } = useWriteHederaVaultApprove();
 
-  const form = useFormik({
+  const { data: vaultAssetAddress } = useReadHederaVaultAsset(vaultAddress);
+  const { data: vaultAssetUserBalance } = useReadBalanceOf(
+    vaultAssetAddress as EvmAddress,
+  );
+
+  const depositForm = useFormik({
     initialValues: {
       amount: 0,
     },
@@ -75,93 +73,134 @@ export function VaultDeposit({ vaultAddress }: VaultInfoProps) {
     });
   };
 
-  const { data: previewDepositData } = useReadHederaVaultPreviewDeposit(
-    vaultAddress,
-    form.values.amount,
+  const maxAmount = useMemo(
+    () => Number(formatBalance(vaultAssetUserBalance)),
+    [vaultAssetUserBalance],
   );
 
-  const previewDepositDataFormatted = formatBalance(
-    previewDepositData?.toString(),
-  );
+  const handleUpdateAmountWithPercent = (percentage: number) => {
+    const calculatedAmount = (maxAmount * percentage) / 100;
+
+    if (calculatedAmount) {
+      depositForm.setFieldValue("amount", calculatedAmount);
+
+      if (calculatedAmount <= maxAmount) {
+        setMaxAmountError(false);
+      } else {
+        setMaxAmountError(true);
+      }
+    }
+  };
+
+  const handleAmountChange = (e: { target: { value: string } }) => {
+    const calculatedAmount = new BigNumber(e.target.value).toNumber();
+
+    if (calculatedAmount || calculatedAmount === 0) {
+      depositForm.setFieldValue("amount", calculatedAmount);
+
+      if (calculatedAmount <= maxAmount) {
+        setMaxAmountError(false);
+      } else {
+        setMaxAmountError(true);
+      }
+
+      return;
+    }
+
+    depositForm.setFieldValue("amount", 0);
+    setMaxAmountError(false);
+  };
+
+  const [maxAmountError, setMaxAmountError] = useState(false);
 
   return (
     <>
-      <Heading size={"sm"}>Deposit asset into vault</Heading>
-
-      <form onSubmit={form.handleSubmit}>
-        <VStack gap={2} alignItems="flex-start">
-          <FormControl isRequired>
-            <FormLabel>Amount of asset to deposit</FormLabel>
-            <NumberInput
-              name="amount"
-              variant="outline"
-              value={form.values.amount}
-              clampValueOnBlur={false}
-              onChange={(val) => form.setFieldValue("amount", val)}
+      <form onSubmit={depositForm.handleSubmit}>
+        <Flex direction="column" gap="4">
+          <Flex
+            direction="row"
+            width="100%"
+            pt="2"
+            pb="2"
+            justifyContent="space-between"
+          >
+            <Text fontWeight="800" fontSize={14}>
+              Deposit Amount{": "}
+              {depositForm.values?.amount}
+            </Text>
+            <Text fontWeight="600" fontSize={14}>
+              Max: {maxAmount}
+            </Text>
+          </Flex>
+          <Flex width="100%" justifyContent="space-between" gap="1">
+            <Input
+              value={depositForm.values?.amount}
+              onChange={handleAmountChange}
+            />
+            <Flex
+              width="70px"
+              height="40px"
+              borderRadius={6}
+              borderWidth={1}
+              borderColor="lightGray"
+              alignItems="center"
+              justifyContent="center"
             >
-              <NumberInputField />
-            </NumberInput>
-            <FormHelperText>
-              User balance of vault asset token amount: {balanceFormatted}
-            </FormHelperText>
-            <FormHelperText>
-              You will receive vault shares token amount:{" "}
-              {previewDepositDataFormatted}
-            </FormHelperText>
-            {vaultAssetUserBalanceError && (
-              <FormHelperText color={"red"}>
-                Error fetching balance of vault asset token: {vaultAssetAddress}
-              </FormHelperText>
-            )}
-            {vaultAssetUserBalanceError && (
-              <FormHelperText
-                color={"red"}
-              >{`${vaultAssetUserBalanceError}`}</FormHelperText>
-            )}
-          </FormControl>
-          <HStack>
+              <Icon name="Boat" />
+            </Flex>
+          </Flex>
+          <Flex width="100%" justifyContent="space-between" gap="2">
+            {[25, 50, 75, 100].map((percentage) => (
+              <Button
+                key={percentage}
+                width="100%"
+                onClick={() => handleUpdateAmountWithPercent(percentage)}
+              >
+                <Text fontWeight="600">
+                  {typeof percentage === "number"
+                    ? percentage + "%"
+                    : percentage}
+                </Text>
+              </Button>
+            ))}
+          </Flex>
+          {maxAmountError && (
+            <Alert status="error">
+              <AlertIcon />
+              <AlertDescription>Token allowance is too low.</AlertDescription>
+            </Alert>
+          )}
+          <Flex direction="row" justifyContent="space-between" gap="5">
             <Button
-              onClick={() => approveToken(form.values.amount)}
-              isLoading={isApprovePending}
+              width="50%"
+              variant="outline"
+              isDisabled={maxAmountError || !depositForm.values.amount}
             >
-              Approve
+              confirm
             </Button>
-            <Button type="submit" isLoading={isDepositPending}>
-              Deposit
+            <Button
+              width="50%"
+              variant="outline"
+              isDisabled={maxAmountError || !depositForm.values.amount}
+              onClick={() => approveToken(depositForm.values.amount)}
+              type="button"
+            >
+              approve
             </Button>
-          </HStack>
-        </VStack>
+          </Flex>
+        </Flex>
       </form>
 
-      {approveResult && (
-        <Alert status="success">
-          <AlertIcon />
-          <AlertTitle>Approve success!</AlertTitle>
-          <AlertDescription>TxId: {approveResult}</AlertDescription>
-        </Alert>
-      )}
-      {approveError && (
-        <Alert status="error">
-          <AlertIcon />
-          <AlertTitle>Approve token error!</AlertTitle>
-          <AlertDescription>{approveError.toString()}</AlertDescription>
-        </Alert>
-      )}
-
-      {depositResult && (
-        <Alert status="success">
-          <AlertIcon />
-          <AlertTitle>Deposit success!</AlertTitle>
-          <AlertDescription>TxId: {depositResult}</AlertDescription>
-        </Alert>
-      )}
-      {depositError && (
-        <Alert status="error">
-          <AlertIcon />
-          <AlertTitle>Deposit token error!</AlertTitle>
-          <AlertDescription>{depositError.toString()}</AlertDescription>
-        </Alert>
-      )}
+      <TransactionResult
+        actionName={TxActionName.Deposit}
+        transactionResult={depositResult}
+        transactionError={depositError}
+      />
+      <TransactionResult
+        actionName={TxActionName.Approve}
+        transactionResult={approveResult}
+        transactionError={approveError}
+      />
     </>
   );
 }
