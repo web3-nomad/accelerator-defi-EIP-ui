@@ -41,6 +41,11 @@ export type TransferTokenFromRequest = {
 
 export type EvmAddress = `0x${string}`;
 
+export type InputRefProps = {
+  value?: string;
+  setValue: (value?: string) => void;
+};
+
 export type VaultInfoProps = {
   vaultAddress: EvmAddress;
 };

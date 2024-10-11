@@ -3824,11 +3824,250 @@ export const maxOwnershipByCountryModuleAbi = [
 ] as const;
 
 export const maxOwnershipByCountryModuleAddress =
-  "0x66bf2c085f88AF1b1993364ddB1332095B7AD3Ae" as const;
+  "0x5B971fCDD9Ea663d054a47B6c13fbe9D23E5cDda" as const;
 
 export const maxOwnershipByCountryModuleConfig = {
   address: maxOwnershipByCountryModuleAddress,
   abi: maxOwnershipByCountryModuleAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// MaxOwnershipModule
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const maxOwnershipModuleAbi = [
+  {
+    type: "error",
+    inputs: [
+      { name: "_compliance", internalType: "address", type: "address" },
+      { name: "_id", internalType: "address[]", type: "address[]" },
+      { name: "_balance", internalType: "uint256[]", type: "uint256[]" },
+    ],
+    name: "InvalidPresetValues",
+  },
+  { type: "error", inputs: [], name: "MathOverflowedMulDiv" },
+  {
+    type: "error",
+    inputs: [
+      { name: "_compliance", internalType: "address", type: "address" },
+      { name: "_value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "MaxOwnershipExceeded",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "OnlyComplianceOwnerCanCall",
+  },
+  {
+    type: "error",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "TokenAlreadyBound",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "_compliance",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "ComplianceBound",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "_compliance",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "ComplianceUnbound",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "_compliance",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      { name: "_id", internalType: "address", type: "address", indexed: true },
+      {
+        name: "_balance",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "IDBalancePreSet",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "_compliance",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "_maxPercetage",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: true,
+      },
+    ],
+    name: "MaxPercentageSet",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_compliance", internalType: "address", type: "address" },
+      { name: "_id", internalType: "address[]", type: "address[]" },
+      { name: "_balance", internalType: "uint256[]", type: "uint256[]" },
+    ],
+    name: "batchPreSetModuleState",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "bindCompliance",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "canComplianceBind",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_compliance", internalType: "address", type: "address" },
+      { name: "_identity", internalType: "address", type: "address" },
+    ],
+    name: "getIDBalance",
+    outputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "isComplianceBound",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "isPlugAndPlay",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_from", internalType: "address", type: "address" },
+      { name: "_value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "moduleBurnAction",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "", internalType: "address", type: "address" },
+      { name: "_to", internalType: "address", type: "address" },
+      { name: "_value", internalType: "uint256", type: "uint256" },
+      { name: "_compliance", internalType: "address", type: "address" },
+    ],
+    name: "moduleCheck",
+    outputs: [{ name: "", internalType: "bool", type: "bool" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_to", internalType: "address", type: "address" },
+      { name: "_value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "moduleMintAction",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_from", internalType: "address", type: "address" },
+      { name: "_to", internalType: "address", type: "address" },
+      { name: "_value", internalType: "uint256", type: "uint256" },
+    ],
+    name: "moduleTransferAction",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "name",
+    outputs: [{ name: "_name", internalType: "string", type: "string" }],
+    stateMutability: "pure",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "_compliance", internalType: "address", type: "address" },
+      { name: "_id", internalType: "address", type: "address" },
+      { name: "_balance", internalType: "uint256", type: "uint256" },
+    ],
+    name: "preSetModuleState",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "presetCompleted",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_max", internalType: "uint256", type: "uint256" }],
+    name: "setMaxPercentage",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_compliance", internalType: "address", type: "address" }],
+    name: "unbindCompliance",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+] as const;
+
+export const maxOwnershipModuleAddress =
+  "0xE9eAfa62d44291f0F4690404a5FD28300E9d1c47" as const;
+
+export const maxOwnershipModuleConfig = {
+  address: maxOwnershipModuleAddress,
+  abi: maxOwnershipModuleAbi,
 } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -4056,7 +4295,7 @@ export const maxTenPercentOwnershipModuleAbi = [
 ] as const;
 
 export const maxTenPercentOwnershipModuleAddress =
-  "0xb4224765b8d201D536d56Ce84654d687c26B3B7b" as const;
+  "0xC5568d78718418c827c358E8f9C1618e522d40C3" as const;
 
 export const maxTenPercentOwnershipModuleConfig = {
   address: maxTenPercentOwnershipModuleAddress,
@@ -11488,6 +11727,318 @@ export const watchMaxOwnershipByCountryModuleMaxPercentageSetEvent =
   /*#__PURE__*/ createWatchContractEvent({
     abi: maxOwnershipByCountryModuleAbi,
     address: maxOwnershipByCountryModuleAddress,
+    eventName: "MaxPercentageSet",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__
+ */
+export const readMaxOwnershipModule = /*#__PURE__*/ createReadContract({
+  abi: maxOwnershipModuleAbi,
+  address: maxOwnershipModuleAddress,
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"canComplianceBind"`
+ */
+export const readMaxOwnershipModuleCanComplianceBind =
+  /*#__PURE__*/ createReadContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "canComplianceBind",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"getIDBalance"`
+ */
+export const readMaxOwnershipModuleGetIdBalance =
+  /*#__PURE__*/ createReadContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "getIDBalance",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"isComplianceBound"`
+ */
+export const readMaxOwnershipModuleIsComplianceBound =
+  /*#__PURE__*/ createReadContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "isComplianceBound",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"isPlugAndPlay"`
+ */
+export const readMaxOwnershipModuleIsPlugAndPlay =
+  /*#__PURE__*/ createReadContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "isPlugAndPlay",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"moduleCheck"`
+ */
+export const readMaxOwnershipModuleModuleCheck =
+  /*#__PURE__*/ createReadContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "moduleCheck",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"name"`
+ */
+export const readMaxOwnershipModuleName = /*#__PURE__*/ createReadContract({
+  abi: maxOwnershipModuleAbi,
+  address: maxOwnershipModuleAddress,
+  functionName: "name",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__
+ */
+export const writeMaxOwnershipModule = /*#__PURE__*/ createWriteContract({
+  abi: maxOwnershipModuleAbi,
+  address: maxOwnershipModuleAddress,
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"batchPreSetModuleState"`
+ */
+export const writeMaxOwnershipModuleBatchPreSetModuleState =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "batchPreSetModuleState",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"bindCompliance"`
+ */
+export const writeMaxOwnershipModuleBindCompliance =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "bindCompliance",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"moduleBurnAction"`
+ */
+export const writeMaxOwnershipModuleModuleBurnAction =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "moduleBurnAction",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"moduleMintAction"`
+ */
+export const writeMaxOwnershipModuleModuleMintAction =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "moduleMintAction",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"moduleTransferAction"`
+ */
+export const writeMaxOwnershipModuleModuleTransferAction =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "moduleTransferAction",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"preSetModuleState"`
+ */
+export const writeMaxOwnershipModulePreSetModuleState =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "preSetModuleState",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"presetCompleted"`
+ */
+export const writeMaxOwnershipModulePresetCompleted =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "presetCompleted",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"setMaxPercentage"`
+ */
+export const writeMaxOwnershipModuleSetMaxPercentage =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "setMaxPercentage",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"unbindCompliance"`
+ */
+export const writeMaxOwnershipModuleUnbindCompliance =
+  /*#__PURE__*/ createWriteContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "unbindCompliance",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__
+ */
+export const simulateMaxOwnershipModule = /*#__PURE__*/ createSimulateContract({
+  abi: maxOwnershipModuleAbi,
+  address: maxOwnershipModuleAddress,
+});
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"batchPreSetModuleState"`
+ */
+export const simulateMaxOwnershipModuleBatchPreSetModuleState =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "batchPreSetModuleState",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"bindCompliance"`
+ */
+export const simulateMaxOwnershipModuleBindCompliance =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "bindCompliance",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"moduleBurnAction"`
+ */
+export const simulateMaxOwnershipModuleModuleBurnAction =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "moduleBurnAction",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"moduleMintAction"`
+ */
+export const simulateMaxOwnershipModuleModuleMintAction =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "moduleMintAction",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"moduleTransferAction"`
+ */
+export const simulateMaxOwnershipModuleModuleTransferAction =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "moduleTransferAction",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"preSetModuleState"`
+ */
+export const simulateMaxOwnershipModulePreSetModuleState =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "preSetModuleState",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"presetCompleted"`
+ */
+export const simulateMaxOwnershipModulePresetCompleted =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "presetCompleted",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"setMaxPercentage"`
+ */
+export const simulateMaxOwnershipModuleSetMaxPercentage =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "setMaxPercentage",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `functionName` set to `"unbindCompliance"`
+ */
+export const simulateMaxOwnershipModuleUnbindCompliance =
+  /*#__PURE__*/ createSimulateContract({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    functionName: "unbindCompliance",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link maxOwnershipModuleAbi}__
+ */
+export const watchMaxOwnershipModuleEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `eventName` set to `"ComplianceBound"`
+ */
+export const watchMaxOwnershipModuleComplianceBoundEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    eventName: "ComplianceBound",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `eventName` set to `"ComplianceUnbound"`
+ */
+export const watchMaxOwnershipModuleComplianceUnboundEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    eventName: "ComplianceUnbound",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `eventName` set to `"IDBalancePreSet"`
+ */
+export const watchMaxOwnershipModuleIdBalancePreSetEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
+    eventName: "IDBalancePreSet",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link maxOwnershipModuleAbi}__ and `eventName` set to `"MaxPercentageSet"`
+ */
+export const watchMaxOwnershipModuleMaxPercentageSetEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: maxOwnershipModuleAbi,
+    address: maxOwnershipModuleAddress,
     eventName: "MaxPercentageSet",
   });
 
