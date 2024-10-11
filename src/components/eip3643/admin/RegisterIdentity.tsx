@@ -19,7 +19,7 @@ import { CountryCodesISO, EvmAddress, TokenNameItem } from "@/types/types";
 import { Eip3643Context } from "@/contexts/Eip3643Context";
 import { useTokenIdentityRegistry } from "@/hooks/useTokenIdentityRegistry";
 import { MenuSelect } from "@/components/MenuSelect";
-import { investorCountriesItems } from "@/components/manage-identities/ManageIdentities";
+import { investorCountriesItems } from "@/components/manage-registry/manage-identities/ManageIdentities";
 import { useReadTokenIsAgent } from "@/hooks/eip3643/useReadTokenIsAgent";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { useReadTokenOwner } from "@/hooks/eip3643/useReadTokenOwner";
@@ -42,7 +42,12 @@ export default function RegisterIdentity({
     isPending,
   } = useRegisterIdentity();
 
-  const { registry, registryAgents } = useTokenIdentityRegistry(tokenSelected);
+  const { registry, registryIdentities } =
+    useTokenIdentityRegistry(tokenSelected);
+
+  const registryIdentitiesAddresses = registryIdentities.map(
+    (identity) => identity.walletAddress,
+  );
 
   const [selectedCountry, setSelectedCountry] = useState<CountryCodesISO>(
     CountryCodesISO.US,
@@ -56,9 +61,15 @@ export default function RegisterIdentity({
     () =>
       Boolean(
         currentIdentityAddress &&
-          registryAgents.includes(currentIdentityWallet),
+          registryIdentitiesAddresses.includes(
+            currentIdentityWallet as EvmAddress,
+          ),
       ),
-    [currentIdentityAddress, registryAgents, currentIdentityWallet],
+    [
+      currentIdentityAddress,
+      registryIdentitiesAddresses,
+      currentIdentityWallet,
+    ],
   );
 
   const { data: isAgent } = useReadTokenIsAgent(
@@ -151,7 +162,9 @@ export default function RegisterIdentity({
         )}
       </FormControl>
 
-      {registryAgents.length === 0 && <Text>No identities found</Text>}
+      {registryIdentitiesAddresses.length === 0 && (
+        <Text>No identities found</Text>
+      )}
       {error && (
         <Alert status="error">
           <AlertIcon />
@@ -171,7 +184,7 @@ export default function RegisterIdentity({
 
       <Heading size={"md"}>Wallet addresses with registered identities</Heading>
       <OrderedList>
-        {registryAgents.map((item) => (
+        {registryIdentitiesAddresses.map((item) => (
           <ListItem key={item}>{item}</ListItem>
         ))}
       </OrderedList>

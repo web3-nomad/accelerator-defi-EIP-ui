@@ -62,3 +62,13 @@ export function parseUnitsWithDecimals(value: string, decimals: number) {
 export function formatUnitsWithDecimals(value: bigint, decimals: number) {
   return formatUnits(value, decimals);
 }
+
+export function removeEvmAddressesDuplicates(data: Array<string>) {
+  return data.reduce((addresses: Array<string>, address) => {
+    if (!addresses.includes(address)) {
+      return [...addresses, address];
+    }
+
+    return addresses;
+  }, []);
+}
