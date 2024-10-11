@@ -106,19 +106,23 @@ export default function Compliance({
           <Text>Compliance modules added: </Text>
           {addedModules &&
             addedModules.map((module) => {
-              let moduleFound = complianceModulesList.find(
+              const moduleFound = complianceModulesList.find(
                 (moduleItem) => moduleItem.value == module,
               );
 
               if (moduleFound) {
                 return (
-                  <>
+                  <VStack key="module-not-found">
                     <Text>Module name: {moduleFound?.label}</Text>
                     <Text>Module address: {moduleFound?.value} </Text>
-                  </>
+                  </VStack>
                 );
               } else {
-                return <>⚠️ Module address is outdated: {module}</>;
+                return (
+                  <Text key="module-not-found">
+                    ⚠️ Module address is outdated: {module}
+                  </Text>
+                );
               }
             })}
         </VStack>
