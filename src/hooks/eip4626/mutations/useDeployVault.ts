@@ -3,15 +3,23 @@ import { useMutation } from "@tanstack/react-query";
 import { writeVaultFactoryDeployVault } from "@/services/contracts/wagmiGenActions";
 import { WalletInterface } from "@/services/wallets/walletInterface";
 import { DeployVaultRequest } from "@/types/types";
+import { useDeployValueSafeTx } from "@/hooks/useDeployValueSafeTx";
 import { ethers } from "ethers";
-
-//increase the value in case of "0x" estimation error
-const DEPLOY_VALUE = "14";
+import { useEffect, useState } from "react";
 
 export function useDeployVault() {
   const { accountEvm, walletInterface } = useWalletInterface();
 
-  return useMutation({
+  const [isError, setIsError] = useState<boolean>();
+
+  const { currentDeployValue } = useDeployValueSafeTx(
+    "hedera-hashgraph",
+    "usd",
+    0.8,
+    isError,
+  );
+
+  const mut = useMutation({
     mutationFn: async ({
       stakingTokenAddress,
       shareTokenName,
@@ -43,7 +51,10 @@ export function useDeployVault() {
         walletInterface as WalletInterface,
         {
           args: [salt, vaultDetails, feeConfig],
-          value: ethers.parseUnits(DEPLOY_VALUE, 18),
+          value: ethers.parseUnits(
+            Math.ceil(currentDeployValue ?? 0)?.toString(),
+            18,
+          ),
         },
       );
 
@@ -51,4 +62,10 @@ export function useDeployVault() {
       return deployResult;
     },
   });
+
+  useEffect(() => {
+    setIsError(mut.isError);
+  }, [mut.isError]);
+
+  return { ...mut, currentDeployValue };
 }

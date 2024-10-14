@@ -8,16 +8,12 @@ import {
   Heading,
   FormLabel,
   FormControl,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
-  NumberIncrementStepper,
-  NumberDecrementStepper,
   Alert,
   AlertIcon,
   AlertTitle,
   AlertDescription,
   FormHelperText,
+  Text,
 } from "@chakra-ui/react";
 import { EvmAddress } from "@/types/types";
 
@@ -25,6 +21,7 @@ export default function DeployToken({ onClose = () => {} }) {
   const {
     error,
     isPending,
+    currentDeployValue,
     data: deployResult,
     mutateAsync: deployVault,
   } = useDeployVault();
@@ -127,20 +124,25 @@ export default function DeployToken({ onClose = () => {} }) {
           />
         </FormControl>
         {!deployResult && (
-          <Stack spacing={4} direction="row" align="center">
-            <Button type="submit" isLoading={isPending}>
-              Deploy
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => {
-                onClose();
-              }}
-              isLoading={isPending}
-            >
-              Cancel
-            </Button>
-          </Stack>
+          <>
+            <Text>
+              Deploy with HBAR value: {Math.ceil(currentDeployValue ?? 0)}
+            </Text>
+            <Stack spacing={4} direction="row" align="center" mt="1">
+              <Button type="submit" isLoading={isPending}>
+                Deploy
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  onClose();
+                }}
+                isLoading={isPending}
+              >
+                Cancel
+              </Button>
+            </Stack>
+          </>
         )}
         {error && (
           <Alert status="error">
