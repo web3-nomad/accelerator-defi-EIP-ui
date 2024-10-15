@@ -4,11 +4,19 @@ import { useEffect, useState } from "react";
 export function useDeployValueSafeTx(
   currencyName: string,
   fiatCurrencyName: string,
-  initialAmountInFiat: number,
+  initialFiatAmount: number,
   txSubmitError?: boolean,
 ) {
   const [tokenRate, setTokenRate] = useState<number>();
-  const [currentDeployValue, setCurrentDeployValue] = useState<number>();
+  const [currentDeployValue, setCurrentDeployValue] = useState<number>(0);
+  const [currentDeployValueParsed, setCurrentDeployValueParsed] =
+    useState<string>("0");
+
+  useEffect(() => {
+    setCurrentDeployValueParsed(() =>
+      Math.ceil(currentDeployValue ?? 0)?.toString(),
+    );
+  }, [currentDeployValue]);
 
   useEffect(() => {
     if (txSubmitError) {
@@ -17,23 +25,21 @@ export function useDeployValueSafeTx(
   }, [txSubmitError]);
 
   useEffect(() => {
-    getFiatCurrencyRate([currencyName], [fiatCurrencyName]).then(
-      (rateResponse) => {
-        rateResponse.json().then((rateData) => {
-          const newRate = rateData[currencyName][fiatCurrencyName];
+    getFiatCurrencyRate(currencyName, fiatCurrencyName).then((rateResponse) => {
+      rateResponse.json().then((rateData) => {
+        const newRate = rateData[currencyName][fiatCurrencyName];
 
-          setTokenRate(newRate);
-          setCurrentDeployValue(newRate && initialAmountInFiat / newRate);
-        });
-      },
-    );
+        setTokenRate(newRate);
+        setCurrentDeployValue(newRate && initialFiatAmount / newRate);
+      });
+    });
   }, [
     currencyName,
     fiatCurrencyName,
-    initialAmountInFiat,
+    initialFiatAmount,
     setTokenRate,
     setCurrentDeployValue,
   ]);
 
-  return { currentDeployValue, tokenRate };
+  return { currentDeployValue, currentDeployValueParsed, tokenRate };
 }

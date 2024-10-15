@@ -21,7 +21,7 @@ export default function DeployToken({ onClose = () => {} }) {
   const {
     error,
     isPending,
-    currentDeployValue,
+    currentDeployValueParsed,
     data: deployResult,
     mutateAsync: deployVault,
   } = useDeployVault();
@@ -125,9 +125,7 @@ export default function DeployToken({ onClose = () => {} }) {
         </FormControl>
         {!deployResult && (
           <>
-            <Text>
-              Deploy with HBAR value: {Math.ceil(currentDeployValue ?? 0)}
-            </Text>
+            <Text>Deploy with HBAR value: {currentDeployValueParsed}</Text>
             <Stack spacing={4} direction="row" align="center" mt="1">
               <Button type="submit" isLoading={isPending}>
                 Deploy

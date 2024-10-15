@@ -10,13 +10,13 @@ import { useEffect, useState } from "react";
 export function useDeployVault() {
   const { accountEvm, walletInterface } = useWalletInterface();
 
-  const [isError, setIsError] = useState<boolean>();
+  const [isTxError, setIsTxError] = useState<boolean>();
 
-  const { currentDeployValue } = useDeployValueSafeTx(
+  const { currentDeployValue, currentDeployValueParsed } = useDeployValueSafeTx(
     "hedera-hashgraph",
     "usd",
-    0.8,
-    isError,
+    0.9,
+    isTxError,
   );
 
   const mut = useMutation({
@@ -51,10 +51,7 @@ export function useDeployVault() {
         walletInterface as WalletInterface,
         {
           args: [salt, vaultDetails, feeConfig],
-          value: ethers.parseUnits(
-            Math.ceil(currentDeployValue ?? 0)?.toString(),
-            18,
-          ),
+          value: ethers.parseUnits(currentDeployValueParsed, 18),
         },
       );
 
@@ -64,8 +61,8 @@ export function useDeployVault() {
   });
 
   useEffect(() => {
-    setIsError(mut.isError);
+    setIsTxError(mut.isError);
   }, [mut.isError]);
 
-  return { ...mut, currentDeployValue };
+  return { ...mut, currentDeployValue, currentDeployValueParsed };
 }
