@@ -5,11 +5,11 @@ import {
   Input,
   Alert,
   AlertDescription,
+  AlertIcon,
 } from "@chakra-ui/react";
 import { GroupBase } from "react-select";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { ethers } from "ethers";
 import { useQueryClient } from "@tanstack/react-query";
 import { EvmAddress } from "@/types/types";
 import { QueryKeys } from "@/hooks/types";
@@ -21,12 +21,18 @@ import {
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { WalletInterface } from "@/services/wallets/walletInterface";
 import { useTokenIdentityRegistryAgents } from "@/hooks/useTokenIdentityRegistryAgents";
+import { ethers } from "ethers";
 
 type ManageAgentsProps = {
   setUpdateTxResult: (res?: string) => void;
   setUpdateTxError: (err?: string) => void;
   onClose: () => void;
   registry?: EvmAddress;
+};
+
+type InputRefProps = {
+  value: string;
+  setValue: (value?: string) => void;
 };
 
 export function ManageAgents({
@@ -36,7 +42,8 @@ export function ManageAgents({
   onClose,
 }: ManageAgentsProps) {
   const [selectedAgent, setSelectedAgent] = useState<EvmAddress>();
-  const [newUserAgentAddress, setNewUserAgentAddress] = useState<string>();
+  const inputRef = useRef();
+  const [agentExistsError, setAgentExistsError] = useState<string>();
   const { walletInterface } = useWalletInterface();
   const { filteredAgents } = useTokenIdentityRegistryAgents(registry);
   const queryClient = useQueryClient();
@@ -58,7 +65,7 @@ export function ManageAgents({
     mutateAsync: mutateIdentityRegistryAddAgent,
     isPending: isAddAgentPending,
   } = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (newUserAgentAddress: string) => {
       return writeIdentityRegistryAddAgent(
         walletInterface as WalletInterface,
         { args: [newUserAgentAddress as EvmAddress] },
@@ -68,9 +75,21 @@ export function ManageAgents({
   });
 
   const addNewUserAgent = async () => {
-    if (ethers.isAddress(newUserAgentAddress)) {
+    const newUserAgentAddress = (inputRef.current as unknown as InputRefProps)
+      ?.value;
+
+    if (filteredAgents.includes(newUserAgentAddress)) {
+      setAgentExistsError("Agent already exists");
+
+      return;
+    } else {
+      setAgentExistsError(undefined);
+    }
+
+    if (newUserAgentAddress && ethers.isAddress(newUserAgentAddress)) {
       try {
-        const txHash = await mutateIdentityRegistryAddAgent();
+        const txHash =
+          await mutateIdentityRegistryAddAgent(newUserAgentAddress);
         setUpdateTxResult(txHash);
         setUpdateTxError(undefined);
         setTimeout(() => {
@@ -82,12 +101,12 @@ export function ManageAgents({
         setUpdateTxResult(undefined);
         setUpdateTxError(err);
       }
+
+      onClose();
+      (inputRef.current as unknown as InputRefProps)?.setValue(undefined);
     } else {
-      setUpdateTxError("User agent address is incorrect");
-      setUpdateTxResult(undefined);
+      setAgentExistsError("Address is empty or not an EVM address");
     }
-    onClose();
-    setNewUserAgentAddress(undefined);
   };
 
   const handleAgentSelect = (agent: string) => {
@@ -108,6 +127,7 @@ export function ManageAgents({
       setUpdateTxResult(undefined);
       setUpdateTxError(err);
     }
+
     onClose();
     setSelectedAgent(undefined);
   };
@@ -118,9 +138,8 @@ export function ManageAgents({
         <Flex direction="row" gap="2">
           <Input
             width="70%"
-            value={newUserAgentAddress}
+            ref={inputRef as any}
             placeholder="User agent address"
-            onChange={(e) => setNewUserAgentAddress(e.target.value)}
           />
           <Button
             width="28%"
@@ -130,11 +149,20 @@ export function ManageAgents({
             Add new agent
           </Button>
         </Flex>
-        <Alert status="success" mt="2">
-          <AlertDescription fontSize="12">
-            Somebody who can perform update / delete operations on {"identity"}{" "}
-            wallet.
-          </AlertDescription>
+        <Alert status={agentExistsError ? "error" : "success"} mt="2">
+          {agentExistsError ? (
+            <>
+              <AlertIcon />
+              <AlertDescription fontSize={12}>
+                {agentExistsError}
+              </AlertDescription>
+            </>
+          ) : (
+            <AlertDescription fontSize="12">
+              Somebody who can perform update / delete operations on{" "}
+              {"identity"} wallet.
+            </AlertDescription>
+          )}
         </Alert>
         {!!filteredAgents && (
           <Flex direction="column" mt="7">
