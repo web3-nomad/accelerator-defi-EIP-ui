@@ -7,19 +7,21 @@ import { useDeployValueSafeTx } from "@/hooks/useDeployValueSafeTx";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 
+const MIN_ACCEPTED_DEPLOY_VALUE_IN_USD = 0.9;
+
 export function useDeployVault() {
   const { accountEvm, walletInterface } = useWalletInterface();
 
-  const [isTxError, setIsTxError] = useState<boolean>();
+  const [isTxError, setIsTxError] = useState(false);
 
   const { currentDeployValue, currentDeployValueParsed } = useDeployValueSafeTx(
     "hedera-hashgraph",
     "usd",
-    0.9,
+    MIN_ACCEPTED_DEPLOY_VALUE_IN_USD,
     isTxError,
   );
 
-  const mut = useMutation({
+  const mutation = useMutation({
     mutationFn: async ({
       stakingTokenAddress,
       shareTokenName,
@@ -61,8 +63,8 @@ export function useDeployVault() {
   });
 
   useEffect(() => {
-    setIsTxError(mut.isError);
-  }, [mut.isError]);
+    setIsTxError(mutation.isError);
+  }, [mutation.isError]);
 
-  return { ...mut, currentDeployValue, currentDeployValueParsed };
+  return { ...mutation, currentDeployValue, currentDeployValueParsed };
 }

@@ -1,5 +1,5 @@
 import { getFiatCurrencyRate } from "@/services/util/helpers";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export function useDeployValueSafeTx(
   currencyName: string,
@@ -9,8 +9,7 @@ export function useDeployValueSafeTx(
 ) {
   const [tokenRate, setTokenRate] = useState<number>();
   const [currentDeployValue, setCurrentDeployValue] = useState<number>(0);
-  const [currentDeployValueParsed, setCurrentDeployValueParsed] =
-    useState<string>("0");
+  const [currentDeployValueParsed, setCurrentDeployValueParsed] = useState("0");
 
   useEffect(() => {
     setCurrentDeployValueParsed(() =>
@@ -24,22 +23,18 @@ export function useDeployValueSafeTx(
     }
   }, [txSubmitError]);
 
-  useEffect(() => {
-    getFiatCurrencyRate(currencyName, fiatCurrencyName).then((rateResponse) => {
-      rateResponse.json().then((rateData) => {
-        const newRate = rateData[currencyName][fiatCurrencyName];
+  const getDeployValueFromRate = useCallback(async () => {
+    const response = await getFiatCurrencyRate(currencyName, fiatCurrencyName);
+    const responseData = await response.json();
+    const newRateValue = responseData[currencyName][fiatCurrencyName];
 
-        setTokenRate(newRate);
-        setCurrentDeployValue(newRate && initialFiatAmount / newRate);
-      });
-    });
-  }, [
-    currencyName,
-    fiatCurrencyName,
-    initialFiatAmount,
-    setTokenRate,
-    setCurrentDeployValue,
-  ]);
+    setTokenRate(newRateValue);
+    setCurrentDeployValue(newRateValue && initialFiatAmount / newRateValue);
+  }, [currencyName, fiatCurrencyName, initialFiatAmount]);
+
+  useEffect(() => {
+    getDeployValueFromRate();
+  }, [getDeployValueFromRate]);
 
   return { currentDeployValue, currentDeployValueParsed, tokenRate };
 }
