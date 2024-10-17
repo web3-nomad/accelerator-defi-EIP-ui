@@ -5,6 +5,8 @@ import BigNumber from "bignumber.js";
 import { formatUnits, parseUnits } from "viem";
 import { EvmAddress } from "@/types/types";
 
+const COINGECKO_API_ENDPOINT = "https://api.coingecko.com/api/v3";
+
 export function convertAccountIdToSolidityAddress(
   accountId: AccountId,
 ): EvmAddress {
@@ -71,4 +73,13 @@ export function removeEvmAddressesDuplicates(data: Array<string>) {
 
     return addresses;
   }, []);
+}
+
+export function getFiatCurrencyRate(
+  coinName: string = "hedera-hashgraph",
+  fiatName: string = "usd",
+) {
+  return fetch(
+    `${COINGECKO_API_ENDPOINT}/simple/price?ids=${coinName}&vs_currencies=${fiatName}`,
+  );
 }
