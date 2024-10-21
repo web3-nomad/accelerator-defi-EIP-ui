@@ -5,13 +5,13 @@ import {
   Input,
   Alert,
   AlertDescription,
+  AlertIcon,
 } from "@chakra-ui/react";
 import { GroupBase } from "react-select";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { ethers } from "ethers";
 import { useQueryClient } from "@tanstack/react-query";
-import { EvmAddress } from "@/types/types";
+import { EvmAddress, IdentityItem, InputRefProps } from "@/types/types";
 import { QueryKeys } from "@/hooks/types";
 import { MenuSelect } from "@/components/MenuSelect";
 import {
@@ -21,24 +21,41 @@ import {
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { WalletInterface } from "@/services/wallets/walletInterface";
 import { useTokenIdentityRegistryAgents } from "@/hooks/useTokenIdentityRegistryAgents";
+import { ethers } from "ethers";
 
 type ManageAgentsProps = {
   setUpdateTxResult: (res?: string) => void;
   setUpdateTxError: (err?: string) => void;
   onClose: () => void;
   registry?: EvmAddress;
+  identityItems: IdentityItem[];
 };
 
 export function ManageAgents({
   setUpdateTxResult,
   setUpdateTxError,
   registry,
+  identityItems,
   onClose,
 }: ManageAgentsProps) {
+  const [selectedAgentToAdd, setSelectedAgentToAdd] = useState<EvmAddress>();
   const [selectedAgent, setSelectedAgent] = useState<EvmAddress>();
-  const [newUserAgentAddress, setNewUserAgentAddress] = useState<string>();
-  const { walletInterface } = useWalletInterface();
-  const { filteredAgents } = useTokenIdentityRegistryAgents(registry);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [agentManualError, setAgentManualError] = useState<string>();
+  const [agentSelectError, setAgentSelectError] = useState<string>();
+  const { walletInterface, accountEvm } = useWalletInterface();
+  const { filteredAgents, filteredNotAgentsYet } =
+    useTokenIdentityRegistryAgents(
+      registry,
+      identityItems.map((agent) => agent.identity as EvmAddress),
+    );
+  const accountIdentity = identityItems.find(
+    (item) => item.wallet === accountEvm,
+  );
+  const isAccountAgentAdmin = filteredNotAgentsYet?.includes(
+    accountIdentity?.identity as EvmAddress,
+  );
+
   const queryClient = useQueryClient();
 
   const {
@@ -58,7 +75,7 @@ export function ManageAgents({
     mutateAsync: mutateIdentityRegistryAddAgent,
     isPending: isAddAgentPending,
   } = useMutation({
-    mutationFn: async () => {
+    mutationFn: async (newUserAgentAddress: string) => {
       return writeIdentityRegistryAddAgent(
         walletInterface as WalletInterface,
         { args: [newUserAgentAddress as EvmAddress] },
@@ -67,10 +84,18 @@ export function ManageAgents({
     },
   });
 
-  const addNewUserAgent = async () => {
-    if (ethers.isAddress(newUserAgentAddress)) {
+  const addNewUserAgentAsAdmin = async () => {
+    if (filteredAgents.includes(selectedAgentToAdd)) {
+      setAgentSelectError("Agent already exists");
+
+      return;
+    } else {
+      setAgentSelectError(undefined);
+    }
+
+    if (selectedAgentToAdd && ethers.isAddress(selectedAgentToAdd)) {
       try {
-        const txHash = await mutateIdentityRegistryAddAgent();
+        const txHash = await mutateIdentityRegistryAddAgent(selectedAgentToAdd);
         setUpdateTxResult(txHash);
         setUpdateTxError(undefined);
         setTimeout(() => {
@@ -82,12 +107,47 @@ export function ManageAgents({
         setUpdateTxResult(undefined);
         setUpdateTxError(err);
       }
+
+      onClose();
+      (inputRef.current as unknown as InputRefProps)?.setValue(undefined);
     } else {
-      setUpdateTxError("User agent address is incorrect");
-      setUpdateTxResult(undefined);
+      setAgentSelectError("Address is empty or not an EVM address");
     }
-    onClose();
-    setNewUserAgentAddress(undefined);
+  };
+
+  const addNewUserAgent = async () => {
+    const newUserAgentAddress = (inputRef.current as unknown as InputRefProps)
+      ?.value;
+
+    if (filteredAgents.includes(newUserAgentAddress)) {
+      setAgentManualError("Agent already exists");
+
+      return;
+    } else {
+      setAgentManualError(undefined);
+    }
+
+    if (newUserAgentAddress && ethers.isAddress(newUserAgentAddress)) {
+      try {
+        const txHash =
+          await mutateIdentityRegistryAddAgent(newUserAgentAddress);
+        setUpdateTxResult(txHash);
+        setUpdateTxError(undefined);
+        setTimeout(() => {
+          queryClient.invalidateQueries({
+            queryKey: [QueryKeys.ReadAgentInRegistry],
+          });
+        }, 1000);
+      } catch (err: any) {
+        setUpdateTxResult(undefined);
+        setUpdateTxError(err);
+      }
+
+      onClose();
+      (inputRef.current as unknown as InputRefProps)?.setValue(undefined);
+    } else {
+      setAgentManualError("Address is empty or not an EVM address");
+    }
   };
 
   const handleAgentSelect = (agent: string) => {
@@ -108,6 +168,7 @@ export function ManageAgents({
       setUpdateTxResult(undefined);
       setUpdateTxError(err);
     }
+
     onClose();
     setSelectedAgent(undefined);
   };
@@ -118,9 +179,9 @@ export function ManageAgents({
         <Flex direction="row" gap="2">
           <Input
             width="70%"
-            value={newUserAgentAddress}
-            placeholder="User agent address"
-            onChange={(e) => setNewUserAgentAddress(e.target.value)}
+            size="md"
+            ref={inputRef}
+            placeholder="Paste user agent address manually"
           />
           <Button
             width="28%"
@@ -130,12 +191,67 @@ export function ManageAgents({
             Add new agent
           </Button>
         </Flex>
-        <Alert status="success" mt="2">
-          <AlertDescription fontSize="12">
-            Somebody who can perform update / delete operations on {"identity"}{" "}
-            wallet.
-          </AlertDescription>
+        <Alert status={agentManualError ? "error" : "success"} mt="2">
+          {agentManualError ? (
+            <>
+              <AlertIcon />
+              <AlertDescription fontSize={12}>
+                {agentManualError}
+              </AlertDescription>
+            </>
+          ) : (
+            <AlertDescription fontSize="12">
+              Somebody who can perform update / delete operations on{" "}
+              {"identity"} wallet.
+            </AlertDescription>
+          )}
         </Alert>
+        {isAccountAgentAdmin && !!filteredNotAgentsYet && (
+          <Flex direction="column" mt="7">
+            <MenuSelect
+              data={
+                filteredNotAgentsYet.map((agent) => ({
+                  value: agent,
+                  label: agent,
+                })) as unknown as GroupBase<string | number>[]
+              }
+              label="Select agent to add (only for admin)"
+              onTokenSelect={(value) =>
+                setSelectedAgentToAdd(value as EvmAddress)
+              }
+            />
+            <Alert status={agentSelectError ? "error" : "success"} mt="2">
+              {agentSelectError ? (
+                <>
+                  <AlertIcon />
+                  <AlertDescription fontSize={12}>
+                    {agentSelectError}
+                  </AlertDescription>
+                </>
+              ) : (
+                <AlertDescription fontSize="12">
+                  Somebody who can perform update / delete operations on{" "}
+                  {"identity"} wallet.
+                </AlertDescription>
+              )}
+            </Alert>
+            {selectedAgentToAdd && (
+              <>
+                <Text fontWeight="bold" style={{ fontSize: 14 }} mt="2">
+                  Selected agent: {selectedAgentToAdd}
+                </Text>
+                <Button
+                  width="50%"
+                  onClick={addNewUserAgentAsAdmin}
+                  mt="2"
+                  isLoading={isAddAgentPending}
+                >
+                  Add selected agent
+                </Button>
+              </>
+            )}
+          </Flex>
+        )}
         {!!filteredAgents && (
           <Flex direction="column" mt="7">
             <MenuSelect

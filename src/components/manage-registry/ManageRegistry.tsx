@@ -35,8 +35,16 @@ import { useTokenIdentityRegistry } from "@/hooks/useTokenIdentityRegistry";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { ManageAgents } from "./manage-agents/ManageAgents";
 import { ManageIdentities } from "./manage-identities/ManageIdentities";
+import { encodeLogToIdentity } from "@/services/util/helpers";
+import { LogDescription } from "ethers";
 
-export const ManageRegistry = ({ isAgents }: { isAgents: boolean }) => {
+export const ManageRegistry = ({
+  isAgents,
+  identities,
+}: {
+  isAgents: boolean;
+  identities: LogDescription[];
+}) => {
   const [ownTokens, setOwnTokens] = useState<Array<TokenNameItem>>([]);
   const [selectedIdentity, setSelectedIdentity] = useState<{
     walletAddress: EvmAddress;
@@ -51,6 +59,8 @@ export const ManageRegistry = ({ isAgents }: { isAgents: boolean }) => {
   const { accountEvm } = useWalletInterface();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const identityItems = identities.map((id) => encodeLogToIdentity(id));
 
   useEffect(() => {
     (deployedTokens as any).map((item: any) => {
@@ -112,6 +122,7 @@ export const ManageRegistry = ({ isAgents }: { isAgents: boolean }) => {
                 setUpdateTxError={setUpdateTxError}
                 setUpdateTxResult={setUpdateTxResult}
                 registry={registry}
+                identityItems={identityItems}
               />
             ) : (
               <ManageIdentities
