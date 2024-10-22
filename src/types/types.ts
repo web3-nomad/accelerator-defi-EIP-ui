@@ -46,11 +46,6 @@ export type IdentityItem = {
   identity: string;
 };
 
-export type InputRefProps = {
-  value?: string;
-  setValue: (value?: string) => void;
-};
-
 export type VaultInfoProps = {
   vaultAddress: EvmAddress;
 };

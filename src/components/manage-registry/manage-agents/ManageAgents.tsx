@@ -8,10 +8,10 @@ import {
   AlertIcon,
 } from "@chakra-ui/react";
 import { GroupBase } from "react-select";
-import { useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useQueryClient } from "@tanstack/react-query";
-import { EvmAddress, IdentityItem, InputRefProps } from "@/types/types";
+import { EvmAddress, IdentityItem } from "@/types/types";
 import { QueryKeys } from "@/hooks/types";
 import { MenuSelect } from "@/components/MenuSelect";
 import {
@@ -27,8 +27,9 @@ type ManageAgentsProps = {
   setUpdateTxResult: (res?: string) => void;
   setUpdateTxError: (err?: string) => void;
   onClose: () => void;
-  registry?: EvmAddress;
   identityItems: IdentityItem[];
+  registry?: EvmAddress;
+  selectedIdentity?: EvmAddress;
 };
 
 export function ManageAgents({
@@ -36,24 +37,27 @@ export function ManageAgents({
   setUpdateTxError,
   registry,
   identityItems,
+  selectedIdentity,
   onClose,
 }: ManageAgentsProps) {
   const [selectedAgentToAdd, setSelectedAgentToAdd] = useState<EvmAddress>();
+  const [agentToAdd, setAgentToAdd] = useState<EvmAddress>();
   const [selectedAgent, setSelectedAgent] = useState<EvmAddress>();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [agentManualError, setAgentManualError] = useState<string>();
-  const [agentSelectError, setAgentSelectError] = useState<string>();
+  const [agentManualError, setAgentManualError] = useState("");
+  const [agentSelectError, setAgentSelectError] = useState("");
   const { walletInterface, accountEvm } = useWalletInterface();
-  const { filteredAgents, filteredNotAgentsYet } =
-    useTokenIdentityRegistryAgents(
-      registry,
-      identityItems.map((agent) => agent.identity as EvmAddress),
-    );
-  const accountIdentity = identityItems.find(
-    (item) => item.wallet === accountEvm,
+  const { filteredAgents } = useTokenIdentityRegistryAgents(registry);
+  const identityItemsToAddAsAgents = identityItems.filter(
+    (item) => !filteredAgents.find((agent) => agent === item.identity),
   );
-  const isAccountAgentAdmin = filteredNotAgentsYet?.includes(
-    accountIdentity?.identity as EvmAddress,
+  const accountIdentity = identityItems.find(
+    (item) => item.wallet?.toLowerCase() === accountEvm,
+  );
+  const isAccountAgentAdmin = useMemo(
+    () =>
+      accountIdentity?.identity === selectedIdentity ||
+      filteredAgents?.includes(accountIdentity?.identity as EvmAddress),
+    [filteredAgents, accountIdentity?.identity, selectedIdentity],
   );
 
   const queryClient = useQueryClient();
@@ -62,6 +66,11 @@ export function ManageAgents({
     mutateAsync: mutateIdentityRegistryRemoveAgent,
     isPending: isRemoveAgentPending,
   } = useMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeys.ReadAgentInRegistry],
+      });
+    },
     mutationFn: async () => {
       return writeIdentityRegistryRemoveAgent(
         walletInterface as WalletInterface,
@@ -75,6 +84,11 @@ export function ManageAgents({
     mutateAsync: mutateIdentityRegistryAddAgent,
     isPending: isAddAgentPending,
   } = useMutation({
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QueryKeys.ReadAgentInRegistry],
+      });
+    },
     mutationFn: async (newUserAgentAddress: string) => {
       return writeIdentityRegistryAddAgent(
         walletInterface as WalletInterface,
@@ -90,7 +104,7 @@ export function ManageAgents({
 
       return;
     } else {
-      setAgentSelectError(undefined);
+      setAgentSelectError("");
     }
 
     if (selectedAgentToAdd && ethers.isAddress(selectedAgentToAdd)) {
@@ -98,53 +112,38 @@ export function ManageAgents({
         const txHash = await mutateIdentityRegistryAddAgent(selectedAgentToAdd);
         setUpdateTxResult(txHash);
         setUpdateTxError(undefined);
-        setTimeout(() => {
-          queryClient.invalidateQueries({
-            queryKey: [QueryKeys.ReadAgentInRegistry],
-          });
-        }, 1000);
       } catch (err: any) {
         setUpdateTxResult(undefined);
         setUpdateTxError(err);
       }
 
       onClose();
-      (inputRef.current as unknown as InputRefProps)?.setValue(undefined);
     } else {
       setAgentSelectError("Address is empty or not an EVM address");
     }
   };
 
   const addNewUserAgent = async () => {
-    const newUserAgentAddress = (inputRef.current as unknown as InputRefProps)
-      ?.value;
-
-    if (filteredAgents.includes(newUserAgentAddress)) {
+    if (filteredAgents.includes(agentToAdd as EvmAddress)) {
       setAgentManualError("Agent already exists");
 
       return;
     } else {
-      setAgentManualError(undefined);
+      setAgentManualError("");
     }
 
-    if (newUserAgentAddress && ethers.isAddress(newUserAgentAddress)) {
+    if (agentToAdd && ethers.isAddress(agentToAdd)) {
       try {
-        const txHash =
-          await mutateIdentityRegistryAddAgent(newUserAgentAddress);
+        const txHash = await mutateIdentityRegistryAddAgent(agentToAdd);
         setUpdateTxResult(txHash);
         setUpdateTxError(undefined);
-        setTimeout(() => {
-          queryClient.invalidateQueries({
-            queryKey: [QueryKeys.ReadAgentInRegistry],
-          });
-        }, 1000);
       } catch (err: any) {
         setUpdateTxResult(undefined);
         setUpdateTxError(err);
       }
 
       onClose();
-      (inputRef.current as unknown as InputRefProps)?.setValue(undefined);
+      setAgentToAdd(undefined);
     } else {
       setAgentManualError("Address is empty or not an EVM address");
     }
@@ -156,14 +155,9 @@ export function ManageAgents({
 
   const removeUserAgent = async () => {
     try {
-      const txHash = await mutateIdentityRegistryRemoveAgent();
+      const txHash = await mutateIdentityRegistryRemoveAgent(undefined);
       setUpdateTxResult(txHash);
       setUpdateTxError(undefined);
-      setTimeout(() => {
-        queryClient.invalidateQueries({
-          queryKey: [QueryKeys.ReadAgentInRegistry],
-        });
-      }, 1000);
     } catch (err: any) {
       setUpdateTxResult(undefined);
       setUpdateTxError(err);
@@ -180,7 +174,9 @@ export function ManageAgents({
           <Input
             width="70%"
             size="md"
-            ref={inputRef}
+            onInput={(e) => {
+              setAgentToAdd((e.target as any).value);
+            }}
             placeholder="Paste user agent address manually"
           />
           <Button
@@ -201,18 +197,18 @@ export function ManageAgents({
             </>
           ) : (
             <AlertDescription fontSize="12">
-              Somebody who can perform update / delete operations on{" "}
-              {"identity"} wallet.
+              User which can perform update / delete operations on identity
+              wallet.
             </AlertDescription>
           )}
         </Alert>
-        {isAccountAgentAdmin && !!filteredNotAgentsYet && (
+        {isAccountAgentAdmin && (
           <Flex direction="column" mt="7">
             <MenuSelect
               data={
-                filteredNotAgentsYet.map((agent) => ({
-                  value: agent,
-                  label: agent,
+                identityItemsToAddAsAgents.map((item) => ({
+                  value: item.identity,
+                  label: item.identity,
                 })) as unknown as GroupBase<string | number>[]
               }
               label="Select agent to add (only for admin)"
@@ -230,8 +226,8 @@ export function ManageAgents({
                 </>
               ) : (
                 <AlertDescription fontSize="12">
-                  Somebody who can perform update / delete operations on{" "}
-                  {"identity"} wallet.
+                  User which can perform update / delete operations on identity
+                  wallet.
                 </AlertDescription>
               )}
             </Alert>

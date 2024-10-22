@@ -9,10 +9,16 @@ import { useEffect, useState } from "react";
 import { WatchContractEventReturnType } from "viem";
 import { QueryKeys } from "./types";
 
-export function useTokenIdentityRegistryAgents(
-  registry?: EvmAddress,
-  identityItems?: EvmAddress[],
-) {
+const combineIdentityRegistryAgentsOnlyAgentsResult = (result: any[]) => {
+  return result
+    .filter(
+      (agent: { data: { isAgent: { "0": boolean } } }) =>
+        !!agent.data?.isAgent?.["0"],
+    )
+    .map((agent: { data: { agent?: EvmAddress } }) => agent.data?.agent);
+};
+
+export function useTokenIdentityRegistryAgents(registry?: EvmAddress) {
   const [uniqueAgents, setUniqueAgents] = useState<Array<string>>([]);
 
   useEffect(() => {
@@ -37,33 +43,6 @@ export function useTokenIdentityRegistryAgents(
     }
   }, [registry]);
 
-  const filteredNotAgentsYetQueryResult = useQueries({
-    queries: (identityItems ?? []).map((agent) => ({
-      queryKey: [QueryKeys.ReadAgentInRegistry, agent],
-      enabled: !!identityItems?.length && !!registry,
-      queryFn: async () => {
-        const isAgent = await readIdentityRegistryIsAgent(
-          { args: [agent] },
-          registry,
-        );
-
-        return {
-          agent,
-          isAgent,
-        };
-      },
-      staleTime: Infinity,
-    })),
-    combine: (result) => {
-      return result
-        .filter(
-          (agent) =>
-            !(agent.data?.isAgent as unknown as { "0": boolean })?.["0"],
-        )
-        .map((agent) => agent.data?.agent);
-    },
-  });
-
   const filteredAgentsQueryResult = useQueries({
     queries: uniqueAgents.map((agent) => ({
       queryKey: [QueryKeys.ReadAgentInRegistry, agent],
@@ -81,18 +60,10 @@ export function useTokenIdentityRegistryAgents(
       },
       staleTime: Infinity,
     })),
-    combine: (result) => {
-      return result
-        .filter(
-          (agent) =>
-            !!(agent.data?.isAgent as unknown as { "0": boolean })?.["0"],
-        )
-        .map((agent) => agent.data?.agent);
-    },
+    combine: combineIdentityRegistryAgentsOnlyAgentsResult,
   });
 
   return {
     filteredAgents: filteredAgentsQueryResult,
-    filteredNotAgentsYet: filteredNotAgentsYetQueryResult,
   };
 }

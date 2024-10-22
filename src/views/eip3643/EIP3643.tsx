@@ -64,10 +64,10 @@ export default function EIP3643() {
             <NFT />
           </TabPanel>
           <TabPanel>
-            <ManageRegistry isAgents={false} identities={identities} />
+            <ManageRegistry isAgents={false} />
           </TabPanel>
           <TabPanel>
-            <ManageRegistry isAgents identities={identities} />
+            <ManageRegistry isAgents />
           </TabPanel>
         </TabPanels>
       </Tabs>
