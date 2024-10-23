@@ -47,8 +47,12 @@ export function ManageAgents({
   const [agentSelectError, setAgentSelectError] = useState("");
   const { walletInterface, accountEvm } = useWalletInterface();
   const { filteredAgents } = useTokenIdentityRegistryAgents(registry);
-  const identityItemsToAddAsAgents = identityItems.filter(
-    (item) => !filteredAgents.find((agent) => agent === item.identity),
+  const identityItemsToAddAsAgents = useMemo(
+    () =>
+      identityItems.filter(
+        (item) => !filteredAgents.find((agent) => agent === item.identity),
+      ),
+    [filteredAgents, identityItems],
   );
   const accountIdentity = identityItems.find(
     (item) => item.wallet?.toLowerCase() === accountEvm,
@@ -155,7 +159,7 @@ export function ManageAgents({
 
   const removeUserAgent = async () => {
     try {
-      const txHash = await mutateIdentityRegistryRemoveAgent(undefined);
+      const txHash = await mutateIdentityRegistryRemoveAgent();
       setUpdateTxResult(txHash);
       setUpdateTxError(undefined);
     } catch (err: any) {
@@ -174,8 +178,10 @@ export function ManageAgents({
           <Input
             width="70%"
             size="md"
-            onInput={(e) => {
-              setAgentToAdd((e.target as any).value);
+            onChange={(e) => {
+              setAgentToAdd(
+                (e.target as unknown as { value: EvmAddress }).value,
+              );
             }}
             placeholder="Paste user agent address manually"
           />

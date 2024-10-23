@@ -4,18 +4,17 @@ import {
 } from "@/services/contracts/wagmiGenActions";
 import { EvmAddress } from "@/types/types";
 import { removeEvmAddressesDuplicates } from "@/services/util/helpers";
-import { useQueries } from "@tanstack/react-query";
+import { useQueries, UseQueryResult } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { WatchContractEventReturnType } from "viem";
 import { QueryKeys } from "./types";
 
-const combineIdentityRegistryAgentsOnlyAgentsResult = (result: any[]) => {
+const combineIdentityRegistryAgentsOnlyAgentsResult = (
+  result: UseQueryResult<{ agent: string; isAgent: boolean }, Error>[],
+) => {
   return result
-    .filter(
-      (agent: { data: { isAgent: { "0": boolean } } }) =>
-        !!agent.data?.isAgent?.["0"],
-    )
-    .map((agent: { data: { agent?: EvmAddress } }) => agent.data?.agent);
+    .filter((agent) => !!(agent.data?.isAgent as unknown as string[])?.["0"])
+    .map((agent) => agent.data?.agent);
 };
 
 export function useTokenIdentityRegistryAgents(registry?: EvmAddress) {
