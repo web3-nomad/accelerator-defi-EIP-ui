@@ -23,7 +23,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { GroupBase } from "react-select";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useMemo } from "react";
 import { EvmAddress, TokenNameItem } from "@/types/types";
 import { Eip3643Context } from "@/contexts/Eip3643Context";
 import { MenuSelect } from "@/components/MenuSelect";
@@ -35,6 +35,7 @@ import { useTokenIdentityRegistry } from "@/hooks/useTokenIdentityRegistry";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { ManageAgents } from "./manage-agents/ManageAgents";
 import { ManageIdentities } from "./manage-identities/ManageIdentities";
+import { encodeLogToIdentity } from "@/services/util/helpers";
 
 export const ManageRegistry = ({ isAgents }: { isAgents: boolean }) => {
   const [ownTokens, setOwnTokens] = useState<Array<TokenNameItem>>([]);
@@ -47,10 +48,15 @@ export const ManageRegistry = ({ isAgents }: { isAgents: boolean }) => {
     useTokenIdentityRegistry(selectedToken);
   const [updateTxResult, setUpdateTxResult] = useState<string>();
   const [updateTxError, setUpdateTxError] = useState<string>();
-  const { deployedTokens } = useContext(Eip3643Context);
+  const { deployedTokens, identities } = useContext(Eip3643Context);
   const { accountEvm } = useWalletInterface();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const identityItems = useMemo(
+    () => identities.map((id) => encodeLogToIdentity(id)),
+    [identities],
+  );
 
   useEffect(() => {
     (deployedTokens as any).map((item: any) => {
@@ -112,6 +118,8 @@ export const ManageRegistry = ({ isAgents }: { isAgents: boolean }) => {
                 setUpdateTxError={setUpdateTxError}
                 setUpdateTxResult={setUpdateTxResult}
                 registry={registry}
+                identityItems={identityItems}
+                selectedIdentity={selectedIdentity?.identityAddress}
               />
             ) : (
               <ManageIdentities

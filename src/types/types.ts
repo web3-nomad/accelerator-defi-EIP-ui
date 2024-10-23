@@ -41,6 +41,11 @@ export type TransferTokenFromRequest = {
 
 export type EvmAddress = `0x${string}`;
 
+export type IdentityItem = {
+  wallet: string;
+  identity: string;
+};
+
 export type VaultInfoProps = {
   vaultAddress: EvmAddress;
 };

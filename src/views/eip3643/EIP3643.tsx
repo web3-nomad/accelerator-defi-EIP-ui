@@ -15,7 +15,8 @@ import { ManageRegistry } from "@/components/manage-registry/ManageRegistry";
 
 export default function EIP3643() {
   const { accountId } = useWalletInterface();
-  const { setDeployedTokens, setIdentities } = useContext(Eip3643Context);
+  const { setDeployedTokens, setIdentities, identities } =
+    useContext(Eip3643Context);
 
   useEffect(() => {
     const unsubTokens: WatchContractEventReturnType =

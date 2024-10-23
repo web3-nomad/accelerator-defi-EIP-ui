@@ -3,7 +3,8 @@ import { isNil } from "lodash";
 import { VAULT_TOKEN_PRECISION_VALUE } from "@/config/constants";
 import BigNumber from "bignumber.js";
 import { formatUnits, parseUnits } from "viem";
-import { EvmAddress } from "@/types/types";
+import { EvmAddress, IdentityItem } from "@/types/types";
+import { LogDescription } from "ethers";
 
 const COINGECKO_API_ENDPOINT = "https://api.coingecko.com/api/v3";
 
@@ -82,4 +83,11 @@ export function getFiatCurrencyRate(
   return fetch(
     `${COINGECKO_API_ENDPOINT}/simple/price?ids=${coinName}&vs_currencies=${fiatName}`,
   );
+}
+
+export function encodeLogToIdentity(log: LogDescription): IdentityItem {
+  return {
+    wallet: log.args[0],
+    identity: log.args[1],
+  };
 }
