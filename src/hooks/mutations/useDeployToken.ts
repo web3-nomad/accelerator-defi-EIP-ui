@@ -5,10 +5,13 @@ import { WalletInterface } from "@/services/wallets/walletInterface";
 import { ethers } from "ethers";
 import { DeployTokenRequest, EvmAddress } from "@/types/types";
 
-export function useDeployToken() {
+export function useDeployToken({ onFinish }: { onFinish: () => void }) {
   const { accountEvm, walletInterface } = useWalletInterface();
 
   return useMutation({
+    onError: () => {
+      onFinish();
+    },
     mutationFn: async ({
       name,
       symbol,
