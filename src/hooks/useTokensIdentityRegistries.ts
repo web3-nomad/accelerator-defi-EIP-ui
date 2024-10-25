@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { EvmAddress, TokenNameItem } from "@/types/types";
 import { WatchContractEventReturnType } from "@/services/contracts/watchContractEvent";
-import {
-  readTokenIdentityRegistry,
-  watchIdentityRegistryIdentityRegisteredEvent,
-} from "@/services/contracts/wagmiGenActions";
+import { watchIdentityRegistryIdentityRegisteredEvent } from "@/services/contracts/wagmiGenActions";
+import { TokenRegistry } from "@/types/types";
 
-export function useTokensIdentityRegistries(tokens?: TokenNameItem[]) {
+export function useTokensIdentityRegistries(
+  tokenRegistries: TokenRegistry[],
+  loadComplete = false,
+) {
   const [registriesAgents, setRegistriesAgents] = useState<{
     [address: string]: string[];
   }>();
@@ -14,36 +14,36 @@ export function useTokensIdentityRegistries(tokens?: TokenNameItem[]) {
   useEffect(() => {
     let unsubs: WatchContractEventReturnType[] = [];
 
-    if (tokens?.length) {
-      tokens.forEach((token) => {
-        readTokenIdentityRegistry({ args: [] }, token.address).then((res) => {
-          unsubs.push(
-            watchIdentityRegistryIdentityRegisteredEvent(
-              {
-                onLogs: (data) => {
-                  setRegistriesAgents((prev) => {
-                    if (!prev) {
-                      prev = {};
-                    }
+    if (loadComplete) {
+      tokenRegistries.map((tokenRegistry) => {
+        unsubs.push(
+          watchIdentityRegistryIdentityRegisteredEvent(
+            {
+              onLogs: (data) => {
+                setRegistriesAgents((prev) => {
+                  if (!prev) {
+                    prev = {};
+                  }
 
-                    return {
-                      ...prev,
-                      [token.address]: data.map((item: any) => item.args[0]),
-                    };
-                  });
-                },
+                  return {
+                    ...prev,
+                    [tokenRegistry.tokenAddress]: data.map(
+                      (item: any) => item.args[0],
+                    ),
+                  };
+                });
               },
-              res[0] as EvmAddress,
-            ),
-          );
-        });
+            },
+            tokenRegistry.registryAddress,
+          ),
+        );
       });
     }
 
     return () => {
       unsubs?.length && unsubs.forEach((unsub) => unsub());
     };
-  }, [tokens]);
+  }, [tokenRegistries, loadComplete]);
 
   return { registriesAgents };
 }

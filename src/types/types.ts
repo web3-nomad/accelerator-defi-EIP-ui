@@ -33,6 +33,11 @@ export type TokenNameItem = {
   name: string;
 };
 
+export type TokenRegistry = {
+  tokenAddress: EvmAddress;
+  registryAddress: EvmAddress;
+};
+
 export type TransferTokenFromRequest = {
   tokenAddress: `0x${string}`;
   toAddress: `0x${string}`;

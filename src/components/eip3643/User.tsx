@@ -1,52 +1,59 @@
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useContext, useState, useMemo } from "react";
 import TransferToken from "@/components/eip3643/user/TransferToken";
 import { Eip3643Context } from "@/contexts/Eip3643Context";
-import { readTokenName } from "@/services/contracts/wagmiGenActions";
 import { TokenNameItem } from "@/types/types";
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { Divider, Stack, Text, Box } from "@chakra-ui/react";
 import { useTokensIdentityRegistries } from "@/hooks/useTokensIdentityRegistries";
 import { MenuSelect } from "@/components/MenuSelect";
 import { GroupBase } from "react-select";
-import { useDebounce } from "@uidotdev/usehooks";
 import RegisterIdentity from "@/components/eip3643/admin/RegisterIdentity";
 import CreateIdentityFactory from "@/components/eip3643/admin/CreateIdentityFactory";
+import { useReadTokenName } from "@/hooks/useReadTokenName";
+import { useReadTokenIdentityRegistryQueries } from "@/hooks/useReadTokenIdentityRegistryQueries";
 
 export default function User() {
   const [tokenSelected, setTokenSelected] = useState<TokenNameItem>();
-  const [tokens, setTokens] = useState<TokenNameItem[]>([]);
   const { accountEvm } = useWalletInterface();
   const { deployedTokens } = useContext(Eip3643Context);
-  const { registriesAgents } = useTokensIdentityRegistries(tokens);
+  const { data: tokens, isSuccess: tokensIsSuccess } =
+    useReadTokenName(deployedTokens);
+
   const [tokensByOwnership, setTokensByOwnership] = useState<TokenNameItem[]>(
     [],
   );
-  const debouncedRegistriesAgents = useDebounce(registriesAgents, 5000);
+
+  const { data: tokenRegistries, isSuccess: registryAddressesIsSuccess } =
+    useReadTokenIdentityRegistryQueries(tokens);
+
+  const isReadyToLoadAgents = useMemo(() => {
+    return (
+      deployedTokens.length === tokens.length &&
+      tokens.length === tokenRegistries.length &&
+      tokensIsSuccess &&
+      registryAddressesIsSuccess
+    );
+  }, [
+    deployedTokens.length,
+    tokenRegistries.length,
+    registryAddressesIsSuccess,
+    tokens.length,
+    tokensIsSuccess,
+  ]);
+
+  const { registriesAgents } = useTokensIdentityRegistries(
+    tokenRegistries,
+    isReadyToLoadAgents,
+  );
 
   useEffect(() => {
-    (deployedTokens as any).map((item: any) => {
-      const tokenAddress = item["args"]?.[0];
-      tokenAddress &&
-        readTokenName({}, tokenAddress).then((res) => {
-          setTokens((prev) => {
-            return [
-              ...prev.filter((itemSub) => itemSub.address !== tokenAddress),
-              {
-                address: tokenAddress,
-                name: res[0],
-              },
-            ];
-          });
-        });
-    });
-  }, [deployedTokens, accountEvm, setTokens]);
+    if (!isReadyToLoadAgents) return;
 
-  useEffect(() => {
-    if (debouncedRegistriesAgents && accountEvm) {
+    if (registriesAgents && accountEvm) {
       setTokensByOwnership(
-        tokens.sort((a) => {
+        tokens.toSorted((a) => {
           const tokenIncludesIdentity =
-            debouncedRegistriesAgents[a.address]?.includes(accountEvm);
+            registriesAgents[a.address]?.includes(accountEvm);
 
           if (tokenIncludesIdentity) {
             return -1;
@@ -58,7 +65,7 @@ export default function User() {
     } else if (tokens) {
       setTokensByOwnership(tokens);
     }
-  }, [debouncedRegistriesAgents, accountEvm, tokens]);
+  }, [registriesAgents, accountEvm, tokens, isReadyToLoadAgents]);
 
   const handleTokenSelect = (value: string) => {
     const tokenItem = tokens.find((itemSub) => itemSub.address === value);
@@ -70,7 +77,7 @@ export default function User() {
       <Stack align="center">
         <Box width="50%">
           <MenuSelect
-            loadingInProgress={!tokensByOwnership?.length}
+            loadingInProgress={!isReadyToLoadAgents}
             data={
               tokensByOwnership.map((item) => ({
                 value: item.address,
