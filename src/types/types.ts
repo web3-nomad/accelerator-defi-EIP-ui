@@ -29,8 +29,13 @@ export type AddIdentityToRegistryRequest = {
 };
 
 export type TokenNameItem = {
-  address: `0x${string}`;
+  address: EvmAddress;
   name: string;
+};
+
+export type TokenOwnerItem = {
+  tokenAddress: EvmAddress;
+  ownerAddress: EvmAddress;
 };
 
 export type TokenRegistry = {

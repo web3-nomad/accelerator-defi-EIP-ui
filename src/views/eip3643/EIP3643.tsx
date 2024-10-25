@@ -12,6 +12,7 @@ import { WatchContractEventReturnType } from "viem";
 import NoWalletConnected from "@/components/NoWalletConnected";
 import NFT from "@/components/eip3643/NFT";
 import { ManageRegistry } from "@/components/manage-registry/ManageRegistry";
+import { EvmAddress } from "@/types/types";
 
 export default function EIP3643() {
   const { accountId } = useWalletInterface();
@@ -22,9 +23,14 @@ export default function EIP3643() {
     const unsubTokens: WatchContractEventReturnType =
       watchTrexFactoryTrexSuiteDeployedEvent({
         onLogs: (data) => {
-          setDeployedTokens(((prev: any) => {
-            return [...prev, ...data];
-          }) as any);
+          setDeployedTokens((prev) => {
+            return [
+              ...prev,
+              ...data
+                .map(({ args }) => args._token)
+                .filter((token): token is EvmAddress => token !== undefined),
+            ];
+          });
         },
       });
     const unsubIdentities: WatchContractEventReturnType =
@@ -45,7 +51,7 @@ export default function EIP3643() {
 
   return (
     <>
-      <Tabs>
+      <Tabs isLazy>
         <TabList>
           <Tab>User Area</Tab>
           <Tab>Admin Area</Tab>
@@ -57,7 +63,9 @@ export default function EIP3643() {
           <TabPanel>
             <User />
           </TabPanel>
-          <TabPanel>{/*<Admin />*/}</TabPanel>
+          <TabPanel>
+            <Admin />
+          </TabPanel>
           <TabPanel>
             <NFT />
           </TabPanel>

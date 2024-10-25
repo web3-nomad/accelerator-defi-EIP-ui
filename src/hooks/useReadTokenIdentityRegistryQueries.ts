@@ -11,7 +11,7 @@ const combineQueryResults = (results: UseQueryResult[]) => {
 };
 
 export function useReadTokenIdentityRegistryQueries(
-  tokens: TokenNameItem[] | undefined[],
+  tokens: (TokenNameItem | undefined)[],
 ) {
   return useQueries({
     // @ts-ignore
@@ -22,11 +22,11 @@ export function useReadTokenIdentityRegistryQueries(
         : async () => {
             const registryAddress = await readTokenIdentityRegistry(
               { args: [] },
-              token.address,
+              token?.address,
             );
 
             return {
-              tokenAddress: token.address,
+              tokenAddress: token?.address,
               registryAddress: registryAddress,
             };
           },

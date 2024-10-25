@@ -9,7 +9,7 @@ import { MenuSelect } from "@/components/MenuSelect";
 import { GroupBase } from "react-select";
 import RegisterIdentity from "@/components/eip3643/admin/RegisterIdentity";
 import CreateIdentityFactory from "@/components/eip3643/admin/CreateIdentityFactory";
-import { useReadTokenName } from "@/hooks/useReadTokenName";
+import { useReadTokenNameQueries } from "@/hooks/useReadTokenNameQueries";
 import { useReadTokenIdentityRegistryQueries } from "@/hooks/useReadTokenIdentityRegistryQueries";
 
 export default function User() {
@@ -17,7 +17,7 @@ export default function User() {
   const { accountEvm } = useWalletInterface();
   const { deployedTokens } = useContext(Eip3643Context);
   const { data: tokens, isSuccess: tokensIsSuccess } =
-    useReadTokenName(deployedTokens);
+    useReadTokenNameQueries(deployedTokens);
 
   const [tokensByOwnership, setTokensByOwnership] = useState<TokenNameItem[]>(
     [],
@@ -49,9 +49,13 @@ export default function User() {
   useEffect(() => {
     if (!isReadyToLoadAgents) return;
 
+    const tokensFiltered = tokens.filter(
+      (token): token is TokenNameItem => token !== undefined,
+    );
+
     if (registriesAgents && accountEvm) {
       setTokensByOwnership(
-        tokens.toSorted((a) => {
+        tokensFiltered.toSorted((a) => {
           const tokenIncludesIdentity =
             registriesAgents[a.address]?.includes(accountEvm);
 
@@ -62,13 +66,15 @@ export default function User() {
           return 1;
         }),
       );
-    } else if (tokens) {
-      setTokensByOwnership(tokens);
+    } else {
+      setTokensByOwnership(tokensFiltered);
     }
   }, [registriesAgents, accountEvm, tokens, isReadyToLoadAgents]);
 
   const handleTokenSelect = (value: string) => {
-    const tokenItem = tokens.find((itemSub) => itemSub.address === value);
+    const tokenItem = tokens
+      .filter((token): token is TokenNameItem => token !== undefined)
+      .find((itemSub) => itemSub.address === value);
     setTokenSelected(tokenItem);
   };
 

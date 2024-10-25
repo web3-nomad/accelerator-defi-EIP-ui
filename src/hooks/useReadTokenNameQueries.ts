@@ -1,7 +1,6 @@
-import { useQueries, UseQueryResult } from "@tanstack/react-query";
+import { skipToken, useQueries, UseQueryResult } from "@tanstack/react-query";
 import { readTokenName } from "@/services/contracts/wagmiGenActions";
 import { QueryKeys } from "@/hooks/types";
-import { LogDescription } from "ethers";
 import { EvmAddress, TokenNameItem } from "@/types/types";
 
 /**
@@ -11,22 +10,25 @@ import { EvmAddress, TokenNameItem } from "@/types/types";
  */
 const combineQueryResults = (results: UseQueryResult[]) => {
   return {
-    data: results.map((result) => result.data as TokenNameItem),
+    data: results.map((result) => result.data as TokenNameItem | undefined),
     isSuccess: results.every((result) => result.isSuccess),
   };
 };
 
-export function useReadTokenName(tokenLogItems: LogDescription[]) {
+export function useReadTokenNameQueries(tokenAddresses: EvmAddress[]) {
   return useQueries({
-    queries: tokenLogItems.map((tokenLogItem) => ({
-      queryKey: [QueryKeys.ReadTokenName, tokenLogItem["args"]?.[0]],
-      queryFn: async () => {
-        const tokenName = await readTokenName({}, tokenLogItem["args"]?.[0]);
-        return {
-          name: tokenName.toString(),
-          address: tokenLogItem["args"]?.[0] as EvmAddress,
-        };
-      },
+    //@ts-ignore
+    queries: tokenAddresses.map((tokenAddress) => ({
+      queryKey: [QueryKeys.ReadTokenName, tokenAddress],
+      queryFn: !tokenAddress
+        ? skipToken
+        : async (): Promise<TokenNameItem> => {
+            const tokenName = await readTokenName({}, tokenAddress);
+            return {
+              name: tokenName.toString(),
+              address: tokenAddress,
+            };
+          },
       staleTime: Infinity,
     })),
     combine: combineQueryResults,
