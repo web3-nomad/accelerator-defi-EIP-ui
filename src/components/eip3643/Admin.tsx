@@ -5,58 +5,16 @@ import { GroupBase } from "react-select";
 import DeployToken from "@/components/eip3643/admin/DeployToken";
 import RegisterIdentity from "@/components/eip3643/admin/RegisterIdentity";
 import CreateIdentityFactory from "@/components/eip3643/admin/CreateIdentityFactory";
-import { Eip3643Context } from "@/contexts/Eip3643Context";
-import { TokenNameItem, TokenOwnerItem } from "@/types/types";
-import { useWalletInterface } from "@/services/wallets/useWalletInterface";
+import { TokenNameItem } from "@/types/types";
 import TokenInfo from "@/components/eip3643/admin/TokenInfo";
 import Compliance from "@/components/eip3643/admin/Compliance";
 import { MenuSelect } from "@/components/MenuSelect";
-import { useReadTokenOwnerQueries } from "@/hooks/useReadTokenOwnerQueries";
-import { useReadTokenNameQueries } from "@/hooks/useReadTokenNameQueries";
+import { useOwnTokens } from "@/hooks/eip3643/useOwnTokens";
 
 export default function Admin() {
   const [isDeploy, setIsDeploy] = useState(false);
   const [tokenSelected, setTokenSelected] = useState<TokenNameItem>();
-  const [ownTokens, setOwnTokens] = useState<TokenNameItem[]>([]);
-  const { accountEvm } = useWalletInterface();
-  const { deployedTokens } = useContext(Eip3643Context);
-
-  const { data: tokensWithOwners, isSuccess: tokensWithOwnersSuccess } =
-    useReadTokenOwnerQueries(deployedTokens);
-
-  const [userOwnedTokens, setUserOwnedTokens] = useState<TokenOwnerItem[]>([]);
-
-  useEffect(() => {
-    if (tokensWithOwnersSuccess) {
-      setUserOwnedTokens(
-        tokensWithOwners
-          .filter(
-            (tokenOwnerItem): tokenOwnerItem is TokenOwnerItem =>
-              tokenOwnerItem !== undefined,
-          )
-          .filter(
-            (tokenOwnerItem) =>
-              tokenOwnerItem.ownerAddress?.toLowerCase() ===
-              accountEvm?.toLowerCase(),
-          ),
-      );
-    }
-  }, [accountEvm, tokensWithOwners, tokensWithOwnersSuccess]);
-
-  const { data: userOwnedTokensWithNames, isSuccess: tokensWithNamesSuccess } =
-    useReadTokenNameQueries(
-      userOwnedTokens.map((userOwnedToken) => userOwnedToken.tokenAddress),
-    );
-
-  useEffect(() => {
-    if (tokensWithNamesSuccess) {
-      setOwnTokens(
-        userOwnedTokensWithNames.filter(
-          (token): token is TokenNameItem => token !== undefined,
-        ),
-      );
-    }
-  }, [tokensWithNamesSuccess, userOwnedTokensWithNames]);
+  const { ownTokens } = useOwnTokens();
 
   const handleTokenSelect = (value: string | number) => {
     const tokenItem = ownTokens.find((itemSub) => itemSub.address === value);

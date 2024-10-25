@@ -69,8 +69,12 @@ export default function EIP3643() {
           <TabPanel>
             <NFT />
           </TabPanel>
-          <TabPanel>{/*<ManageRegistry isAgents={false} />*/}</TabPanel>
-          <TabPanel>{/*<ManageRegistry isAgents />*/}</TabPanel>
+          <TabPanel>
+            <ManageRegistry isAgents={false} />
+          </TabPanel>
+          <TabPanel>
+            <ManageRegistry isAgents />
+          </TabPanel>
         </TabPanels>
       </Tabs>
     </>
