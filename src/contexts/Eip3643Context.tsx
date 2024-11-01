@@ -1,9 +1,16 @@
 import { LogDescription } from "ethers";
-import { createContext, ReactNode, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useState,
+} from "react";
+import { EvmAddress } from "@/types/types";
 
 type defaultContextType = {
-  deployedTokens: LogDescription[];
-  setDeployedTokens: (newValue: []) => void;
+  deployedTokens: EvmAddress[];
+  setDeployedTokens: Dispatch<SetStateAction<EvmAddress[]>>;
   identities: LogDescription[];
   setIdentities: (newValue: []) => void;
   currentIdentityAddress: string;

@@ -5,44 +5,16 @@ import { GroupBase } from "react-select";
 import DeployToken from "@/components/eip3643/admin/DeployToken";
 import RegisterIdentity from "@/components/eip3643/admin/RegisterIdentity";
 import CreateIdentityFactory from "@/components/eip3643/admin/CreateIdentityFactory";
-import { Eip3643Context } from "@/contexts/Eip3643Context";
-import {
-  readTokenName,
-  readTokenOwner,
-} from "@/services/contracts/wagmiGenActions";
 import { TokenNameItem } from "@/types/types";
-import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import TokenInfo from "@/components/eip3643/admin/TokenInfo";
 import Compliance from "@/components/eip3643/admin/Compliance";
 import { MenuSelect } from "@/components/MenuSelect";
+import { useOwnTokens } from "@/hooks/eip3643/useOwnTokens";
 
 export default function Admin() {
   const [isDeploy, setIsDeploy] = useState(false);
   const [tokenSelected, setTokenSelected] = useState<TokenNameItem>();
-  const [ownTokens, setOwnTokens] = useState([] as Array<TokenNameItem>);
-  const { accountEvm } = useWalletInterface();
-  const { deployedTokens } = useContext(Eip3643Context);
-
-  useEffect(() => {
-    (deployedTokens as any).map((item: any) => {
-      const tokenAddress = item["args"]?.[0];
-      tokenAddress &&
-        readTokenOwner({}, tokenAddress).then((resOwner) => {
-          resOwner[0].toString().toLowerCase() === accountEvm?.toLowerCase() &&
-            readTokenName({}, tokenAddress).then((resName) => {
-              setOwnTokens((prev) => {
-                return [
-                  ...prev.filter((itemSub) => itemSub.address !== tokenAddress),
-                  {
-                    address: tokenAddress,
-                    name: resName[0],
-                  },
-                ];
-              });
-            });
-        });
-    });
-  }, [deployedTokens, accountEvm, setOwnTokens]);
+  const { ownTokens } = useOwnTokens();
 
   const handleTokenSelect = (value: string | number) => {
     const tokenItem = ownTokens.find((itemSub) => itemSub.address === value);

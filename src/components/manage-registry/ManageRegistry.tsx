@@ -23,22 +23,17 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { GroupBase } from "react-select";
-import { useContext, useState, useEffect, useMemo } from "react";
+import { useContext, useState, useMemo } from "react";
 import { EvmAddress, TokenNameItem } from "@/types/types";
 import { Eip3643Context } from "@/contexts/Eip3643Context";
 import { MenuSelect } from "@/components/MenuSelect";
-import {
-  readTokenName,
-  readTokenOwner,
-} from "@/services/contracts/wagmiGenActions";
 import { useTokenIdentityRegistry } from "@/hooks/useTokenIdentityRegistry";
-import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { ManageAgents } from "./manage-agents/ManageAgents";
 import { ManageIdentities } from "./manage-identities/ManageIdentities";
 import { encodeLogToIdentity } from "@/services/util/helpers";
+import { useOwnTokens } from "@/hooks/eip3643/useOwnTokens";
 
 export const ManageRegistry = ({ isAgents }: { isAgents: boolean }) => {
-  const [ownTokens, setOwnTokens] = useState<Array<TokenNameItem>>([]);
   const [selectedIdentity, setSelectedIdentity] = useState<{
     walletAddress: EvmAddress;
     identityAddress: EvmAddress;
@@ -48,8 +43,8 @@ export const ManageRegistry = ({ isAgents }: { isAgents: boolean }) => {
     useTokenIdentityRegistry(selectedToken);
   const [updateTxResult, setUpdateTxResult] = useState<string>();
   const [updateTxError, setUpdateTxError] = useState<string>();
-  const { deployedTokens, identities } = useContext(Eip3643Context);
-  const { accountEvm } = useWalletInterface();
+  const { identities } = useContext(Eip3643Context);
+  const { ownTokens } = useOwnTokens();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -57,27 +52,6 @@ export const ManageRegistry = ({ isAgents }: { isAgents: boolean }) => {
     () => identities.map((id) => encodeLogToIdentity(id)),
     [identities],
   );
-
-  useEffect(() => {
-    (deployedTokens as any).map((item: any) => {
-      const tokenAddress = item["args"]?.[0];
-      tokenAddress &&
-        readTokenOwner({}, tokenAddress).then((resOwner) => {
-          resOwner[0].toString().toLowerCase() === accountEvm?.toLowerCase() &&
-            readTokenName({}, tokenAddress).then((resName) => {
-              setOwnTokens((prev) => {
-                return [
-                  ...prev.filter((itemSub) => itemSub.address !== tokenAddress),
-                  {
-                    address: tokenAddress,
-                    name: resName[0],
-                  },
-                ];
-              });
-            });
-        });
-    });
-  }, [accountEvm, deployedTokens, setOwnTokens]);
 
   const onEditIdentityRegistry = (identityRegistry: {
     walletAddress: EvmAddress;
