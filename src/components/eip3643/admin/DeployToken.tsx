@@ -96,12 +96,7 @@ export default function DeployToken({
     isPending,
     data: deployResult,
     mutateAsync: deployToken,
-  } = useDeployToken({
-    onFinish: () => {
-      setLastDeployedTokenName(undefined);
-      setTokenDeployInProgress(false);
-    },
-  });
+  } = useDeployToken();
 
   const form = useFormik({
     enableReinitialize: true,
@@ -129,13 +124,22 @@ export default function DeployToken({
       //@TODO add support of several modules per token
 
       setTokenDeployInProgress(true);
-      deployToken({
-        name,
-        symbol,
-        decimals,
-        complianceModules,
-        complianceSettings,
-      });
+      setLastDeployedTokenName(name);
+      deployToken(
+        {
+          name,
+          symbol,
+          decimals,
+          complianceModules,
+          complianceSettings,
+        },
+        {
+          onError: () => {
+            setLastDeployedTokenName(undefined);
+            setTokenDeployInProgress(false);
+          },
+        },
+      );
     },
   });
 

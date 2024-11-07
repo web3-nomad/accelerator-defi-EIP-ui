@@ -1,3 +1,5 @@
+import { useReadTokenIdentityRegistryQueries } from "@/hooks/useReadTokenIdentityRegistryQueries";
+
 export enum QueryKeys {
   ContractCallResults = "contractCallResults",
   ReadErc20BalanceOf = "readErc20BalanceOf",
@@ -13,6 +15,7 @@ export enum QueryKeys {
   ReadTokenOwner = "readTokenOwner",
   ReadIdentityRegistryInvestorCountry = "readIdentityRegistryInvestorCountry",
   ReadTokenTotalSupply = "readTokenTotalSupply",
+  ReadTokenIdentityRegistry = "readTokenIdentityRegistry",
 }
 
 export enum QueryKeysEIP4626 {
