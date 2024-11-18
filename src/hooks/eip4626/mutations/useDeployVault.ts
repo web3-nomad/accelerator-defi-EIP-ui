@@ -1,6 +1,9 @@
 import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { useMutation } from "@tanstack/react-query";
-import { writeVaultFactoryDeployVault } from "@/services/contracts/wagmiGenActions";
+import {
+  tokenBalancerAddress,
+  writeVaultFactoryDeployVault,
+} from "@/services/contracts/wagmiGenActions";
 import { WalletInterface } from "@/services/wallets/walletInterface";
 import { DeployVaultRequest } from "@/types/types";
 import { useDeployValueSafeTx } from "@/hooks/useDeployValueSafeTx";
@@ -41,6 +44,7 @@ export function useDeployVault() {
         shareTokenSymbol,
         vaultRewardController: currentDeployerAddress,
         feeConfigController: currentDeployerAddress,
+        tokenBalancer: tokenBalancerAddress,
       };
 
       const feeConfig = {
