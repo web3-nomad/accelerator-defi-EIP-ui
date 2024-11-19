@@ -31,7 +31,13 @@ import {
   transferLimitOneHundredModuleAddress,
 } from "@/services/contracts/wagmiGenActions";
 import { MenuSelect } from "@/components/MenuSelect";
-import { useCallback, useEffect, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { CountryCodesISO, EvmAddress } from "@/types/types";
 import { GroupBase } from "react-select";
 import { ethers } from "ethers";
@@ -67,9 +73,23 @@ export const complianceModulesList = [
   },
 ];
 
-export default function DeployToken({ onClose = () => {} }) {
+export default function DeployToken({
+  onClose = () => {},
+  setTokenDeployInProgress,
+  userDeployedTokens,
+  tokenDeployInProgress,
+}: {
+  userDeployedTokens: {
+    address: EvmAddress;
+    name: string;
+  }[];
+  tokenDeployInProgress: boolean;
+  setTokenDeployInProgress: Dispatch<SetStateAction<boolean>>;
+  onClose: () => void;
+}) {
   const [complianceModuleSelected, setComplianceModuleSelected] = useState("");
   const [complianceError, setComplianceError] = useState("");
+  const [lastDeployedTokenName, setLastDeployedTokenName] = useState<string>();
 
   const {
     error,
@@ -103,15 +123,41 @@ export default function DeployToken({ onClose = () => {} }) {
 
       //@TODO add support of several modules per token
 
-      deployToken({
-        name,
-        symbol,
-        decimals,
-        complianceModules,
-        complianceSettings,
-      });
+      setTokenDeployInProgress(true);
+      setLastDeployedTokenName(name);
+      deployToken(
+        {
+          name,
+          symbol,
+          decimals,
+          complianceModules,
+          complianceSettings,
+        },
+        {
+          onError: () => {
+            setLastDeployedTokenName(undefined);
+            setTokenDeployInProgress(false);
+          },
+        },
+      );
     },
   });
+
+  useEffect(() => {
+    if (
+      tokenDeployInProgress &&
+      userDeployedTokens?.length &&
+      userDeployedTokens?.find((tok) => tok.name === lastDeployedTokenName)
+    ) {
+      setTokenDeployInProgress(false);
+      setLastDeployedTokenName(undefined);
+    }
+  }, [
+    lastDeployedTokenName,
+    setTokenDeployInProgress,
+    tokenDeployInProgress,
+    userDeployedTokens,
+  ]);
 
   useEffect(() => {
     if (complianceModuleSelected === requiresNftModuleAddress) {
@@ -379,6 +425,7 @@ export default function DeployToken({ onClose = () => {} }) {
             </Button>
           </Stack>
         )}
+
         {error && (
           <Alert status="error">
             <AlertIcon />
@@ -386,6 +433,7 @@ export default function DeployToken({ onClose = () => {} }) {
             <AlertDescription>{error.toString()}</AlertDescription>
           </Alert>
         )}
+
         {deployResult && (
           <>
             <Alert status="success">
@@ -398,6 +446,7 @@ export default function DeployToken({ onClose = () => {} }) {
                 onClose();
               }}
               isLoading={isPending}
+              mt="4"
             >
               Close
             </Button>

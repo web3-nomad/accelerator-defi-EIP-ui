@@ -3,7 +3,7 @@ import { useWalletInterface } from "@/services/wallets/useWalletInterface";
 import { Eip3643Context } from "@/contexts/Eip3643Context";
 import Admin from "@/components/eip3643/Admin";
 import User from "@/components/eip3643/User";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   watchIdFactoryWalletLinkedEvent,
   watchTrexFactoryTrexSuiteDeployedEvent,
@@ -16,10 +16,13 @@ import { EvmAddress } from "@/types/types";
 
 export default function EIP3643() {
   const { accountId } = useWalletInterface();
-  const { setDeployedTokens, setIdentities, identities } =
-    useContext(Eip3643Context);
+  const [deployedTokensEventsTrigger, setDeployedTokensEventsTrigger] =
+    useState(0);
+  const { setDeployedTokens, setIdentities } = useContext(Eip3643Context);
 
   useEffect(() => {
+    console.log("re-fetch tokens", deployedTokensEventsTrigger);
+
     const unsubTokens: WatchContractEventReturnType =
       watchTrexFactoryTrexSuiteDeployedEvent({
         onLogs: (data) => {
@@ -45,7 +48,7 @@ export default function EIP3643() {
       unsubTokens();
       unsubIdentities();
     };
-  }, [setDeployedTokens, setIdentities]);
+  }, [setDeployedTokens, setIdentities, deployedTokensEventsTrigger]);
 
   if (!accountId) return <NoWalletConnected />;
 
@@ -64,7 +67,9 @@ export default function EIP3643() {
             <User />
           </TabPanel>
           <TabPanel>
-            <Admin />
+            <Admin
+              setDeployedTokensEventsTrigger={setDeployedTokensEventsTrigger}
+            />
           </TabPanel>
           <TabPanel>
             <NFT />
