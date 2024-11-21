@@ -7230,7 +7230,7 @@ export const tokenBalancerAbi = [
 ] as const;
 
 export const tokenBalancerAddress =
-  "0x283d5dBD521746b7BC556B05685749AE11a01B60" as const;
+  "0x5dbee7C32027f5A5dF946990BfB4345821E33E80" as const;
 
 export const tokenBalancerConfig = {
   address: tokenBalancerAddress,
@@ -7674,7 +7674,7 @@ export const vaultFactoryAbi = [
             internalType: "address",
             type: "address",
           },
-          { name: "tokenBalancer", internalType: "address", type: "address" },
+          // { name: "tokenBalancer", internalType: "address", type: "address" },
         ],
       },
       {
@@ -7737,7 +7737,7 @@ export const vaultFactoryAbi = [
 ] as const;
 
 export const vaultFactoryAddress =
-  "0x385B6C495bA98c822aBb9CC3bc0c674C47baAb69" as const;
+  "0xe1E981694F119CAd36799B11C6E14dd8Df9164b8" as const;
 
 export const vaultFactoryConfig = {
   address: vaultFactoryAddress,

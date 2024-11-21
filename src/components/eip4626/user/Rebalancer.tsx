@@ -15,9 +15,17 @@ import { GroupBase } from "react-select";
 import { EvmAddress } from "@/types/types";
 import { TransactionResult } from "@/components/TransactionResult";
 
-// todo: replace hardcode values with real one
-const pythPriceIds = ["bytes32_pyth_oracle_id"];
-const tokensToTrack = ["0x3e17e7B35daEc96F5D61b974b888b6bcfF2e5c8f"];
+const pythPriceIds = [
+  "0x1111111111111111111111111111111111111111111111111111111111111111",
+  "0x2222222222222222222222222222222222222222222222222222222222222222",
+  "0xc2d94679a866c5411f85a572c82827b2f0ae880f9ca74ca5e16b070838d51328",
+];
+
+const vaultATokens = [
+  "0x4f9F90BdA689001dC21707e4f9F0FC803c03d701",
+  "0x6684B43CE4B22e5DAc9a40b11938f4C710C14aF4",
+  "0xe3F9ece8B56b8e3b4DECD9f101954Ee1D32159A7",
+];
 
 export const Rebalancer = () => {
   const [isModalsOpen, setIsModalsOpen] = useState({
@@ -94,7 +102,7 @@ export const Rebalancer = () => {
             <MenuSelect
               label="Select Token to track"
               data={
-                tokensToTrack.map((tokenAddr) => ({
+                vaultATokens.map((tokenAddr) => ({
                   value: tokenAddr,
                   label: tokenAddr,
                 })) as unknown as GroupBase<string | number>[]

@@ -44,7 +44,6 @@ export function useDeployVault() {
         shareTokenSymbol,
         vaultRewardController: currentDeployerAddress,
         feeConfigController: currentDeployerAddress,
-        tokenBalancer: tokenBalancerAddress,
       };
 
       const feeConfig = {

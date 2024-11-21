@@ -62,13 +62,20 @@ export const useTokenRebalancer = () => {
       isAutoCompaunder,
     }: {
       token: EvmAddress;
-      priceId: EvmAddress;
+      priceId: string;
       percentage: number;
       isAutoCompaunder: boolean;
     }) =>
       writeTokenBalancerAddTrackingToken(
         walletInterface as WalletInterface,
-        { args: [token, priceId, BigInt(percentage), isAutoCompaunder] },
+        {
+          args: [
+            token,
+            priceId as EvmAddress,
+            BigInt(percentage),
+            isAutoCompaunder,
+          ],
+        },
         tokenBalancerAddress,
       ),
   });
