@@ -12,6 +12,7 @@ import {
   watchHtsTokenFactoryTokenDeployedEvent,
   watchVaultFactoryVaultDeployedEvent,
 } from "@/services/contracts/wagmiGenActions";
+import { Rebalancer } from "@/components/eip4626/user/Rebalancer";
 
 export default function EIP4626() {
   const { accountId } = useWalletInterface();
@@ -78,6 +79,7 @@ export default function EIP4626() {
         <TabList>
           <Tab>User Area</Tab>
           <Tab>Admin Area</Tab>
+          <Tab>Rebalancer</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>
@@ -85,6 +87,9 @@ export default function EIP4626() {
           </TabPanel>
           <TabPanel>
             <Admin />
+          </TabPanel>
+          <TabPanel>
+            <Rebalancer />
           </TabPanel>
         </TabPanels>
       </Tabs>

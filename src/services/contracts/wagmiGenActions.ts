@@ -1002,6 +1002,7 @@ export const hederaVaultAbi = [
         internalType: "address",
         type: "address",
       },
+      { name: "_tokenBalancer", internalType: "address", type: "address" },
     ],
     stateMutability: "payable",
   },
@@ -1554,6 +1555,13 @@ export const hederaVaultAbi = [
   },
   {
     type: "function",
+    inputs: [],
+    name: "rebalance",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
     inputs: [
       { name: "shares", internalType: "uint256", type: "uint256" },
       { name: "receiver", internalType: "address", type: "address" },
@@ -1616,6 +1624,15 @@ export const hederaVaultAbi = [
     inputs: [],
     name: "symbol",
     outputs: [{ name: "", internalType: "string", type: "string" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "tokenBalancer",
+    outputs: [
+      { name: "", internalType: "contract ITokenBalancer", type: "address" },
+    ],
     stateMutability: "view",
   },
   {
@@ -3749,13 +3766,13 @@ export const maxOwnershipByCountryModuleAbi = [
     type: "function",
     inputs: [
       { name: "", internalType: "address", type: "address" },
-      { name: "_to", internalType: "address", type: "address" },
-      { name: "_value", internalType: "uint256", type: "uint256" },
-      { name: "_compliance", internalType: "address", type: "address" },
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "uint256", type: "uint256" },
+      { name: "", internalType: "address", type: "address" },
     ],
     name: "moduleCheck",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
+    stateMutability: "pure",
   },
   {
     type: "function",
@@ -3992,13 +4009,13 @@ export const maxOwnershipModuleAbi = [
     type: "function",
     inputs: [
       { name: "", internalType: "address", type: "address" },
-      { name: "_to", internalType: "address", type: "address" },
-      { name: "_value", internalType: "uint256", type: "uint256" },
-      { name: "_compliance", internalType: "address", type: "address" },
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "uint256", type: "uint256" },
+      { name: "", internalType: "address", type: "address" },
     ],
     name: "moduleCheck",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
+    stateMutability: "pure",
   },
   {
     type: "function",
@@ -4048,7 +4065,7 @@ export const maxOwnershipModuleAbi = [
   },
   {
     type: "function",
-    inputs: [{ name: "_max", internalType: "uint256", type: "uint256" }],
+    inputs: [{ name: "_max", internalType: "uint16", type: "uint16" }],
     name: "setMaxPercentage",
     outputs: [],
     stateMutability: "nonpayable",
@@ -4231,13 +4248,13 @@ export const maxTenPercentOwnershipModuleAbi = [
     type: "function",
     inputs: [
       { name: "", internalType: "address", type: "address" },
-      { name: "_to", internalType: "address", type: "address" },
-      { name: "_value", internalType: "uint256", type: "uint256" },
-      { name: "_compliance", internalType: "address", type: "address" },
+      { name: "", internalType: "address", type: "address" },
+      { name: "", internalType: "uint256", type: "uint256" },
+      { name: "", internalType: "address", type: "address" },
     ],
     name: "moduleCheck",
     outputs: [{ name: "", internalType: "bool", type: "bool" }],
-    stateMutability: "view",
+    stateMutability: "pure",
   },
   {
     type: "function",
@@ -6927,6 +6944,300 @@ export const tokenAddress =
 export const tokenConfig = { address: tokenAddress, abi: tokenAbi } as const;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// TokenBalancer
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const tokenBalancerAbi = [
+  {
+    type: "constructor",
+    inputs: [
+      { name: "_pyth", internalType: "address", type: "address" },
+      { name: "_uniswapV2Router", internalType: "address", type: "address" },
+      { name: "_usdc", internalType: "address", type: "address" },
+    ],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "createdToken",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+    ],
+    name: "CreatedToken",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "token",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "sender",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "Deposit",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "token",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "allocationPercentage",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "TargetAllocationPercentageChanged",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "token",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "priceId",
+        internalType: "bytes32",
+        type: "bytes32",
+        indexed: false,
+      },
+      {
+        name: "allocationPercentage",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "TokenAdded",
+  },
+  {
+    type: "event",
+    anonymous: false,
+    inputs: [
+      {
+        name: "token",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "receiver",
+        internalType: "address",
+        type: "address",
+        indexed: true,
+      },
+      {
+        name: "amount",
+        internalType: "uint256",
+        type: "uint256",
+        indexed: false,
+      },
+    ],
+    name: "Withdraw",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "_calculateAmountsToTrade",
+    outputs: [
+      {
+        name: "amounts",
+        internalType: "struct TokenBalancer.TradeAmount[]",
+        type: "tuple[]",
+        components: [
+          { name: "token", internalType: "address", type: "address" },
+          { name: "amountToTrade", internalType: "uint256", type: "uint256" },
+        ],
+      },
+      { name: "totalValue", internalType: "uint256", type: "uint256" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "token", internalType: "address", type: "address" },
+      { name: "priceId", internalType: "bytes32", type: "bytes32" },
+    ],
+    name: "_getPrice",
+    outputs: [
+      { name: "oneDollarInToken", internalType: "uint256", type: "uint256" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "aToken", internalType: "address", type: "address" },
+      { name: "priceId", internalType: "bytes32", type: "bytes32" },
+      { name: "percentage", internalType: "uint256", type: "uint256" },
+      { name: "isAutoCompaunder", internalType: "bool", type: "bool" },
+    ],
+    name: "addTrackingToken",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "balances",
+    outputs: [{ name: "balance", internalType: "uint256", type: "uint256" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "token", internalType: "address", type: "address" },
+      { name: "amount", internalType: "uint256", type: "uint256" },
+    ],
+    name: "deposit",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "_aToken", internalType: "address", type: "address" }],
+    name: "getTokenValueInUSDC",
+    outputs: [
+      {
+        name: "",
+        internalType: "struct TokenBalancer.TokenValuePayload",
+        type: "tuple",
+        components: [
+          { name: "token", internalType: "address", type: "address" },
+          { name: "value", internalType: "uint256", type: "uint256" },
+          { name: "balance", internalType: "uint256", type: "uint256" },
+          { name: "price", internalType: "uint256", type: "uint256" },
+          {
+            name: "targetPercentage",
+            internalType: "uint256",
+            type: "uint256",
+          },
+        ],
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "pyth",
+    outputs: [{ name: "", internalType: "contract IPyth", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "rebalance",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "token", internalType: "address", type: "address" },
+      { name: "percentage", internalType: "uint256", type: "uint256" },
+    ],
+    name: "setAllocationPercentage",
+    outputs: [],
+    stateMutability: "nonpayable",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "token", internalType: "address", type: "address" }],
+    name: "tokenInfo",
+    outputs: [
+      { name: "aToken", internalType: "address", type: "address" },
+      { name: "token", internalType: "address", type: "address" },
+      { name: "priceId", internalType: "bytes32", type: "bytes32" },
+      { name: "targetPercentage", internalType: "uint256", type: "uint256" },
+      { name: "isAutoCompaunder", internalType: "bool", type: "bool" },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    name: "tokens",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [{ name: "", internalType: "uint256", type: "uint256" }],
+    name: "underlyingTokens",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "uniswapV2Router",
+    outputs: [
+      {
+        name: "",
+        internalType: "contract IUniswapV2Router02",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+  },
+  {
+    type: "function",
+    inputs: [
+      { name: "pythPriceUpdate", internalType: "bytes[]", type: "bytes[]" },
+    ],
+    name: "update",
+    outputs: [],
+    stateMutability: "payable",
+  },
+  {
+    type: "function",
+    inputs: [],
+    name: "usdc",
+    outputs: [{ name: "", internalType: "address", type: "address" }],
+    stateMutability: "view",
+  },
+] as const;
+
+export const tokenBalancerAddress =
+  "0x5dbee7C32027f5A5dF946990BfB4345821E33E80" as const;
+
+export const tokenBalancerConfig = {
+  address: tokenBalancerAddress,
+  abi: tokenBalancerAbi,
+} as const;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // TransferLimitOneHundredModule
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -7363,6 +7674,7 @@ export const vaultFactoryAbi = [
             internalType: "address",
             type: "address",
           },
+          // { name: "tokenBalancer", internalType: "address", type: "address" },
         ],
       },
       {
@@ -7425,7 +7737,7 @@ export const vaultFactoryAbi = [
 ] as const;
 
 export const vaultFactoryAddress =
-  "0xa221354a965bC0d82da65DEee2f41bBCA5420b73" as const;
+  "0xe1E981694F119CAd36799B11C6E14dd8Df9164b8" as const;
 
 export const vaultFactoryConfig = {
   address: vaultFactoryAddress,
@@ -8903,6 +9215,15 @@ export const readHederaVaultSymbol = /*#__PURE__*/ createReadContract({
 });
 
 /**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"tokenBalancer"`
+ */
+export const readHederaVaultTokenBalancer = /*#__PURE__*/ createReadContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "tokenBalancer",
+});
+
+/**
  * Wraps __{@link readContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"tokensRewardInfo"`
  */
 export const readHederaVaultTokensRewardInfo = /*#__PURE__*/ createReadContract(
@@ -9013,6 +9334,15 @@ export const writeHederaVaultPermit = /*#__PURE__*/ createWriteContract({
   abi: hederaVaultAbi,
   address: hederaVaultAddress,
   functionName: "permit",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"rebalance"`
+ */
+export const writeHederaVaultRebalance = /*#__PURE__*/ createWriteContract({
+  abi: hederaVaultAbi,
+  address: hederaVaultAddress,
+  functionName: "rebalance",
 });
 
 /**
@@ -9172,6 +9502,16 @@ export const simulateHederaVaultPermit = /*#__PURE__*/ createSimulateContract({
   address: hederaVaultAddress,
   functionName: "permit",
 });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"rebalance"`
+ */
+export const simulateHederaVaultRebalance =
+  /*#__PURE__*/ createSimulateContract({
+    abi: hederaVaultAbi,
+    address: hederaVaultAddress,
+    functionName: "rebalance",
+  });
 
 /**
  * Wraps __{@link simulateContract}__ with `abi` set to __{@link hederaVaultAbi}__ and `functionName` set to `"redeem"`
@@ -15281,6 +15621,280 @@ export const watchTokenUpdatedTokenInformationEvent =
     abi: tokenAbi,
     address: tokenAddress,
     eventName: "UpdatedTokenInformation",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link tokenBalancerAbi}__
+ */
+export const readTokenBalancer = /*#__PURE__*/ createReadContract({
+  abi: tokenBalancerAbi,
+  address: tokenBalancerAddress,
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link tokenBalancerAbi}__ and `functionName` set to `"_calculateAmountsToTrade"`
+ */
+export const readTokenBalancerCalculateAmountsToTrade =
+  /*#__PURE__*/ createReadContract({
+    abi: tokenBalancerAbi,
+    address: tokenBalancerAddress,
+    functionName: "_calculateAmountsToTrade",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link tokenBalancerAbi}__ and `functionName` set to `"_getPrice"`
+ */
+export const readTokenBalancerGetPrice = /*#__PURE__*/ createReadContract({
+  abi: tokenBalancerAbi,
+  address: tokenBalancerAddress,
+  functionName: "_getPrice",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link tokenBalancerAbi}__ and `functionName` set to `"balances"`
+ */
+export const readTokenBalancerBalances = /*#__PURE__*/ createReadContract({
+  abi: tokenBalancerAbi,
+  address: tokenBalancerAddress,
+  functionName: "balances",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link tokenBalancerAbi}__ and `functionName` set to `"getTokenValueInUSDC"`
+ */
+export const readTokenBalancerGetTokenValueInUsdc =
+  /*#__PURE__*/ createReadContract({
+    abi: tokenBalancerAbi,
+    address: tokenBalancerAddress,
+    functionName: "getTokenValueInUSDC",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link tokenBalancerAbi}__ and `functionName` set to `"pyth"`
+ */
+export const readTokenBalancerPyth = /*#__PURE__*/ createReadContract({
+  abi: tokenBalancerAbi,
+  address: tokenBalancerAddress,
+  functionName: "pyth",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link tokenBalancerAbi}__ and `functionName` set to `"tokenInfo"`
+ */
+export const readTokenBalancerTokenInfo = /*#__PURE__*/ createReadContract({
+  abi: tokenBalancerAbi,
+  address: tokenBalancerAddress,
+  functionName: "tokenInfo",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link tokenBalancerAbi}__ and `functionName` set to `"tokens"`
+ */
+export const readTokenBalancerTokens = /*#__PURE__*/ createReadContract({
+  abi: tokenBalancerAbi,
+  address: tokenBalancerAddress,
+  functionName: "tokens",
+});
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link tokenBalancerAbi}__ and `functionName` set to `"underlyingTokens"`
+ */
+export const readTokenBalancerUnderlyingTokens =
+  /*#__PURE__*/ createReadContract({
+    abi: tokenBalancerAbi,
+    address: tokenBalancerAddress,
+    functionName: "underlyingTokens",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link tokenBalancerAbi}__ and `functionName` set to `"uniswapV2Router"`
+ */
+export const readTokenBalancerUniswapV2Router =
+  /*#__PURE__*/ createReadContract({
+    abi: tokenBalancerAbi,
+    address: tokenBalancerAddress,
+    functionName: "uniswapV2Router",
+  });
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link tokenBalancerAbi}__ and `functionName` set to `"usdc"`
+ */
+export const readTokenBalancerUsdc = /*#__PURE__*/ createReadContract({
+  abi: tokenBalancerAbi,
+  address: tokenBalancerAddress,
+  functionName: "usdc",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link tokenBalancerAbi}__
+ */
+export const writeTokenBalancer = /*#__PURE__*/ createWriteContract({
+  abi: tokenBalancerAbi,
+  address: tokenBalancerAddress,
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link tokenBalancerAbi}__ and `functionName` set to `"addTrackingToken"`
+ */
+export const writeTokenBalancerAddTrackingToken =
+  /*#__PURE__*/ createWriteContract({
+    abi: tokenBalancerAbi,
+    address: tokenBalancerAddress,
+    functionName: "addTrackingToken",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link tokenBalancerAbi}__ and `functionName` set to `"deposit"`
+ */
+export const writeTokenBalancerDeposit = /*#__PURE__*/ createWriteContract({
+  abi: tokenBalancerAbi,
+  address: tokenBalancerAddress,
+  functionName: "deposit",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link tokenBalancerAbi}__ and `functionName` set to `"rebalance"`
+ */
+export const writeTokenBalancerRebalance = /*#__PURE__*/ createWriteContract({
+  abi: tokenBalancerAbi,
+  address: tokenBalancerAddress,
+  functionName: "rebalance",
+});
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link tokenBalancerAbi}__ and `functionName` set to `"setAllocationPercentage"`
+ */
+export const writeTokenBalancerSetAllocationPercentage =
+  /*#__PURE__*/ createWriteContract({
+    abi: tokenBalancerAbi,
+    address: tokenBalancerAddress,
+    functionName: "setAllocationPercentage",
+  });
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link tokenBalancerAbi}__ and `functionName` set to `"update"`
+ */
+export const writeTokenBalancerUpdate = /*#__PURE__*/ createWriteContract({
+  abi: tokenBalancerAbi,
+  address: tokenBalancerAddress,
+  functionName: "update",
+});
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link tokenBalancerAbi}__
+ */
+export const simulateTokenBalancer = /*#__PURE__*/ createSimulateContract({
+  abi: tokenBalancerAbi,
+  address: tokenBalancerAddress,
+});
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link tokenBalancerAbi}__ and `functionName` set to `"addTrackingToken"`
+ */
+export const simulateTokenBalancerAddTrackingToken =
+  /*#__PURE__*/ createSimulateContract({
+    abi: tokenBalancerAbi,
+    address: tokenBalancerAddress,
+    functionName: "addTrackingToken",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link tokenBalancerAbi}__ and `functionName` set to `"deposit"`
+ */
+export const simulateTokenBalancerDeposit =
+  /*#__PURE__*/ createSimulateContract({
+    abi: tokenBalancerAbi,
+    address: tokenBalancerAddress,
+    functionName: "deposit",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link tokenBalancerAbi}__ and `functionName` set to `"rebalance"`
+ */
+export const simulateTokenBalancerRebalance =
+  /*#__PURE__*/ createSimulateContract({
+    abi: tokenBalancerAbi,
+    address: tokenBalancerAddress,
+    functionName: "rebalance",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link tokenBalancerAbi}__ and `functionName` set to `"setAllocationPercentage"`
+ */
+export const simulateTokenBalancerSetAllocationPercentage =
+  /*#__PURE__*/ createSimulateContract({
+    abi: tokenBalancerAbi,
+    address: tokenBalancerAddress,
+    functionName: "setAllocationPercentage",
+  });
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link tokenBalancerAbi}__ and `functionName` set to `"update"`
+ */
+export const simulateTokenBalancerUpdate = /*#__PURE__*/ createSimulateContract(
+  {
+    abi: tokenBalancerAbi,
+    address: tokenBalancerAddress,
+    functionName: "update",
+  },
+);
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link tokenBalancerAbi}__
+ */
+export const watchTokenBalancerEvent = /*#__PURE__*/ createWatchContractEvent({
+  abi: tokenBalancerAbi,
+  address: tokenBalancerAddress,
+});
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link tokenBalancerAbi}__ and `eventName` set to `"CreatedToken"`
+ */
+export const watchTokenBalancerCreatedTokenEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: tokenBalancerAbi,
+    address: tokenBalancerAddress,
+    eventName: "CreatedToken",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link tokenBalancerAbi}__ and `eventName` set to `"Deposit"`
+ */
+export const watchTokenBalancerDepositEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: tokenBalancerAbi,
+    address: tokenBalancerAddress,
+    eventName: "Deposit",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link tokenBalancerAbi}__ and `eventName` set to `"TargetAllocationPercentageChanged"`
+ */
+export const watchTokenBalancerTargetAllocationPercentageChangedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: tokenBalancerAbi,
+    address: tokenBalancerAddress,
+    eventName: "TargetAllocationPercentageChanged",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link tokenBalancerAbi}__ and `eventName` set to `"TokenAdded"`
+ */
+export const watchTokenBalancerTokenAddedEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: tokenBalancerAbi,
+    address: tokenBalancerAddress,
+    eventName: "TokenAdded",
+  });
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link tokenBalancerAbi}__ and `eventName` set to `"Withdraw"`
+ */
+export const watchTokenBalancerWithdrawEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: tokenBalancerAbi,
+    address: tokenBalancerAddress,
+    eventName: "Withdraw",
   });
 
 /**
